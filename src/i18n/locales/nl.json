@@ -1,0 +1,164 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "back": "Terug",
+    "next": "Volgende",
+    "submit": "Versturen",
+    "confirm": "Bevestigen",
+    "yes": "Ja",
+    "no": "Nee",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "noResults": "Geen resultaten",
+    "error": "Er is iets misgegaan",
+    "success": "Gelukt!"
+  },
+  "splash": {
+    "welcome": "Welkom bij Alhan Groep 💪"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "register": "Registreren",
+    "email": "E-mailadres",
+    "password": "Wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "resetPassword": "Wachtwoord herstellen",
+    "newPassword": "Nieuw wachtwoord",
+    "rememberMe": "Onthoud mij",
+    "noAccount": "Nog geen account?",
+    "hasAccount": "Al een account?",
+    "fullName": "Volledige naam",
+    "phone": "Telefoonnummer",
+    "referralCode": "Referral code (optioneel)",
+    "registerSubtitle": "Word onderdeel van de Alhan familie",
+    "loginSubtitle": "Welkom terug bij Alhan Groep",
+    "resetSent": "Herstel e-mail verzonden! Controleer je inbox.",
+    "logout": "Uitloggen"
+  },
+  "nav": {
+    "home": "Home",
+    "profile": "Profiel",
+    "work": "Werk",
+    "network": "Netwerk",
+    "settings": "Instellingen"
+  },
+  "home": {
+    "welcome": "Welkom {{name}} 👋",
+    "subtitle": "Alhan Groep — Bouwen met vertrouwen",
+    "available": "Beschikbaar",
+    "unavailable": "Niet beschikbaar",
+    "profileComplete": "Jouw profiel is {{percentage}}% compleet",
+    "documents": "Documenten",
+    "license": "Rijbewijs",
+    "region": "Regio",
+    "referrals": "Referrals",
+    "none": "Geen"
+  },
+  "profile": {
+    "title": "Profiel",
+    "step1Title": "Wie ben jij?",
+    "step2Title": "Wat doe jij?",
+    "step3Title": "Jouw gegevens",
+    "step4Title": "Rijbewijs & Materiaal",
+    "step5Title": "Jouw documenten",
+    "firstName": "Voornaam",
+    "lastName": "Achternaam",
+    "phone": "Telefoonnummer",
+    "uploadPhoto": "Upload foto",
+    "disciplines": {
+      "grondwerk": "Grondwerk",
+      "straatwerk": "Straatwerk",
+      "kabels": "Kabels & Leidingen",
+      "sanering": "Sanering"
+    },
+    "kvk": "KvK nummer",
+    "iban": "IBAN",
+    "hourlyRate": "Uurtarief (€)",
+    "region": "Regio / Woonplaats",
+    "drivingLicense": "Rijbewijs",
+    "licenseCategories": "Categorieën",
+    "ownVan": "Eigen werkbusje",
+    "ownMaterials": "Eigen materiaal",
+    "materials": {
+      "schop": "Schop",
+      "trilplaat": "Trilplaat",
+      "zaagmachine": "Zaagmachine",
+      "hamer": "Hamer",
+      "boor": "Boor",
+      "meetlint": "Meetlint",
+      "veiligheid": "Veiligheidsuitrusting",
+      "anders": "Anders"
+    },
+    "idDocument": "ID bewijs",
+    "vcaCertificate": "VCA certificaat",
+    "vog": "VOG (optioneel)",
+    "expiryDate": "Vervaldatum",
+    "completionTitle": "Welkom bij de Alhan Familie! 💪",
+    "completionSubtitle": "Jouw profiel wordt beoordeeld door ons team",
+    "goToProfile": "Ga naar mijn profiel",
+    "alhanScore": "Alhan Score",
+    "badges": {
+      "newForce": "Nieuwe Kracht",
+      "reliable": "Betrouwbare Kracht",
+      "veteran": "Alhan Veteraan",
+      "topRecruiter": "Top Recruiter"
+    },
+    "status": {
+      "pending": "In behandeling",
+      "approved": "Goedgekeurd",
+      "rejected": "Afgekeurd"
+    },
+    "docStatus": {
+      "approved": "Goedgekeurd",
+      "pending": "In behandeling",
+      "expired": "Verlopen"
+    }
+  },
+  "work": {
+    "title": "Opdrachten",
+    "interested": "Ik ben beschikbaar",
+    "interestRegistered": "Interesse geregistreerd",
+    "startDate": "Startdatum",
+    "needed": "nodig",
+    "empty": "Geen opdrachten beschikbaar — houd je beschikbaarheid aan!",
+    "status": {
+      "open": "Open",
+      "filled": "Bezet",
+      "completed": "Afgerond"
+    }
+  },
+  "network": {
+    "title": "Netwerk",
+    "inviteTitle": "Nodig een collega uit",
+    "yourCode": "Jouw referral code",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd!",
+    "share": "Delen via WhatsApp",
+    "inviteMessage": "{{name}} nodigt jou uit bij Alhan Groep 💪",
+    "referralList": "Jouw referrals",
+    "totalBonus": "Totaal verdiend",
+    "bonusExplanation": "Jouw bonus wordt uitbetaald nadat jouw collega zijn eerste opdracht heeft afgerond",
+    "status": {
+      "registered": "Aangemeld",
+      "approved": "Goedgekeurd",
+      "worked": "Gewerkt",
+      "paid": "Bonus uitbetaald"
+    }
+  },
+  "settings": {
+    "title": "Instellingen",
+    "language": "Taal",
+    "darkMode": "Donkere modus",
+    "notifications": "Meldingen",
+    "changePassword": "Wachtwoord wijzigen",
+    "deleteAccount": "Account verwijderen",
+    "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden.",
+    "version": "App versie",
+    "contact": "Contact"
+  }
+}
