@@ -69,7 +69,8 @@
     "work": "Werk",
     "network": "Netwerk",
     "settings": "Instellingen",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "leaderboard": "Leaderboard"
   },
   "home": {
     "welcome": "Welkom {{name}} 👋",

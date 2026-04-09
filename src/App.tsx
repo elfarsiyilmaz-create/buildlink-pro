@@ -19,8 +19,10 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Onboarding from "@/pages/Onboarding";
+import Leaderboard from "@/pages/Leaderboard";
 import NotFound from "@/pages/NotFound";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import AlhanChat from "@/components/AlhanChat";
 
 const queryClient = new QueryClient();
 
@@ -52,11 +54,13 @@ const App = () => (
               <Route path="/network" element={<Network />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
           <PWAInstallPrompt />
+          <AlhanChat />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
