@@ -50,7 +50,8 @@
     "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
     "passwordMismatch": "Wachtwoorden komen niet overeen",
     "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
-    "fillAllFields": "Vul alle verplichte velden in"
+    "fillAllFields": "Vul alle verplichte velden in",
+    "logoutSuccess": "Succesvol uitgelogd"
   },
   "nav": {
     "home": "Home",
