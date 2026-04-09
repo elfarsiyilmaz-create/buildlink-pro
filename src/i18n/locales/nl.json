@@ -160,5 +160,19 @@
     "deleteConfirm": "Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden.",
     "version": "App versie",
     "contact": "Contact"
+  },
+  "certificates": {
+    "title": "Mijn Certificaten",
+    "add": "Toevoegen",
+    "name": "Certificaatnaam",
+    "namePlaceholder": "bijv. VCA, BHV, Heftruck",
+    "expiryDate": "Vervaldatum",
+    "selectDate": "Selecteer datum",
+    "file": "Bestand",
+    "chooseFile": "Kies bestand",
+    "added": "Certificaat toegevoegd",
+    "deleted": "Certificaat verwijderd",
+    "nameRequired": "Vul een certificaatnaam in",
+    "empty": "Nog geen certificaten toegevoegd"
   }
 }
