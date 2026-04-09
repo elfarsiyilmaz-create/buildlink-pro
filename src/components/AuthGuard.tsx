@@ -44,8 +44,9 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       const profileStatus = (profile?.status as string) || 'pending';
 
       if (profileStatus === 'approved') {
-        // Always show onboarding on login (demo mode)
-        if (location.pathname !== '/onboarding') {
+        // Demo mode: show onboarding once per session
+        const onboardingShownThisSession = sessionStorage.getItem('onboarding_shown');
+        if (!onboardingShownThisSession && location.pathname !== '/onboarding') {
           navigate('/onboarding', { replace: true });
           setStatus('onboarding');
         } else {
