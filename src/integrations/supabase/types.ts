@@ -394,6 +394,68 @@ export type Database = {
         }
         Relationships: []
       }
+      time_entries: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          date: string
+          description: string | null
+          hourly_rate: number | null
+          hours_worked: number
+          id: string
+          job_id: string | null
+          status: string
+          submitted_at: string | null
+          total_earned: number | null
+          user_id: string
+          week_number: number | null
+          year: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          date: string
+          description?: string | null
+          hourly_rate?: number | null
+          hours_worked: number
+          id?: string
+          job_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          total_earned?: number | null
+          user_id: string
+          week_number?: number | null
+          year?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          hourly_rate?: number | null
+          hours_worked?: number
+          id?: string
+          job_id?: string | null
+          status?: string
+          submitted_at?: string | null
+          total_earned?: number | null
+          user_id?: string
+          week_number?: number | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
