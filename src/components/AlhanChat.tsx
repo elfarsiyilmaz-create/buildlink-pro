@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { X, Send, Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import ReactMarkdown from 'react-markdown';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -12,11 +13,46 @@ const AlhanChat = () => {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [profileContext, setProfileContext] = useState<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Load profile context when chat opens
+  useEffect(() => {
+    if (open && !profileContext) {
+      loadProfileContext();
+    }
+  }, [open]);
+
+  const loadProfileContext = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const [
+      { data: profile },
+      { data: scores },
+      { data: achievements },
+      { data: certs },
+      { data: completions },
+    ] = await Promise.all([
+      supabase.from('profiles').select('first_name, last_name, specialization, city, hourly_rate, bio, transport_type, has_own_equipment, status, avatar_url').eq('user_id', user.id).single(),
+      supabase.from('leaderboard_scores').select('total_points, current_streak, level, challenges_completed').eq('user_id', user.id).single(),
+      supabase.from('user_achievements').select('achievement_id, achievements(name)').eq('user_id', user.id),
+      supabase.from('certificates').select('name, expiry_date').eq('user_id', user.id),
+      supabase.from('user_challenge_completions').select('completed_date').eq('user_id', user.id).order('completed_date', { ascending: false }).limit(7),
+    ]);
+
+    setProfileContext({
+      profile,
+      scores,
+      achievements: achievements?.map((a: any) => a.achievements?.name).filter(Boolean),
+      certificates: certs,
+      recentActivity: completions?.length || 0,
+    });
+  };
 
   const send = async () => {
     if (!input.trim() || loading) return;
@@ -28,7 +64,10 @@ const AlhanChat = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('alhan-chat', {
-        body: { messages: newMessages.map(m => ({ role: m.role, content: m.content })) },
+        body: {
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          profileContext,
+        },
       });
 
       if (error) throw error;
@@ -93,7 +132,13 @@ const AlhanChat = () => {
                         ? 'bg-primary text-primary-foreground rounded-br-md'
                         : 'bg-muted text-foreground rounded-bl-md'
                     }`}>
-                      {msg.content}
+                      {msg.role === 'assistant' ? (
+                        <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                      ) : (
+                        msg.content
+                      )}
                     </div>
                   </div>
                 ))}
