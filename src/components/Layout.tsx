@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
+import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield, Trophy } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import Logo from './Logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';

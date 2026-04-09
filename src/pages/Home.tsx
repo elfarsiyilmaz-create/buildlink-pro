@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Clock, CalendarDays, Cloud, Thermometer, FileCheck, Car, MapPin, Users } from 'lucide-react';
+import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
+import DailyChallenges from '@/components/home/DailyChallenges';
+import PersonalDashboard from '@/components/home/PersonalDashboard';
+import AchievementUnlock from '@/components/home/AchievementUnlock';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -9,13 +13,11 @@ const Home = () => {
   const [available, setAvailable] = useState(false);
   const [weather, setWeather] = useState<{ temp: number; description: string } | null>(null);
 
-  // Live clock
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Weather
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       async (pos) => {
@@ -44,27 +46,21 @@ const Home = () => {
 
   const formatDate = () => {
     return time.toLocaleDateString('nl-NL', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     });
   };
 
   const profilePercentage = 35;
-
-  const fadeUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-  };
+  const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
 
   return (
     <div className="space-y-5 py-5">
+      {/* Achievement unlock toast */}
+      <AchievementUnlock />
+
       {/* Welcome Header */}
       <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-        <h1 className="text-2xl font-bold text-foreground">
-          {t('home.welcome', { name: 'ZZP\'er' })}
-        </h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('home.welcome', { name: "ZZP'er" })}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">{t('home.subtitle')}</p>
       </motion.div>
 
@@ -99,45 +95,41 @@ const Home = () => {
         <button
           onClick={() => setAvailable(!available)}
           className={`w-full rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ${
-            available
-              ? 'bg-success text-success-foreground pulse-green'
-              : 'bg-destructive text-destructive-foreground'
+            available ? 'bg-success text-success-foreground pulse-green' : 'bg-destructive text-destructive-foreground'
           }`}
         >
-          <span className="font-bold text-lg">
-            {available ? t('home.available') : t('home.unavailable')}
-          </span>
-          <div
-            className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${
-              available ? 'bg-white/30' : 'bg-white/20'
-            }`}
-          >
-            <motion.div
-              layout
-              className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-md"
-              style={{ left: available ? 'calc(100% - 28px)' : '4px' }}
-            />
+          <span className="font-bold text-lg">{available ? t('home.available') : t('home.unavailable')}</span>
+          <div className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${available ? 'bg-white/30' : 'bg-white/20'}`}>
+            <motion.div layout className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-md" style={{ left: available ? 'calc(100% - 28px)' : '4px' }} />
           </div>
         </button>
       </motion.div>
 
+      {/* Availability Calendar */}
+      <motion.div {...fadeUp} transition={{ delay: 0.35 }}>
+        <AvailabilityCalendar />
+      </motion.div>
+
+      {/* Personal Dashboard */}
+      <motion.div {...fadeUp} transition={{ delay: 0.4 }}>
+        <PersonalDashboard />
+      </motion.div>
+
+      {/* Daily Challenges */}
+      <motion.div {...fadeUp} transition={{ delay: 0.45 }}>
+        <DailyChallenges />
+      </motion.div>
+
       {/* Profile Completeness */}
-      <motion.div {...fadeUp} transition={{ delay: 0.4 }} className="glass-card rounded-2xl p-4">
-        <p className="text-sm font-medium text-foreground mb-2">
-          {t('home.profileComplete', { percentage: profilePercentage })}
-        </p>
+      <motion.div {...fadeUp} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-4">
+        <p className="text-sm font-medium text-foreground mb-2">{t('home.profileComplete', { percentage: profilePercentage })}</p>
         <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${profilePercentage}%` }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="h-full gradient-primary rounded-full"
-          />
+          <motion.div initial={{ width: 0 }} animate={{ width: `${profilePercentage}%` }} transition={{ duration: 1, delay: 0.6 }} className="h-full gradient-primary rounded-full" />
         </div>
       </motion.div>
 
       {/* Quick Stats */}
-      <motion.div {...fadeUp} transition={{ delay: 0.5 }} className="grid grid-cols-4 gap-2">
+      <motion.div {...fadeUp} transition={{ delay: 0.55 }} className="grid grid-cols-4 gap-2">
         {[
           { icon: FileCheck, label: t('home.documents'), value: '0/3' },
           { icon: Car, label: t('home.license'), value: t('home.none') },
