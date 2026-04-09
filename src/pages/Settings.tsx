@@ -1,12 +1,22 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Moon, Sun, Lock, Trash2, Mail, Phone } from 'lucide-react';
+import { Moon, Sun, Lock, Trash2, Mail, Phone, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Settings = () => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success(t('auth.logoutSuccess'));
+    navigate('/login', { replace: true });
+  };
 
   return (
     <motion.div
@@ -55,6 +65,13 @@ const Settings = () => {
         <button className="w-full flex items-center gap-3 px-5 py-4 text-destructive hover:bg-destructive/5 transition-colors">
           <Trash2 className="w-5 h-5" />
           <span className="font-medium text-sm">{t('settings.deleteAccount')}</span>
+        </button>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-5 py-4 text-destructive hover:bg-destructive/5 transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="font-medium text-sm">{t('auth.logout')}</span>
         </button>
       </div>
 

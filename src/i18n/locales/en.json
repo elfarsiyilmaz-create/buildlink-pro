@@ -50,7 +50,8 @@
     "invalidCredentials": "Invalid email or password",
     "passwordMismatch": "Passwords don't match",
     "passwordTooShort": "Password must be at least 6 characters",
-    "fillAllFields": "Please fill in all required fields"
+    "fillAllFields": "Please fill in all required fields",
+    "logoutSuccess": "Successfully logged out"
   },
   "nav": {
     "home": "Home",
