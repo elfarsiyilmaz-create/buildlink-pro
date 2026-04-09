@@ -51,7 +51,14 @@
     "passwordMismatch": "Parolele nu se potrivesc",
     "passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere",
     "fillAllFields": "Completează toate câmpurile obligatorii",
-    "logoutSuccess": "Deconectare reușită"
+    "logoutSuccess": "Deconectare reușită",
+    "resetSubtitle": "Introduceți e-mailul și vă vom trimite un link de resetare",
+    "sendResetLink": "Trimite linkul",
+    "resetSentTitle": "E-mail trimis!",
+    "resetSentMessage": "Verificați inbox-ul pentru linkul de resetare a parolei.",
+    "newPasswordSubtitle": "Introduceți noua parolă mai jos",
+    "updatePassword": "Actualizează parola",
+    "passwordUpdated": "Parola a fost actualizată cu succes"
   },
   "nav": {
     "home": "Acasă",

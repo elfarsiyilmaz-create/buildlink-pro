@@ -51,7 +51,14 @@
     "passwordMismatch": "As senhas não coincidem",
     "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
     "fillAllFields": "Preencha todos os campos obrigatórios",
-    "logoutSuccess": "Logout realizado com sucesso"
+    "logoutSuccess": "Logout realizado com sucesso",
+    "resetSubtitle": "Digite seu e-mail e enviaremos um link de redefinição",
+    "sendResetLink": "Enviar link",
+    "resetSentTitle": "E-mail enviado!",
+    "resetSentMessage": "Verifique sua caixa de entrada para o link de redefinição.",
+    "newPasswordSubtitle": "Digite sua nova senha abaixo",
+    "updatePassword": "Atualizar senha",
+    "passwordUpdated": "Senha atualizada com sucesso"
   },
   "nav": {
     "home": "Início",

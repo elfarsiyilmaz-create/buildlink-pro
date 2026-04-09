@@ -49,9 +49,16 @@
     "emailNotConfirmed": "Önce e-postanızı doğrulayın",
     "invalidCredentials": "Geçersiz e-posta veya şifre",
     "passwordMismatch": "Şifreler eşleşmiyor",
-    "passwordTooShort": "Şifre en az 6 karakter olmalı",
+    "passwordTooShort": "Şifre en az 6 karakter olmalıdır",
     "fillAllFields": "Tüm zorunlu alanları doldurun",
-    "logoutSuccess": "Başarıyla çıkış yapıldı"
+    "logoutSuccess": "Başarıyla çıkış yapıldı",
+    "resetSubtitle": "E-postanızı girin, size bir sıfırlama bağlantısı gönderelim",
+    "sendResetLink": "Bağlantı gönder",
+    "resetSentTitle": "E-posta gönderildi!",
+    "resetSentMessage": "Şifre sıfırlama bağlantısı için gelen kutunuzu kontrol edin.",
+    "newPasswordSubtitle": "Yeni şifrenizi aşağıya girin",
+    "updatePassword": "Şifreyi güncelle",
+    "passwordUpdated": "Şifre başarıyla güncellendi"
   },
   "nav": {
     "home": "Ana Sayfa",

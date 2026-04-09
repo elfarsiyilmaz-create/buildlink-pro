@@ -48,10 +48,17 @@
     "rejectedMessage": "Your account has been rejected. Please contact support for more information.",
     "emailNotConfirmed": "Please verify your email address first",
     "invalidCredentials": "Invalid email or password",
-    "passwordMismatch": "Passwords don't match",
+    "passwordMismatch": "Passwords do not match",
     "passwordTooShort": "Password must be at least 6 characters",
     "fillAllFields": "Please fill in all required fields",
-    "logoutSuccess": "Successfully logged out"
+    "logoutSuccess": "Successfully logged out",
+    "resetSubtitle": "Enter your email and we will send you a reset link",
+    "sendResetLink": "Send reset link",
+    "resetSentTitle": "Email sent!",
+    "resetSentMessage": "Check your inbox for the password reset link.",
+    "newPasswordSubtitle": "Enter your new password below",
+    "updatePassword": "Update password",
+    "passwordUpdated": "Password updated successfully"
   },
   "nav": {
     "home": "Home",

@@ -48,10 +48,17 @@
     "rejectedMessage": "Twoje konto zostało odrzucone. Skontaktuj się z pomocą.",
     "emailNotConfirmed": "Najpierw zweryfikuj swój e-mail",
     "invalidCredentials": "Nieprawidłowy e-mail lub hasło",
-    "passwordMismatch": "Hasła nie pasują do siebie",
+    "passwordMismatch": "Hasła nie są zgodne",
     "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków",
     "fillAllFields": "Wypełnij wszystkie wymagane pola",
-    "logoutSuccess": "Pomyślnie wylogowano"
+    "logoutSuccess": "Pomyślnie wylogowano",
+    "resetSubtitle": "Wpisz swój e-mail, a wyślemy Ci link do resetowania",
+    "sendResetLink": "Wyślij link",
+    "resetSentTitle": "E-mail wysłany!",
+    "resetSentMessage": "Sprawdź swoją skrzynkę odbiorczą, aby znaleźć link do resetowania hasła.",
+    "newPasswordSubtitle": "Wpisz poniżej nowe hasło",
+    "updatePassword": "Zaktualizuj hasło",
+    "passwordUpdated": "Hasło zostało pomyślnie zaktualizowane"
   },
   "nav": {
     "home": "Strona główna",
