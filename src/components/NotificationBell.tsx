@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
-import { nl, en, de, fr, es, pt, pl, ro, tr, ar, bg } from 'date-fns/locale';
+import { nl, enUS, de, fr, es, pt, pl, ro, tr, ar, bg } from 'date-fns/locale';
 
 interface Notification {
   id: string;
@@ -15,7 +15,7 @@ interface Notification {
   created_at: string;
 }
 
-const localeMap: Record<string, Locale> = { nl, en, de, fr, es, pt, pl, ro, tr, ar, bg };
+const localeMap: Record<string, typeof nl> = { nl, en: enUS, de, fr, es, pt, pl, ro, tr, ar, bg };
 
 const NotificationBell = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
