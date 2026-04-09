@@ -19,6 +19,10 @@ import { CalendarIcon } from 'lucide-react';
 import CertificateSection from '@/components/CertificateSection';
 import ProfilePhotoUpload from '@/components/profile/ProfilePhotoUpload';
 import AboutTransportSection from '@/components/profile/AboutTransportSection';
+import ProfileCompletenessRing from '@/components/profile/ProfileCompletenessRing';
+import CompletenessBanner from '@/components/profile/CompletenessBanner';
+import ProfileWizard from '@/components/profile/ProfileWizard';
+import { useProfileCompleteness } from '@/hooks/useProfileCompleteness';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'Verplicht').max(100),
@@ -67,24 +71,21 @@ const Profile = () => {
   const [userId, setUserId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
+  const [profileData, setProfileData] = useState<any>(null);
+  const [hasCerts, setHasCerts] = useState(false);
+  const [hasAvail, setHasAvail] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const completeness = useProfileCompleteness(profileData, hasCerts, hasAvail);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      first_name: '',
-      last_name: '',
-      phone: '',
-      bsn: '',
-      address: '',
-      city: '',
-      postal_code: '',
-      specialization: '',
-      hourly_rate: null,
-      preferred_language: 'nl',
-      bio: '',
-      transport_type: '',
-      has_own_equipment: false,
-      equipment_description: '',
+      first_name: '', last_name: '', phone: '', bsn: '', address: '', city: '',
+      postal_code: '', specialization: '', hourly_rate: null, preferred_language: 'nl',
+      bio: '', transport_type: '', has_own_equipment: false, equipment_description: '',
     },
   });
 
@@ -92,51 +93,67 @@ const Profile = () => {
   const lastName = watch('last_name');
   const initials = `${(firstName || '')[0] || ''}${(lastName || '')[0] || ''}`.toUpperCase();
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-        setEmail(user.email || '');
-        setUserId(user.id);
+  const loadProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      setEmail(user.email || '');
+      setUserId(user.id);
 
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-        if (error && error.code !== 'PGRST116') throw error;
+      if (error && error.code !== 'PGRST116') throw error;
 
-        if (data) {
-          reset({
-            first_name: data.first_name || '',
-            last_name: data.last_name || '',
-            phone: data.phone || '',
-            bsn: data.bsn || '',
-            address: data.address || '',
-            city: data.city || '',
-            postal_code: data.postal_code || '',
-            specialization: data.specialization || '',
-            hourly_rate: data.hourly_rate ? Number(data.hourly_rate) : null,
-            preferred_language: data.preferred_language || 'nl',
-            date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
-            bio: (data as any).bio || '',
-            transport_type: (data as any).transport_type || '',
-            has_own_equipment: (data as any).has_own_equipment || false,
-            equipment_description: (data as any).equipment_description || '',
-          });
-          if (data.date_of_birth) setDateOfBirth(new Date(data.date_of_birth));
-          setAvatarUrl(data.avatar_url || null);
-        }
-      } catch (err) {
-        console.error('Error loading profile:', err);
-      } finally {
-        setLoading(false);
+      if (data) {
+        setProfileData(data);
+        reset({
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+          phone: data.phone || '',
+          bsn: data.bsn || '',
+          address: data.address || '',
+          city: data.city || '',
+          postal_code: data.postal_code || '',
+          specialization: data.specialization || '',
+          hourly_rate: data.hourly_rate ? Number(data.hourly_rate) : null,
+          preferred_language: data.preferred_language || 'nl',
+          date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
+          bio: (data as any).bio || '',
+          transport_type: (data as any).transport_type || '',
+          has_own_equipment: (data as any).has_own_equipment || false,
+          equipment_description: (data as any).equipment_description || '',
+        });
+        if (data.date_of_birth) setDateOfBirth(new Date(data.date_of_birth));
+        setAvatarUrl(data.avatar_url || null);
       }
-    };
+
+      // Check certificates
+      const { count: certCount } = await supabase
+        .from('certificates')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      setHasCerts((certCount || 0) > 0);
+
+      // Check availability
+      const { count: availCount } = await supabase
+        .from('availability')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      setHasAvail((availCount || 0) > 0);
+    } catch (err) {
+      console.error('Error loading profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadProfile();
-  }, [reset]);
+  }, [refreshKey]);
 
   const onSubmit = async (values: ProfileFormValues) => {
     setSaving(true);
@@ -169,11 +186,17 @@ const Profile = () => {
 
       if (error) throw error;
       toast.success(t('common.success'));
+      setRefreshKey(k => k + 1);
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
     } finally {
       setSaving(false);
     }
+  };
+
+  const openWizard = (step?: number) => {
+    setWizardStep(step ?? 0);
+    setWizardOpen(true);
   };
 
   if (loading) {
@@ -192,18 +215,36 @@ const Profile = () => {
     >
       <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
 
-      {/* Avatar Upload */}
-      <ProfilePhotoUpload
-        avatarUrl={avatarUrl}
-        initials={initials}
-        userId={userId}
-        onPhotoUpdated={setAvatarUrl}
+      {/* Completeness Banner */}
+      <CompletenessBanner
+        percentage={completeness.percentage}
+        missingFields={completeness.missingFields}
+        color={completeness.color}
+        onOpenWizard={openWizard}
       />
+
+      {/* Avatar with Progress Ring */}
+      <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-3">
+        <ProfileCompletenessRing
+          percentage={completeness.percentage}
+          color={completeness.color}
+          avatarUrl={avatarUrl}
+          initials={initials}
+        />
+        <ProfilePhotoUpload
+          avatarUrl={null}
+          initials=""
+          userId={userId}
+          onPhotoUpdated={(url) => {
+            setAvatarUrl(url);
+            setRefreshKey(k => k + 1);
+          }}
+        />
+      </div>
       <p className="text-sm text-muted-foreground text-center">{email}</p>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Name row */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label htmlFor="first_name">{t('profile.firstName')}</Label>
@@ -217,59 +258,38 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Phone */}
         <div className="space-y-1.5">
           <Label htmlFor="phone">{t('profile.phone')}</Label>
           <Input id="phone" type="tel" {...register('phone')} className="bg-card" />
           {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
         </div>
 
-        {/* Email (read-only) */}
         <div className="space-y-1.5">
           <Label>{t('auth.email')}</Label>
           <Input value={email} readOnly disabled className="bg-muted" />
         </div>
 
-        {/* Date of Birth */}
         <div className="space-y-1.5">
           <Label>Geboortedatum</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal bg-card",
-                  !dateOfBirth && "text-muted-foreground"
-                )}
-              >
+              <Button variant="outline" className={cn("w-full justify-start text-left font-normal bg-card", !dateOfBirth && "text-muted-foreground")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {dateOfBirth ? format(dateOfBirth, 'dd-MM-yyyy') : 'Selecteer datum'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={dateOfBirth}
-                onSelect={(date) => {
-                  setDateOfBirth(date);
-                  setValue('date_of_birth', date || null);
-                }}
-                disabled={(date) => date > new Date() || date < new Date('1940-01-01')}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
+              <Calendar mode="single" selected={dateOfBirth} onSelect={(date) => { setDateOfBirth(date); setValue('date_of_birth', date || null); }} disabled={(date) => date > new Date() || date < new Date('1940-01-01')} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
         </div>
 
-        {/* BSN */}
         <div className="space-y-1.5">
           <Label htmlFor="bsn">BSN</Label>
           <Input id="bsn" {...register('bsn')} maxLength={9} placeholder="123456789" className="bg-card" />
           {errors.bsn && <p className="text-xs text-destructive">{errors.bsn.message}</p>}
         </div>
 
-        {/* Address row */}
         <div className="space-y-1.5">
           <Label htmlFor="address">Adres</Label>
           <Input id="address" {...register('address')} className="bg-card" />
@@ -286,13 +306,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Specialization */}
         <div className="space-y-1.5">
           <Label>Specialisatie</Label>
-          <Select
-            value={watch('specialization') || ''}
-            onValueChange={(v) => setValue('specialization', v)}
-          >
+          <Select value={watch('specialization') || ''} onValueChange={(v) => setValue('specialization', v)}>
             <SelectTrigger className="bg-card">
               <SelectValue placeholder="Kies specialisatie" />
             </SelectTrigger>
@@ -304,36 +320,22 @@ const Profile = () => {
           </Select>
         </div>
 
-        {/* Hourly rate */}
         <div className="space-y-1.5">
           <Label htmlFor="hourly_rate">{t('profile.hourlyRate')}</Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">€</span>
-            <Input
-              id="hourly_rate"
-              type="number"
-              step="0.50"
-              min="0"
-              max="999"
-              className="pl-7 bg-card"
-              {...register('hourly_rate', { valueAsNumber: true })}
-            />
+            <Input id="hourly_rate" type="number" step="0.50" min="0" max="999" className="pl-7 bg-card" {...register('hourly_rate', { valueAsNumber: true })} />
           </div>
         </div>
 
-        {/* About / Transport / Equipment */}
         <div className="border-t border-border pt-4 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Over jou & Uitrusting</h2>
           <AboutTransportSection register={register} watch={watch} setValue={setValue} />
         </div>
 
-        {/* Language */}
         <div className="space-y-1.5">
           <Label>{t('settings.language')}</Label>
-          <Select
-            value={watch('preferred_language') || 'nl'}
-            onValueChange={(v) => setValue('preferred_language', v)}
-          >
+          <Select value={watch('preferred_language') || 'nl'} onValueChange={(v) => setValue('preferred_language', v)}>
             <SelectTrigger className="bg-card">
               <SelectValue />
             </SelectTrigger>
@@ -345,15 +347,28 @@ const Profile = () => {
           </Select>
         </div>
 
-        {/* Save */}
         <Button type="submit" className="w-full" disabled={saving}>
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
           {t('common.save')}
         </Button>
       </form>
 
-      {/* Certificates */}
       <CertificateSection />
+
+      {/* Wizard */}
+      <ProfileWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        initialStep={wizardStep}
+        profileData={profileData}
+        userId={userId}
+        avatarUrl={avatarUrl}
+        onProfileUpdated={() => setRefreshKey(k => k + 1)}
+        onAvatarUpdated={(url) => {
+          setAvatarUrl(url);
+          setRefreshKey(k => k + 1);
+        }}
+      />
     </motion.div>
   );
 };
