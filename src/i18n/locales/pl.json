@@ -70,7 +70,8 @@
     "network": "Sieć",
     "settings": "Ustawienia",
     "admin": "Admin Panel",
-    "leaderboard": "Ranking"
+    "leaderboard": "Ranking",
+    "hours": "Godziny"
   },
   "home": {
     "welcome": "Witaj {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Data rozpoczęcia",
     "needed": "potrzebne",
     "empty": "Brak dostępnych zleceń.",
-    "status": { "open": "Otwarte", "filled": "Zajęte", "completed": "Ukończone" },
+    "status": {
+      "open": "Otwarte",
+      "filled": "Zajęte",
+      "completed": "Ukończone"
+    },
     "available_jobs": "Dostępne zlecenia",
     "my_applications": "Moje aplikacje",
     "apply_now": "Aplikuj teraz",
@@ -325,5 +330,42 @@
     "title": "Ranking",
     "subtitle": "Top ZZP'ers z Alhan Groep",
     "empty": "Brak wyników. Ukończ wyzwania, aby zdobyć punkty!"
+  },
+  "hours": {
+    "title": "Rejestracja czasu",
+    "add_entry": "Dodaj godziny",
+    "new_entry": "Nowy wpis",
+    "entry_added": "Godziny dodane",
+    "hours_worked": "Przepracowane godziny",
+    "total_earned": "Łącznie zarobione",
+    "total_hours": "Łączne godziny",
+    "avg_rate": "Śr. stawka",
+    "hourly_rate": "Stawka godzinowa",
+    "date": "Data",
+    "project": "Projekt",
+    "description": "Opis",
+    "description_placeholder": "Co robiłeś?",
+    "week": "Tydzień",
+    "week_total": "Suma tygodnia",
+    "overview": "Przegląd",
+    "status": "Status",
+    "status_draft": "Szkic",
+    "status_submitted": "Wysłane",
+    "status_approved": "Zatwierdzone",
+    "status_paid": "Opłacone",
+    "submit_week": "Wyślij tydzień",
+    "submit_confirm": "Czy na pewno chcesz wysłać ten tydzień?",
+    "week_submitted": "Tydzień wysłany!",
+    "no_entries_yet": "Brak zarejestrowanych godzin",
+    "payment_history": "Historia płatności",
+    "total_paid": "Łącznie wypłacone"
+  },
+  "wheel": {
+    "title": "Koło Fortuny",
+    "spin": "Zakręć kołem!",
+    "spinning": "Kręci się...",
+    "locked": "Uzupełnij profil w 100% aby kręcić",
+    "spin_available": "Masz obrót!",
+    "spin_tomorrow": "Kręć jutro"
   }
 }

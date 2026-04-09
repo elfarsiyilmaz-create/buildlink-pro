@@ -20,6 +20,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import AdminDashboard from "@/pages/AdminDashboard";
 import Onboarding from "@/pages/Onboarding";
 import Leaderboard from "@/pages/Leaderboard";
+import TimeRegistration from "@/pages/TimeRegistration";
 import NotFound from "@/pages/NotFound";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AlhanChat from "@/components/AlhanChat";
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/hours" element={<TimeRegistration />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             </Route>
             <Route path="*" element={<NotFound />} />

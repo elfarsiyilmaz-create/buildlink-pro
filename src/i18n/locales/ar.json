@@ -70,7 +70,8 @@
     "network": "الشبكة",
     "settings": "الإعدادات",
     "admin": "لوحة الإدارة",
-    "leaderboard": "لوحة المتصدرين"
+    "leaderboard": "لوحة المتصدرين",
+    "hours": "الساعات"
   },
   "home": {
     "welcome": "مرحباً {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "تاريخ البدء",
     "needed": "مطلوب",
     "empty": "لا توجد مهام متاحة.",
-    "status": { "open": "مفتوح", "filled": "مشغول", "completed": "مكتمل" },
+    "status": {
+      "open": "مفتوح",
+      "filled": "مشغول",
+      "completed": "مكتمل"
+    },
     "available_jobs": "المهام المتاحة",
     "my_applications": "طلباتي",
     "apply_now": "تقدم الآن",
@@ -325,5 +330,42 @@
     "title": "لوحة المتصدرين",
     "subtitle": "أفضل ZZP'ers في Alhan Groep",
     "empty": "لا توجد نتائج بعد. أكمل التحديات لكسب النقاط!"
+  },
+  "hours": {
+    "title": "تسجيل الساعات",
+    "add_entry": "إضافة ساعات",
+    "new_entry": "تسجيل جديد",
+    "entry_added": "تمت إضافة الساعات",
+    "hours_worked": "ساعات العمل",
+    "total_earned": "إجمالي الأرباح",
+    "total_hours": "إجمالي الساعات",
+    "avg_rate": "المعدل المتوسط",
+    "hourly_rate": "أجر الساعة",
+    "date": "التاريخ",
+    "project": "المشروع",
+    "description": "الوصف",
+    "description_placeholder": "ماذا فعلت؟",
+    "week": "أسبوع",
+    "week_total": "إجمالي الأسبوع",
+    "overview": "نظرة عامة",
+    "status": "الحالة",
+    "status_draft": "مسودة",
+    "status_submitted": "مُرسل",
+    "status_approved": "موافق عليه",
+    "status_paid": "مدفوع",
+    "submit_week": "إرسال الأسبوع",
+    "submit_confirm": "هل أنت متأكد من إرسال هذا الأسبوع؟",
+    "week_submitted": "تم إرسال الأسبوع!",
+    "no_entries_yet": "لا توجد ساعات مسجلة بعد",
+    "payment_history": "سجل المدفوعات",
+    "total_paid": "إجمالي المدفوع"
+  },
+  "wheel": {
+    "title": "عجلة الحظ",
+    "spin": "أدر العجلة!",
+    "spinning": "تدور...",
+    "locked": "أكمل ملفك الشخصي 100% للدوران",
+    "spin_available": "لديك دورة متاحة!",
+    "spin_tomorrow": "أدر غداً"
   }
 }

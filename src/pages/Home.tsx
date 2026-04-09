@@ -6,6 +6,7 @@ import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import PersonalDashboard from '@/components/home/PersonalDashboard';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
+import WheelOfFortune from '@/components/WheelOfFortune';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -142,6 +143,11 @@ const Home = () => {
             <p className="text-[10px] text-muted-foreground mt-0.5">{stat.label}</p>
           </div>
         ))}
+      </motion.div>
+
+      {/* Wheel of Fortune */}
+      <motion.div {...fadeUp} transition={{ delay: 0.6 }}>
+        <WheelOfFortune />
       </motion.div>
     </div>
   );

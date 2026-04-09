@@ -70,7 +70,8 @@
     "network": "Red",
     "settings": "Ajustes",
     "admin": "Admin Panel",
-    "leaderboard": "Clasificación"
+    "leaderboard": "Clasificación",
+    "hours": "Horas"
   },
   "home": {
     "welcome": "Bienvenido {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Fecha de inicio",
     "needed": "necesario",
     "empty": "No hay trabajos disponibles.",
-    "status": { "open": "Abierto", "filled": "Cubierto", "completed": "Completado" },
+    "status": {
+      "open": "Abierto",
+      "filled": "Cubierto",
+      "completed": "Completado"
+    },
     "available_jobs": "Trabajos disponibles",
     "my_applications": "Mis solicitudes",
     "apply_now": "Solicitar ahora",
@@ -325,5 +330,42 @@
     "title": "Clasificación",
     "subtitle": "Top ZZP'ers de Alhan Groep",
     "empty": "Aún sin puntuaciones. ¡Completa desafíos para ganar puntos!"
+  },
+  "hours": {
+    "title": "Registro de horas",
+    "add_entry": "Añadir horas",
+    "new_entry": "Nuevo registro",
+    "entry_added": "Horas añadidas",
+    "hours_worked": "Horas trabajadas",
+    "total_earned": "Total ganado",
+    "total_hours": "Total horas",
+    "avg_rate": "Tarifa media",
+    "hourly_rate": "Tarifa por hora",
+    "date": "Fecha",
+    "project": "Proyecto",
+    "description": "Descripción",
+    "description_placeholder": "¿Qué hiciste?",
+    "week": "Semana",
+    "week_total": "Total semana",
+    "overview": "Resumen",
+    "status": "Estado",
+    "status_draft": "Borrador",
+    "status_submitted": "Enviado",
+    "status_approved": "Aprobado",
+    "status_paid": "Pagado",
+    "submit_week": "Enviar semana",
+    "submit_confirm": "¿Estás seguro de que quieres enviar esta semana?",
+    "week_submitted": "¡Semana enviada!",
+    "no_entries_yet": "No hay horas registradas",
+    "payment_history": "Historial de pagos",
+    "total_paid": "Total pagado"
+  },
+  "wheel": {
+    "title": "Rueda de la Fortuna",
+    "spin": "¡Gira la rueda!",
+    "spinning": "Girando...",
+    "locked": "Completa tu perfil al 100% para girar",
+    "spin_available": "¡Tienes un giro!",
+    "spin_tomorrow": "Gira mañana"
   }
 }
