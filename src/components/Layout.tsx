@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
 import Logo from './Logo';
 import { useUserRole } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -110,7 +111,14 @@ const Layout = () => {
 
               {/* Logout */}
               <div className="p-3 border-t border-border">
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all">
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    navigate('/login', { replace: true });
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all"
+                >
                   <LogOut className="w-5 h-5" />
                   {t('auth.logout')}
                 </button>
