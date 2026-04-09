@@ -246,5 +246,10 @@
     "androidStep1": "Tik op het menu (⋮)",
     "androidStep2": "Tik op 'Toevoegen aan startscherm'",
     "androidStep3": "Tik op 'Toevoegen'"
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "empty": "Nog geen meldingen",
+    "markAllRead": "Alles als gelezen markeren"
   }
 }

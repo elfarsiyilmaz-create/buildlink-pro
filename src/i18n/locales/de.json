@@ -246,5 +246,10 @@
     "androidStep1": "Tippe auf das Menü (⋮)",
     "androidStep2": "Tippe auf 'Zum Startbildschirm hinzufügen'",
     "androidStep3": "Tippe auf 'Hinzufügen'"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "empty": "Noch keine Benachrichtigungen",
+    "markAllRead": "Alle als gelesen markieren"
   }
 }

@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 import Logo from './Logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -59,12 +60,15 @@ const Layout = () => {
             <Menu className="w-5 h-5 text-foreground" />
           </button>
           <Logo size="sm" />
-          <Avatar className="w-9 h-9">
-            {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
-            <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-              {initials || <User className="w-4 h-4" />}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <Avatar className="w-9 h-9">
+              {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
+              <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                {initials || <User className="w-4 h-4" />}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </header>
 

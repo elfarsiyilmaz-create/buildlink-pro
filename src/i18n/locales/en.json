@@ -246,5 +246,10 @@
     "androidStep1": "Tap the menu (⋮)",
     "androidStep2": "Tap 'Add to Home Screen'",
     "androidStep3": "Tap 'Add'"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "markAllRead": "Mark all as read"
   }
 }

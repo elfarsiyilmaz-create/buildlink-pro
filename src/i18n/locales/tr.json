@@ -246,5 +246,10 @@
     "androidStep1": "Menüye dokunun (⋮)",
     "androidStep2": "'Ana ekrana ekle'ye dokunun",
     "androidStep3": "'Ekle'ye dokunun"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "empty": "Bildirim yok",
+    "markAllRead": "Tümünü okundu olarak işaretle"
   }
 }
