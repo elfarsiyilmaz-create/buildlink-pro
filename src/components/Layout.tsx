@@ -39,6 +39,7 @@ const Layout = () => {
     { icon: User, label: t('nav.profile'), path: '/profile' },
     { icon: Briefcase, label: t('nav.work'), path: '/work' },
     { icon: Users, label: t('nav.network'), path: '/network' },
+    { icon: Trophy, label: t('nav.leaderboard', 'Leaderboard'), path: '/leaderboard' },
     { icon: Settings, label: t('nav.settings'), path: '/settings' },
     ...(isAdmin ? [{ icon: Shield, label: t('nav.admin'), path: '/admin' }] : []),
   ];
