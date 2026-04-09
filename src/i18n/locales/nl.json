@@ -359,5 +359,13 @@
     "no_entries_yet": "Nog geen uren geregistreerd",
     "payment_history": "Betaalhistorie",
     "total_paid": "Totaal uitbetaald"
+  },
+  "wheel": {
+    "title": "Rad van Fortuin",
+    "spin": "Draai het rad!",
+    "spinning": "Draait...",
+    "locked": "Maak je profiel 100% compleet om te draaien",
+    "spin_available": "Je hebt een spin beschikbaar!",
+    "spin_tomorrow": "Morgen weer draaien"
   }
 }

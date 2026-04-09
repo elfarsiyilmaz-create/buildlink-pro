@@ -359,5 +359,13 @@
     "no_entries_yet": "Brak zarejestrowanych godzin",
     "payment_history": "Historia płatności",
     "total_paid": "Łącznie wypłacone"
+  },
+  "wheel": {
+    "title": "Koło Fortuny",
+    "spin": "Zakręć kołem!",
+    "spinning": "Kręci się...",
+    "locked": "Uzupełnij profil w 100% aby kręcić",
+    "spin_available": "Masz obrót!",
+    "spin_tomorrow": "Kręć jutro"
   }
 }

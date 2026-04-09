@@ -359,5 +359,13 @@
     "no_entries_yet": "Aucune heure enregistrée",
     "payment_history": "Historique des paiements",
     "total_paid": "Total payé"
+  },
+  "wheel": {
+    "title": "Roue de la Fortune",
+    "spin": "Tourner la roue !",
+    "spinning": "Tourne...",
+    "locked": "Complétez votre profil à 100% pour tourner",
+    "spin_available": "Vous avez un tour !",
+    "spin_tomorrow": "Tournez demain"
   }
 }

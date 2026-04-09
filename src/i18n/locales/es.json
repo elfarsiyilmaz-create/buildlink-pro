@@ -359,5 +359,13 @@
     "no_entries_yet": "No hay horas registradas",
     "payment_history": "Historial de pagos",
     "total_paid": "Total pagado"
+  },
+  "wheel": {
+    "title": "Rueda de la Fortuna",
+    "spin": "¡Gira la rueda!",
+    "spinning": "Girando...",
+    "locked": "Completa tu perfil al 100% para girar",
+    "spin_available": "¡Tienes un giro!",
+    "spin_tomorrow": "Gira mañana"
   }
 }

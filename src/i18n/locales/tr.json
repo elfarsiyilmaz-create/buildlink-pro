@@ -359,5 +359,13 @@
     "no_entries_yet": "Henüz saat kaydı yok",
     "payment_history": "Ödeme geçmişi",
     "total_paid": "Toplam ödenen"
+  },
+  "wheel": {
+    "title": "Şans Çarkı",
+    "spin": "Çarkı çevir!",
+    "spinning": "Dönüyor...",
+    "locked": "Çevirmek için profilini %100 tamamla",
+    "spin_available": "Bir çevirme hakkın var!",
+    "spin_tomorrow": "Yarın tekrar çevir"
   }
 }

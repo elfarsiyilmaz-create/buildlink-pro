@@ -359,5 +359,13 @@
     "no_entries_yet": "Ainda sem horas registadas",
     "payment_history": "Histórico de pagamentos",
     "total_paid": "Total pago"
+  },
+  "wheel": {
+    "title": "Roda da Fortuna",
+    "spin": "Girar a roda!",
+    "spinning": "Girando...",
+    "locked": "Complete seu perfil 100% para girar",
+    "spin_available": "Você tem uma volta!",
+    "spin_tomorrow": "Gire amanhã"
   }
 }

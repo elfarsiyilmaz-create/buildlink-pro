@@ -359,5 +359,13 @@
     "no_entries_yet": "No hours registered yet",
     "payment_history": "Payment history",
     "total_paid": "Total paid out"
+  },
+  "wheel": {
+    "title": "Wheel of Fortune",
+    "spin": "Spin the wheel!",
+    "spinning": "Spinning...",
+    "locked": "Complete your profile 100% to spin",
+    "spin_available": "You have a spin available!",
+    "spin_tomorrow": "Spin again tomorrow"
   }
 }

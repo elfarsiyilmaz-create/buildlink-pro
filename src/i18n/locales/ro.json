@@ -359,5 +359,13 @@
     "no_entries_yet": "Nu sunt ore înregistrate",
     "payment_history": "Istoric plăți",
     "total_paid": "Total plătit"
+  },
+  "wheel": {
+    "title": "Roata Norocului",
+    "spin": "Învârte roata!",
+    "spinning": "Se învârte...",
+    "locked": "Completează profilul 100% pentru a învârti",
+    "spin_available": "Ai o învârtire!",
+    "spin_tomorrow": "Învârte mâine"
   }
 }

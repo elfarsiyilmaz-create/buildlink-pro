@@ -359,5 +359,13 @@
     "no_entries_yet": "Noch keine Stunden erfasst",
     "payment_history": "Zahlungshistorie",
     "total_paid": "Gesamt ausgezahlt"
+  },
+  "wheel": {
+    "title": "Glücksrad",
+    "spin": "Rad drehen!",
+    "spinning": "Dreht...",
+    "locked": "Profil zu 100% vervollständigen zum Drehen",
+    "spin_available": "Du hast einen Spin!",
+    "spin_tomorrow": "Morgen wieder drehen"
   }
 }
