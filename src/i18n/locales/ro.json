@@ -250,6 +250,11 @@
   "notifications": {
     "title": "Notificări",
     "empty": "Nicio notificare",
-    "markAllRead": "Marchează toate ca citite"
+    "markAllRead": "Marchează toate ca citite",
+    "all": "Toate",
+    "unread": "Necitite",
+    "markRead": "Marchează ca citită",
+    "deleteRead": "Șterge citite",
+    "viewAll": "Vezi toate"
   }
 }

@@ -250,6 +250,11 @@
   "notifications": {
     "title": "الإشعارات",
     "empty": "لا توجد إشعارات",
-    "markAllRead": "تحديد الكل كمقروء"
+    "markAllRead": "تحديد الكل كمقروء",
+    "all": "الكل",
+    "unread": "غير مقروءة",
+    "markRead": "تحديد كمقروء",
+    "deleteRead": "حذف المقروءة",
+    "viewAll": "عرض الكل"
   }
 }

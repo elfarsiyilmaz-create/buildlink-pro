@@ -250,6 +250,11 @@
   "notifications": {
     "title": "Notifications",
     "empty": "Aucune notification",
-    "markAllRead": "Tout marquer comme lu"
+    "markAllRead": "Tout marquer comme lu",
+    "all": "Toutes",
+    "unread": "Non lues",
+    "markRead": "Marquer comme lu",
+    "deleteRead": "Supprimer les lues",
+    "viewAll": "Voir toutes"
   }
 }

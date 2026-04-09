@@ -250,6 +250,11 @@
   "notifications": {
     "title": "Bildirimler",
     "empty": "Bildirim yok",
-    "markAllRead": "Tümünü okundu olarak işaretle"
+    "markAllRead": "Tümünü okundu olarak işaretle",
+    "all": "Tümü",
+    "unread": "Okunmamış",
+    "markRead": "Okundu olarak işaretle",
+    "deleteRead": "Okunanları sil",
+    "viewAll": "Tümünü görüntüle"
   }
 }

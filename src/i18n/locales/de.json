@@ -250,6 +250,11 @@
   "notifications": {
     "title": "Benachrichtigungen",
     "empty": "Noch keine Benachrichtigungen",
-    "markAllRead": "Alle als gelesen markieren"
+    "markAllRead": "Alle als gelesen markieren",
+    "all": "Alle",
+    "unread": "Ungelesen",
+    "markRead": "Als gelesen markieren",
+    "deleteRead": "Gelesene löschen",
+    "viewAll": "Alle Benachrichtigungen"
   }
 }

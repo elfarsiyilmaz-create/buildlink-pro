@@ -250,6 +250,11 @@
   "notifications": {
     "title": "Meldingen",
     "empty": "Nog geen meldingen",
-    "markAllRead": "Alles als gelezen markeren"
+    "markAllRead": "Alles als gelezen markeren",
+    "all": "Alle",
+    "unread": "Ongelezen",
+    "markRead": "Markeer als gelezen",
+    "deleteRead": "Gelezen meldingen verwijderen",
+    "viewAll": "Alle meldingen bekijken"
   }
 }
