@@ -160,5 +160,19 @@
     "deleteConfirm": "Are you sure you want to delete your account? This cannot be undone.",
     "version": "App version",
     "contact": "Contact"
+  },
+  "certificates": {
+    "title": "My Certificates",
+    "add": "Add",
+    "name": "Certificate name",
+    "namePlaceholder": "e.g. VCA, BHV, Forklift",
+    "expiryDate": "Expiry date",
+    "selectDate": "Select date",
+    "file": "File",
+    "chooseFile": "Choose file",
+    "added": "Certificate added",
+    "deleted": "Certificate deleted",
+    "nameRequired": "Please enter a certificate name",
+    "empty": "No certificates added yet"
   }
 }
