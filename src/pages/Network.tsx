@@ -265,7 +265,7 @@ const Network = () => {
                 <div className="flex items-center gap-1">
                   <span className="text-sm">{getStatusIcon(invite.status)}</span>
                   <Badge variant={invite.status === 'approved' ? 'default' : 'secondary'} className="text-xs">
-                    {t(`network.status.${invite.status}`, invite.status)}
+                    {String(t(`network.status.${invite.status}`) || invite.status)}
                   </Badge>
                 </div>
               </motion.div>
