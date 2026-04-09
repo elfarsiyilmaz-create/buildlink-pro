@@ -65,6 +65,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
+        sessionStorage.removeItem('onboarding_shown');
         navigate('/login', { replace: true });
       }
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
