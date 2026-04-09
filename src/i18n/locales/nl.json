@@ -38,7 +38,19 @@
     "registerSubtitle": "Word onderdeel van de Alhan familie",
     "loginSubtitle": "Welkom terug bij Alhan Groep",
     "resetSent": "Herstel e-mail verzonden! Controleer je inbox.",
-    "logout": "Uitloggen"
+    "logout": "Uitloggen",
+    "verifyEmailTitle": "Controleer je e-mail",
+    "verifyEmailMessage": "We hebben een verificatielink naar je e-mail gestuurd. Klik erop om je account te verifiëren.",
+    "backToLogin": "Terug naar inloggen",
+    "pendingTitle": "Account wacht op goedkeuring",
+    "pendingMessage": "Je account wacht op goedkeuring van een admin. Je krijgt een melding zodra het is goedgekeurd.",
+    "rejectedTitle": "Account afgewezen",
+    "rejectedMessage": "Je account is afgewezen. Neem contact op met support voor meer informatie.",
+    "emailNotConfirmed": "Verifieer eerst je e-mailadres",
+    "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
+    "passwordMismatch": "Wachtwoorden komen niet overeen",
+    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens bevatten",
+    "fillAllFields": "Vul alle verplichte velden in"
   },
   "nav": {
     "home": "Home",

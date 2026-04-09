@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout";
+import AuthGuard from "@/components/AuthGuard";
 import AdminGuard from "@/components/AdminGuard";
 import Home from "@/pages/Home";
 import Profile from "@/pages/Profile";
@@ -28,7 +29,11 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route element={<Layout />}>
+            <Route element={
+              <AuthGuard>
+                <Layout />
+              </AuthGuard>
+            }>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/work" element={<Work />} />

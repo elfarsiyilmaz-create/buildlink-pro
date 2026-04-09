@@ -38,7 +38,19 @@
     "registerSubtitle": "Become part of the Alhan family",
     "loginSubtitle": "Welcome back to Alhan Groep",
     "resetSent": "Reset email sent! Check your inbox.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "verifyEmailTitle": "Check your email",
+    "verifyEmailMessage": "We've sent a verification link to your email. Please click it to verify your account.",
+    "backToLogin": "Back to login",
+    "pendingTitle": "Account pending approval",
+    "pendingMessage": "Your account is pending admin approval. You'll be notified once approved.",
+    "rejectedTitle": "Account rejected",
+    "rejectedMessage": "Your account has been rejected. Please contact support for more information.",
+    "emailNotConfirmed": "Please verify your email address first",
+    "invalidCredentials": "Invalid email or password",
+    "passwordMismatch": "Passwords don't match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "fillAllFields": "Please fill in all required fields"
   },
   "nav": {
     "home": "Home",
