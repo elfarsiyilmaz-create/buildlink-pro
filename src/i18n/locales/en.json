@@ -175,5 +175,17 @@
     "deleted": "Certificate deleted",
     "nameRequired": "Please enter a certificate name",
     "empty": "No certificates added yet"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "noAccess": "You don't have admin access",
+    "comingSoon": "This section is coming soon",
+    "tabs": {
+      "users": "Users",
+      "assignments": "Assignments",
+      "availability": "Availability",
+      "referrals": "Referrals",
+      "certificates": "Certificates"
+    }
   }
 }
