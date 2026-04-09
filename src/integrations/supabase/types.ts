@@ -143,6 +143,101 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          applied_at: string
+          id: string
+          job_id: string
+          motivation: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string
+          id?: string
+          job_id: string
+          motivation?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string
+          id?: string
+          job_id?: string
+          motivation?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          certifications_required: string[] | null
+          city: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          end_date: string | null
+          hourly_rate: number | null
+          hours_per_week: number | null
+          id: string
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          specialization_required: string[] | null
+          start_date: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          certifications_required?: string[] | null
+          city?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          hourly_rate?: number | null
+          hours_per_week?: number | null
+          id?: string
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          specialization_required?: string[] | null
+          start_date?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          certifications_required?: string[] | null
+          city?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          hourly_rate?: number | null
+          hours_per_week?: number | null
+          id?: string
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          specialization_required?: string[] | null
+          start_date?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       leaderboard_scores: {
         Row: {
           challenges_completed: number
