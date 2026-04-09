@@ -181,11 +181,23 @@
     "noAccess": "You don't have admin access",
     "comingSoon": "This section is coming soon",
     "tabs": {
-      "users": "Users",
+      "users": "ZZP'ers",
       "assignments": "Assignments",
       "availability": "Availability",
       "referrals": "Referrals",
       "certificates": "Certificates"
-    }
+    },
+    "total": "Total",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "searchPlaceholder": "Search by name...",
+    "allSpecializations": "All specializations",
+    "allStatuses": "All statuses",
+    "approve": "Approve",
+    "reject": "Reject",
+    "statusUpdated": "Status updated",
+    "unnamed": "Unnamed",
+    "registrationDate": "Registration date"
   }
 }
