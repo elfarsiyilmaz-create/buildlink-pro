@@ -94,6 +94,7 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
           { role: "system", content: systemPrompt },
           ...messages,
         ],
+        stream: true,
       }),
     });
 
@@ -115,11 +116,9 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
       });
     }
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Sorry, ik kon geen antwoord genereren.";
-
-    return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Stream the SSE response directly to the client
+    return new Response(response.body, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("chat error:", e);
