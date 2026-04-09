@@ -219,5 +219,32 @@
     "statusUpdated": "Status bijgewerkt",
     "unnamed": "Naamloos",
     "registrationDate": "Registratiedatum"
+  },
+  "onboarding": {
+    "selectLanguage": "Kies je taal",
+    "continue": "Doorgaan",
+    "skip": "Overslaan",
+    "getStarted": "Aan de slag",
+    "slide1Title": "Welkom bij Alhan Groep",
+    "slide1Text": "Word onderdeel van ons netwerk van vakprofessionals",
+    "slide2Title": "Vul je profiel in",
+    "slide2Text": "Voeg je gegevens en certificaten toe om te starten",
+    "slide3Title": "Verdien beloningen",
+    "slide3Text": "Nodig vrienden uit en verdien punten voor prijzen",
+    "profileTip": "Vul je profiel in om aan de slag te gaan"
+  },
+  "pwa": {
+    "title": "Installeer Alhan Groep App",
+    "description": "Voeg toe aan je startscherm voor snelle toegang",
+    "install": "Installeren",
+    "notNow": "Niet nu",
+    "howToInstall": "Hoe te installeren",
+    "gotIt": "Begrepen",
+    "iosStep1": "Tik op de Deel-knop (onderaan)",
+    "iosStep2": "Scroll en tik op 'Zet op beginscherm'",
+    "iosStep3": "Tik op 'Voeg toe'",
+    "androidStep1": "Tik op het menu (⋮)",
+    "androidStep2": "Tik op 'Toevoegen aan startscherm'",
+    "androidStep3": "Tik op 'Toevoegen'"
   }
 }

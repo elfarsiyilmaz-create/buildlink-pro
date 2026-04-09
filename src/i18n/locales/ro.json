@@ -219,5 +219,32 @@
     "statusUpdated": "Status actualizat",
     "unnamed": "Fără nume",
     "registrationDate": "Data înregistrării"
+  },
+  "onboarding": {
+    "selectLanguage": "Alege limba ta",
+    "continue": "Continuă",
+    "skip": "Omite",
+    "getStarted": "Începe",
+    "slide1Title": "Bine ai venit la Alhan Groep",
+    "slide1Text": "Alătură-te rețelei noastre de profesioniști calificați",
+    "slide2Title": "Completează-ți profilul",
+    "slide2Text": "Adaugă detaliile și certificatele tale pentru a începe",
+    "slide3Title": "Câștigă recompense",
+    "slide3Text": "Invită prieteni și câștigă puncte pentru premii",
+    "profileTip": "Completează-ți profilul pentru a începe"
+  },
+  "pwa": {
+    "title": "Instalează aplicația Alhan Groep",
+    "description": "Adaugă pe ecranul principal",
+    "install": "Instalează",
+    "notNow": "Nu acum",
+    "howToInstall": "Cum se instalează",
+    "gotIt": "Am înțeles",
+    "iosStep1": "Apasă pe butonul Partajare (jos)",
+    "iosStep2": "Derulează și apasă 'Adaugă pe ecranul principal'",
+    "iosStep3": "Apasă 'Adaugă'",
+    "androidStep1": "Apasă pe meniu (⋮)",
+    "androidStep2": "Apasă 'Adaugă pe ecranul principal'",
+    "androidStep3": "Apasă 'Adaugă'"
   }
 }

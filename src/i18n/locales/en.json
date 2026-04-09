@@ -219,5 +219,32 @@
     "statusUpdated": "Status updated",
     "unnamed": "Unnamed",
     "registrationDate": "Registration date"
+  },
+  "onboarding": {
+    "selectLanguage": "Choose your language",
+    "continue": "Continue",
+    "skip": "Skip",
+    "getStarted": "Get Started",
+    "slide1Title": "Welcome to Alhan Groep",
+    "slide1Text": "Join our network of skilled professionals",
+    "slide2Title": "Complete Your Profile",
+    "slide2Text": "Add your details and certificates to get started",
+    "slide3Title": "Earn Rewards",
+    "slide3Text": "Refer friends and earn points for prizes",
+    "profileTip": "Complete your profile to get started"
+  },
+  "pwa": {
+    "title": "Install Alhan Groep App",
+    "description": "Add to your home screen for quick access",
+    "install": "Install",
+    "notNow": "Not now",
+    "howToInstall": "How to install",
+    "gotIt": "Got it",
+    "iosStep1": "Tap the Share button (bottom)",
+    "iosStep2": "Scroll and tap 'Add to Home Screen'",
+    "iosStep3": "Tap 'Add'",
+    "androidStep1": "Tap the menu (⋮)",
+    "androidStep2": "Tap 'Add to Home Screen'",
+    "androidStep3": "Tap 'Add'"
   }
 }

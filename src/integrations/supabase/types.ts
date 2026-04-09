@@ -62,6 +62,7 @@ export type Database = {
           hourly_rate: number | null
           id: string
           last_name: string | null
+          onboarding_completed: boolean | null
           phone: string | null
           postal_code: string | null
           preferred_language: string | null
@@ -85,6 +86,7 @@ export type Database = {
           hourly_rate?: number | null
           id?: string
           last_name?: string | null
+          onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null
           preferred_language?: string | null
@@ -108,6 +110,7 @@ export type Database = {
           hourly_rate?: number | null
           id?: string
           last_name?: string | null
+          onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null
           preferred_language?: string | null
