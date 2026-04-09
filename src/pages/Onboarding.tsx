@@ -53,12 +53,10 @@ const Onboarding = () => {
   };
 
   const handleComplete = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from('profiles').update({ onboarding_completed: true } as any).eq('user_id', user.id);
-    }
+    // Mark onboarding as shown for this session so AuthGuard lets user through
+    sessionStorage.setItem('onboarding_shown', 'true');
     toast.info(t('onboarding.profileTip'));
-    navigate('/profile', { replace: true });
+    navigate('/', { replace: true });
   }, [navigate, t]);
 
   const handleSkip = () => handleComplete();
