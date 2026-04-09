@@ -45,7 +45,8 @@
     "profile": "Profiel",
     "work": "Werk",
     "network": "Netwerk",
-    "settings": "Instellingen"
+    "settings": "Instellingen",
+    "admin": "Admin Panel"
   },
   "home": {
     "welcome": "Welkom {{name}} 👋",
@@ -174,5 +175,17 @@
     "deleted": "Certificaat verwijderd",
     "nameRequired": "Vul een certificaatnaam in",
     "empty": "Nog geen certificaten toegevoegd"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "noAccess": "Je hebt geen admin toegang",
+    "comingSoon": "Dit onderdeel komt binnenkort",
+    "tabs": {
+      "users": "Gebruikers",
+      "assignments": "Opdrachten",
+      "availability": "Beschikbaarheid",
+      "referrals": "Referrals",
+      "certificates": "Certificaten"
+    }
   }
 }
