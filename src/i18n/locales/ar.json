@@ -219,5 +219,32 @@
     "statusUpdated": "تم تحديث الحالة",
     "unnamed": "بدون اسم",
     "registrationDate": "تاريخ التسجيل"
+  },
+  "onboarding": {
+    "selectLanguage": "اختر لغتك",
+    "continue": "متابعة",
+    "skip": "تخطي",
+    "getStarted": "ابدأ",
+    "slide1Title": "مرحباً بك في Alhan Groep",
+    "slide1Text": "انضم إلى شبكتنا من المحترفين المهرة",
+    "slide2Title": "أكمل ملفك الشخصي",
+    "slide2Text": "أضف بياناتك وشهاداتك للبدء",
+    "slide3Title": "اكسب مكافآت",
+    "slide3Text": "ادعُ أصدقاءك واكسب نقاطاً للجوائز",
+    "profileTip": "أكمل ملفك الشخصي للبدء"
+  },
+  "pwa": {
+    "title": "تثبيت تطبيق Alhan Groep",
+    "description": "أضف إلى الشاشة الرئيسية للوصول السريع",
+    "install": "تثبيت",
+    "notNow": "ليس الآن",
+    "howToInstall": "كيفية التثبيت",
+    "gotIt": "فهمت",
+    "iosStep1": "اضغط على زر المشاركة (أسفل)",
+    "iosStep2": "مرر واضغط 'إضافة إلى الشاشة الرئيسية'",
+    "iosStep3": "اضغط 'إضافة'",
+    "androidStep1": "اضغط على القائمة (⋮)",
+    "androidStep2": "اضغط 'إضافة إلى الشاشة الرئيسية'",
+    "androidStep3": "اضغط 'إضافة'"
   }
 }

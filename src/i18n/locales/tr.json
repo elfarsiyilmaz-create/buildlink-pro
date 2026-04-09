@@ -219,5 +219,32 @@
     "statusUpdated": "Durum güncellendi",
     "unnamed": "İsimsiz",
     "registrationDate": "Kayıt tarihi"
+  },
+  "onboarding": {
+    "selectLanguage": "Dilinizi seçin",
+    "continue": "Devam",
+    "skip": "Atla",
+    "getStarted": "Başla",
+    "slide1Title": "Alhan Groep'e Hoş Geldiniz",
+    "slide1Text": "Yetenekli profesyoneller ağımıza katılın",
+    "slide2Title": "Profilinizi tamamlayın",
+    "slide2Text": "Başlamak için bilgilerinizi ve sertifikalarınızı ekleyin",
+    "slide3Title": "Ödüller kazanın",
+    "slide3Text": "Arkadaşlarınızı davet edin ve ödüller için puan kazanın",
+    "profileTip": "Başlamak için profilinizi tamamlayın"
+  },
+  "pwa": {
+    "title": "Alhan Groep uygulamasını yükle",
+    "description": "Hızlı erişim için ana ekrana ekle",
+    "install": "Yükle",
+    "notNow": "Şimdi değil",
+    "howToInstall": "Nasıl yüklenir",
+    "gotIt": "Anladım",
+    "iosStep1": "Paylaş düğmesine dokunun (altta)",
+    "iosStep2": "Kaydırın ve 'Ana Ekrana Ekle'ye dokunun",
+    "iosStep3": "'Ekle'ye dokunun",
+    "androidStep1": "Menüye dokunun (⋮)",
+    "androidStep2": "'Ana ekrana ekle'ye dokunun",
+    "androidStep3": "'Ekle'ye dokunun"
   }
 }
