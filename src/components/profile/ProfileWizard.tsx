@@ -92,7 +92,7 @@ const ProfileWizard = ({
   const saveStep = async () => {
     setSaving(true);
     try {
-      let payload: Record<string, any> = { wizard_step: step + 1 };
+      let payload: any = { wizard_step: step + 1 };
 
       if (step === 0) {
         if (!firstName || !lastName) {
