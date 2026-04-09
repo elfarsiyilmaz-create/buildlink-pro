@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Save, Loader2 } from 'lucide-react';
@@ -77,8 +77,79 @@ const Profile = () => {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [wizardStep, setWizardStep] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
+  const rewardedRef = useRef(false);
 
   const completeness = useProfileCompleteness(profileData, hasCerts, hasAvail);
+
+  // Gamification: award 100 points + achievement when profile hits 100%
+  useEffect(() => {
+    if (completeness.percentage !== 100 || !userId || rewardedRef.current) return;
+    
+    const awardReward = async () => {
+      try {
+        // Check if already rewarded (profile_completeness already 100 in DB)
+        const { data: existing } = await supabase
+          .from('profiles')
+          .select('profile_completeness')
+          .eq('user_id', userId)
+          .single();
+        
+        if (existing?.profile_completeness === 100) {
+          rewardedRef.current = true;
+          return;
+        }
+
+        rewardedRef.current = true;
+
+        // Update profile_completeness
+        await supabase.from('profiles').update({
+          profile_completeness: 100,
+          completeness_updated_at: new Date().toISOString(),
+        }).eq('user_id', userId);
+
+        // Upsert leaderboard score: add 100 points
+        const { data: score } = await supabase
+          .from('leaderboard_scores')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+
+        if (score) {
+          await supabase.from('leaderboard_scores').update({
+            total_points: score.total_points + 100,
+          }).eq('user_id', userId);
+        } else {
+          await supabase.from('leaderboard_scores').insert({
+            user_id: userId,
+            total_points: 100,
+          });
+        }
+
+        // Unlock "Volledig Profiel" achievement
+        const { data: achievement } = await supabase
+          .from('achievements')
+          .select('id')
+          .eq('name', 'Volledig Profiel')
+          .single();
+
+        if (achievement) {
+          await supabase.from('user_achievements').insert({
+            user_id: userId,
+            achievement_id: achievement.id,
+          });
+        }
+
+        // Show toast
+        toast.success(t('profile.profile_complete') + ' 🎉 +100 ' + t('dashboard.points'), {
+          duration: 5000,
+        });
+      } catch (err) {
+        console.error('Error awarding profile reward:', err);
+      }
+    };
+
+    awardReward();
+  }, [completeness.percentage, userId, t]);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
