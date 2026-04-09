@@ -213,23 +213,29 @@ export type Database = {
           bio: string | null
           bsn: string | null
           city: string | null
+          completeness_updated_at: string | null
           created_at: string
           date_of_birth: string | null
           equipment_description: string | null
           first_name: string | null
           has_own_equipment: boolean | null
           hourly_rate: number | null
+          iban: string | null
           id: string
+          kvk_number: string | null
           last_name: string | null
           onboarding_completed: boolean | null
           phone: string | null
           postal_code: string | null
           preferred_language: string | null
+          profile_completeness: number | null
           specialization: string | null
+          specializations: string[] | null
           status: string
           transport_type: string | null
           updated_at: string
           user_id: string
+          wizard_step: number | null
         }
         Insert: {
           address?: string | null
@@ -237,23 +243,29 @@ export type Database = {
           bio?: string | null
           bsn?: string | null
           city?: string | null
+          completeness_updated_at?: string | null
           created_at?: string
           date_of_birth?: string | null
           equipment_description?: string | null
           first_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
+          iban?: string | null
           id?: string
+          kvk_number?: string | null
           last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null
           preferred_language?: string | null
+          profile_completeness?: number | null
           specialization?: string | null
+          specializations?: string[] | null
           status?: string
           transport_type?: string | null
           updated_at?: string
           user_id: string
+          wizard_step?: number | null
         }
         Update: {
           address?: string | null
@@ -261,23 +273,29 @@ export type Database = {
           bio?: string | null
           bsn?: string | null
           city?: string | null
+          completeness_updated_at?: string | null
           created_at?: string
           date_of_birth?: string | null
           equipment_description?: string | null
           first_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
+          iban?: string | null
           id?: string
+          kvk_number?: string | null
           last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null
           preferred_language?: string | null
+          profile_completeness?: number | null
           specialization?: string | null
+          specializations?: string[] | null
           status?: string
           transport_type?: string | null
           updated_at?: string
           user_id?: string
+          wizard_step?: number | null
         }
         Relationships: []
       }
