@@ -70,7 +70,8 @@
     "network": "Netwerk",
     "settings": "Instellingen",
     "admin": "Admin Panel",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "hours": "Uren"
   },
   "home": {
     "welcome": "Welkom {{name}} 👋",
@@ -329,5 +330,34 @@
     "title": "Leaderboard",
     "subtitle": "Top ZZP'ers van Alhan Groep",
     "empty": "Nog geen scores. Voltooi challenges om punten te verdienen!"
+  },
+  "hours": {
+    "title": "Urenregistratie",
+    "add_entry": "Uren invoeren",
+    "new_entry": "Nieuwe registratie",
+    "entry_added": "Uren toegevoegd",
+    "hours_worked": "Gewerkte uren",
+    "total_earned": "Totaal verdiend",
+    "total_hours": "Totaal uren",
+    "avg_rate": "Gem. tarief",
+    "hourly_rate": "Uurtarief",
+    "date": "Datum",
+    "project": "Opdracht",
+    "description": "Omschrijving",
+    "description_placeholder": "Wat heb je gedaan?",
+    "week": "Week",
+    "week_total": "Week totaal",
+    "overview": "Overzicht",
+    "status": "Status",
+    "status_draft": "Concept",
+    "status_submitted": "Ingediend",
+    "status_approved": "Goedgekeurd",
+    "status_paid": "Uitbetaald",
+    "submit_week": "Week indienen",
+    "submit_confirm": "Weet je zeker dat je deze week wilt indienen? Je kunt daarna geen wijzigingen meer maken.",
+    "week_submitted": "Week ingediend!",
+    "no_entries_yet": "Nog geen uren geregistreerd",
+    "payment_history": "Betaalhistorie",
+    "total_paid": "Totaal uitbetaald"
   }
 }

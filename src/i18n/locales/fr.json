@@ -70,7 +70,8 @@
     "network": "Réseau",
     "settings": "Paramètres",
     "admin": "Admin Panel",
-    "leaderboard": "Classement"
+    "leaderboard": "Classement",
+    "hours": "Heures"
   },
   "home": {
     "welcome": "Bienvenue {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Date de début",
     "needed": "nécessaire",
     "empty": "Aucune mission disponible !",
-    "status": { "open": "Ouvert", "filled": "Pourvu", "completed": "Terminé" },
+    "status": {
+      "open": "Ouvert",
+      "filled": "Pourvu",
+      "completed": "Terminé"
+    },
     "available_jobs": "Missions disponibles",
     "my_applications": "Mes candidatures",
     "apply_now": "Postuler maintenant",
@@ -325,5 +330,34 @@
     "title": "Classement",
     "subtitle": "Top ZZP'ers d'Alhan Groep",
     "empty": "Pas encore de scores. Complétez des défis pour gagner des points !"
+  },
+  "hours": {
+    "title": "Saisie des heures",
+    "add_entry": "Ajouter des heures",
+    "new_entry": "Nouvelle saisie",
+    "entry_added": "Heures ajoutées",
+    "hours_worked": "Heures travaillées",
+    "total_earned": "Total gagné",
+    "total_hours": "Total heures",
+    "avg_rate": "Taux moyen",
+    "hourly_rate": "Taux horaire",
+    "date": "Date",
+    "project": "Projet",
+    "description": "Description",
+    "description_placeholder": "Qu'avez-vous fait ?",
+    "week": "Semaine",
+    "week_total": "Total semaine",
+    "overview": "Aperçu",
+    "status": "Statut",
+    "status_draft": "Brouillon",
+    "status_submitted": "Soumis",
+    "status_approved": "Approuvé",
+    "status_paid": "Payé",
+    "submit_week": "Soumettre la semaine",
+    "submit_confirm": "Êtes-vous sûr de vouloir soumettre cette semaine ?",
+    "week_submitted": "Semaine soumise !",
+    "no_entries_yet": "Aucune heure enregistrée",
+    "payment_history": "Historique des paiements",
+    "total_paid": "Total payé"
   }
 }

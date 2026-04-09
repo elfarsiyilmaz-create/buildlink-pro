@@ -70,7 +70,8 @@
     "network": "Netzwerk",
     "settings": "Einstellungen",
     "admin": "Admin Panel",
-    "leaderboard": "Bestenliste"
+    "leaderboard": "Bestenliste",
+    "hours": "Stunden"
   },
   "home": {
     "welcome": "Willkommen {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Startdatum",
     "needed": "benötigt",
     "empty": "Keine Aufträge verfügbar — halte deine Verfügbarkeit an!",
-    "status": { "open": "Offen", "filled": "Besetzt", "completed": "Abgeschlossen" },
+    "status": {
+      "open": "Offen",
+      "filled": "Besetzt",
+      "completed": "Abgeschlossen"
+    },
     "available_jobs": "Verfügbare Aufträge",
     "my_applications": "Meine Bewerbungen",
     "apply_now": "Jetzt bewerben",
@@ -325,5 +330,34 @@
     "title": "Bestenliste",
     "subtitle": "Top ZZP'ers von Alhan Groep",
     "empty": "Noch keine Punkte. Schließe Herausforderungen ab, um Punkte zu sammeln!"
+  },
+  "hours": {
+    "title": "Zeiterfassung",
+    "add_entry": "Stunden hinzufügen",
+    "new_entry": "Neuer Eintrag",
+    "entry_added": "Stunden hinzugefügt",
+    "hours_worked": "Geleistete Stunden",
+    "total_earned": "Gesamtverdienst",
+    "total_hours": "Gesamtstunden",
+    "avg_rate": "Ø Stundensatz",
+    "hourly_rate": "Stundensatz",
+    "date": "Datum",
+    "project": "Projekt",
+    "description": "Beschreibung",
+    "description_placeholder": "Was haben Sie gemacht?",
+    "week": "Woche",
+    "week_total": "Wochensumme",
+    "overview": "Übersicht",
+    "status": "Status",
+    "status_draft": "Entwurf",
+    "status_submitted": "Eingereicht",
+    "status_approved": "Genehmigt",
+    "status_paid": "Bezahlt",
+    "submit_week": "Woche einreichen",
+    "submit_confirm": "Möchten Sie diese Woche wirklich einreichen?",
+    "week_submitted": "Woche eingereicht!",
+    "no_entries_yet": "Noch keine Stunden erfasst",
+    "payment_history": "Zahlungshistorie",
+    "total_paid": "Gesamt ausgezahlt"
   }
 }

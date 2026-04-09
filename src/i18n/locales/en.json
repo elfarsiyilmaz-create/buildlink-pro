@@ -70,7 +70,8 @@
     "network": "Network",
     "settings": "Settings",
     "admin": "Admin Panel",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "hours": "Hours"
   },
   "home": {
     "welcome": "Welcome {{name}} 👋",
@@ -329,5 +330,34 @@
     "title": "Leaderboard",
     "subtitle": "Top ZZP'ers of Alhan Groep",
     "empty": "No scores yet. Complete challenges to earn points!"
+  },
+  "hours": {
+    "title": "Time Registration",
+    "add_entry": "Add hours",
+    "new_entry": "New entry",
+    "entry_added": "Hours added",
+    "hours_worked": "Hours worked",
+    "total_earned": "Total earned",
+    "total_hours": "Total hours",
+    "avg_rate": "Avg. rate",
+    "hourly_rate": "Hourly rate",
+    "date": "Date",
+    "project": "Project",
+    "description": "Description",
+    "description_placeholder": "What did you do?",
+    "week": "Week",
+    "week_total": "Week total",
+    "overview": "Overview",
+    "status": "Status",
+    "status_draft": "Draft",
+    "status_submitted": "Submitted",
+    "status_approved": "Approved",
+    "status_paid": "Paid",
+    "submit_week": "Submit week",
+    "submit_confirm": "Are you sure you want to submit this week? You cannot make changes after.",
+    "week_submitted": "Week submitted!",
+    "no_entries_yet": "No hours registered yet",
+    "payment_history": "Payment history",
+    "total_paid": "Total paid out"
   }
 }

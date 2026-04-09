@@ -70,7 +70,8 @@
     "network": "Rede",
     "settings": "Configurações",
     "admin": "Admin Panel",
-    "leaderboard": "Classificação"
+    "leaderboard": "Classificação",
+    "hours": "Horas"
   },
   "home": {
     "welcome": "Bem-vindo {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Data de início",
     "needed": "necessário",
     "empty": "Nenhum trabalho disponível.",
-    "status": { "open": "Aberto", "filled": "Preenchido", "completed": "Concluído" },
+    "status": {
+      "open": "Aberto",
+      "filled": "Preenchido",
+      "completed": "Concluído"
+    },
     "available_jobs": "Trabalhos disponíveis",
     "my_applications": "Minhas candidaturas",
     "apply_now": "Candidatar-se agora",
@@ -325,5 +330,34 @@
     "title": "Classificação",
     "subtitle": "Top ZZP'ers do Alhan Groep",
     "empty": "Ainda sem pontuações. Complete desafios para ganhar pontos!"
+  },
+  "hours": {
+    "title": "Registo de horas",
+    "add_entry": "Adicionar horas",
+    "new_entry": "Novo registo",
+    "entry_added": "Horas adicionadas",
+    "hours_worked": "Horas trabalhadas",
+    "total_earned": "Total ganho",
+    "total_hours": "Total horas",
+    "avg_rate": "Taxa média",
+    "hourly_rate": "Taxa horária",
+    "date": "Data",
+    "project": "Projeto",
+    "description": "Descrição",
+    "description_placeholder": "O que fez?",
+    "week": "Semana",
+    "week_total": "Total semana",
+    "overview": "Resumo",
+    "status": "Estado",
+    "status_draft": "Rascunho",
+    "status_submitted": "Submetido",
+    "status_approved": "Aprovado",
+    "status_paid": "Pago",
+    "submit_week": "Submeter semana",
+    "submit_confirm": "Tem a certeza que quer submeter esta semana?",
+    "week_submitted": "Semana submetida!",
+    "no_entries_yet": "Ainda sem horas registadas",
+    "payment_history": "Histórico de pagamentos",
+    "total_paid": "Total pago"
   }
 }

@@ -70,7 +70,8 @@
     "network": "Rețea",
     "settings": "Setări",
     "admin": "Admin Panel",
-    "leaderboard": "Clasament"
+    "leaderboard": "Clasament",
+    "hours": "Ore"
   },
   "home": {
     "welcome": "Bun venit {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Data de început",
     "needed": "necesar",
     "empty": "Nu sunt lucrări disponibile.",
-    "status": { "open": "Deschis", "filled": "Ocupat", "completed": "Finalizat" },
+    "status": {
+      "open": "Deschis",
+      "filled": "Ocupat",
+      "completed": "Finalizat"
+    },
     "available_jobs": "Lucrări disponibile",
     "my_applications": "Aplicațiile mele",
     "apply_now": "Aplică acum",
@@ -325,5 +330,34 @@
     "title": "Clasament",
     "subtitle": "Top ZZP'ers din Alhan Groep",
     "empty": "Încă nu există scoruri. Completează provocări pentru a câștiga puncte!"
+  },
+  "hours": {
+    "title": "Înregistrare ore",
+    "add_entry": "Adaugă ore",
+    "new_entry": "Înregistrare nouă",
+    "entry_added": "Ore adăugate",
+    "hours_worked": "Ore lucrate",
+    "total_earned": "Total câștigat",
+    "total_hours": "Total ore",
+    "avg_rate": "Tarif mediu",
+    "hourly_rate": "Tarif orar",
+    "date": "Data",
+    "project": "Proiect",
+    "description": "Descriere",
+    "description_placeholder": "Ce ai făcut?",
+    "week": "Săptămâna",
+    "week_total": "Total săptămână",
+    "overview": "Prezentare",
+    "status": "Status",
+    "status_draft": "Ciornă",
+    "status_submitted": "Trimis",
+    "status_approved": "Aprobat",
+    "status_paid": "Plătit",
+    "submit_week": "Trimite săptămâna",
+    "submit_confirm": "Ești sigur că vrei să trimiți această săptămână?",
+    "week_submitted": "Săptămâna trimisă!",
+    "no_entries_yet": "Nu sunt ore înregistrate",
+    "payment_history": "Istoric plăți",
+    "total_paid": "Total plătit"
   }
 }

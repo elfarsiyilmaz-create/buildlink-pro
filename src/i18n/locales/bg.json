@@ -70,7 +70,8 @@
     "network": "Мрежа",
     "settings": "Настройки",
     "admin": "Админ Панел",
-    "leaderboard": "Класация"
+    "leaderboard": "Класация",
+    "hours": "Часове"
   },
   "home": {
     "welcome": "Добре дошли {{name}} 👋",
@@ -175,7 +176,11 @@
     "startDate": "Начална дата",
     "needed": "необходим",
     "empty": "Няма налични поръчки.",
-    "status": { "open": "Отворена", "filled": "Запълнена", "completed": "Завършена" },
+    "status": {
+      "open": "Отворена",
+      "filled": "Запълнена",
+      "completed": "Завършена"
+    },
     "available_jobs": "Налични поръчки",
     "my_applications": "Моите кандидатури",
     "apply_now": "Кандидатствай сега",
@@ -325,5 +330,34 @@
     "title": "Класация",
     "subtitle": "Топ ZZP'ers на Alhan Groep",
     "empty": "Все още няма резултати. Завършете предизвикателства, за да спечелите точки!"
+  },
+  "hours": {
+    "title": "Регистрация на часове",
+    "add_entry": "Добави часове",
+    "new_entry": "Нов запис",
+    "entry_added": "Часовете са добавени",
+    "hours_worked": "Отработени часове",
+    "total_earned": "Общо спечелени",
+    "total_hours": "Общо часове",
+    "avg_rate": "Ср. ставка",
+    "hourly_rate": "Часова ставка",
+    "date": "Дата",
+    "project": "Проект",
+    "description": "Описание",
+    "description_placeholder": "Какво направихте?",
+    "week": "Седмица",
+    "week_total": "Общо за седмицата",
+    "overview": "Преглед",
+    "status": "Статус",
+    "status_draft": "Чернова",
+    "status_submitted": "Изпратено",
+    "status_approved": "Одобрено",
+    "status_paid": "Платено",
+    "submit_week": "Изпрати седмицата",
+    "submit_confirm": "Сигурни ли сте, че искате да изпратите тази седмица?",
+    "week_submitted": "Седмицата е изпратена!",
+    "no_entries_yet": "Все още няма регистрирани часове",
+    "payment_history": "История на плащанията",
+    "total_paid": "Общо платено"
   }
 }

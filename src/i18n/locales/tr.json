@@ -70,7 +70,8 @@
     "network": "Ağ",
     "settings": "Ayarlar",
     "admin": "Admin Panel",
-    "leaderboard": "Sıralama"
+    "leaderboard": "Sıralama",
+    "hours": "Saatler"
   },
   "home": {
     "welcome": "Hoş geldin {{name}} 👋",
@@ -329,5 +330,34 @@
     "title": "Sıralama",
     "subtitle": "Alhan Groep'in en iyi ZZP'erleri",
     "empty": "Henüz puan yok. Puan kazanmak için görevleri tamamlayın!"
+  },
+  "hours": {
+    "title": "Saat Kaydı",
+    "add_entry": "Saat ekle",
+    "new_entry": "Yeni kayıt",
+    "entry_added": "Saatler eklendi",
+    "hours_worked": "Çalışılan saatler",
+    "total_earned": "Toplam kazanç",
+    "total_hours": "Toplam saat",
+    "avg_rate": "Ort. ücret",
+    "hourly_rate": "Saatlik ücret",
+    "date": "Tarih",
+    "project": "Proje",
+    "description": "Açıklama",
+    "description_placeholder": "Ne yaptınız?",
+    "week": "Hafta",
+    "week_total": "Hafta toplamı",
+    "overview": "Genel bakış",
+    "status": "Durum",
+    "status_draft": "Taslak",
+    "status_submitted": "Gönderildi",
+    "status_approved": "Onaylandı",
+    "status_paid": "Ödendi",
+    "submit_week": "Haftayı gönder",
+    "submit_confirm": "Bu haftayı göndermek istediğinizden emin misiniz?",
+    "week_submitted": "Hafta gönderildi!",
+    "no_entries_yet": "Henüz saat kaydı yok",
+    "payment_history": "Ödeme geçmişi",
+    "total_paid": "Toplam ödenen"
   }
 }
