@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Check, CheckCheck, Trash2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ const NotificationBell = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const locale = localeMap[i18n.language] || enUS;
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -185,6 +187,16 @@ const NotificationBell = () => {
                   ))
                 )}
               </div>
+
+              {/* View all link */}
+              {notifications.length > 0 && (
+                <button
+                  onClick={() => { setOpen(false); navigate('/notifications'); }}
+                  className="w-full px-4 py-2.5 text-xs font-medium text-primary hover:bg-muted/50 transition-colors border-t border-border text-center"
+                >
+                  {t('notifications.viewAll')}
+                </button>
+              )}
             </motion.div>
           </>
         )}
