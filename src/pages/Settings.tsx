@@ -73,8 +73,6 @@ const Settings = () => {
           <LogOut className="w-5 h-5" />
           <span className="font-medium text-sm">{t('auth.logout')}</span>
         </button>
-          <span className="font-medium text-sm">{t('settings.deleteAccount')}</span>
-        </button>
       </div>
 
       {/* App Info */}
