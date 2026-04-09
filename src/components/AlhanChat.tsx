@@ -6,6 +6,89 @@ import ReactMarkdown from 'react-markdown';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alhan-chat`;
+
+async function streamChat({
+  messages,
+  profileContext,
+  onDelta,
+  onDone,
+  onError,
+}: {
+  messages: { role: string; content: string }[];
+  profileContext: any;
+  onDelta: (text: string) => void;
+  onDone: () => void;
+  onError: (msg: string) => void;
+}) {
+  const resp = await fetch(CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    },
+    body: JSON.stringify({ messages, profileContext }),
+  });
+
+  if (!resp.ok || !resp.body) {
+    if (resp.status === 429) { onError("Te veel verzoeken, probeer het later opnieuw."); return; }
+    if (resp.status === 402) { onError("AI-tegoed op. Neem contact op met de beheerder."); return; }
+    onError("Er ging iets mis. Probeer het later opnieuw."); return;
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let textBuffer = "";
+  let streamDone = false;
+
+  while (!streamDone) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    textBuffer += decoder.decode(value, { stream: true });
+
+    let newlineIndex: number;
+    while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+      let line = textBuffer.slice(0, newlineIndex);
+      textBuffer = textBuffer.slice(newlineIndex + 1);
+
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (line.startsWith(":") || line.trim() === "") continue;
+      if (!line.startsWith("data: ")) continue;
+
+      const jsonStr = line.slice(6).trim();
+      if (jsonStr === "[DONE]") { streamDone = true; break; }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch {
+        textBuffer = line + "\n" + textBuffer;
+        break;
+      }
+    }
+  }
+
+  // Final flush
+  if (textBuffer.trim()) {
+    for (let raw of textBuffer.split("\n")) {
+      if (!raw) continue;
+      if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+      if (raw.startsWith(":") || raw.trim() === "") continue;
+      if (!raw.startsWith("data: ")) continue;
+      const jsonStr = raw.slice(6).trim();
+      if (jsonStr === "[DONE]") continue;
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch { /* ignore */ }
+    }
+  }
+
+  onDone();
+}
+
 const AlhanChat = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
@@ -20,7 +103,6 @@ const AlhanChat = () => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Load profile context when chat opens
   useEffect(() => {
     if (open && !profileContext) {
       loadProfileContext();
@@ -62,28 +144,39 @@ const AlhanChat = () => {
     setInput('');
     setLoading(true);
 
+    let assistantSoFar = "";
+
+    const upsertAssistant = (nextChunk: string) => {
+      assistantSoFar += nextChunk;
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && prev.length > newMessages.length) {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
+        }
+        return [...prev, { role: "assistant", content: assistantSoFar }];
+      });
+    };
+
     try {
-      const { data, error } = await supabase.functions.invoke('alhan-chat', {
-        body: {
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
-          profileContext,
+      await streamChat({
+        messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+        profileContext,
+        onDelta: (chunk) => upsertAssistant(chunk),
+        onDone: () => setLoading(false),
+        onError: (msg) => {
+          setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
+          setLoading(false);
         },
       });
-
-      if (error) throw error;
-      const reply = data?.reply || data?.choices?.[0]?.message?.content || 'Sorry, ik kon geen antwoord genereren.';
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (err) {
       console.error('Chat error:', err);
       setMessages(prev => [...prev, { role: 'assistant', content: 'Er ging iets mis. Probeer het later opnieuw.' }]);
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      {/* Floating Button */}
       <AnimatePresence>
         {!open && (
           <motion.button
@@ -99,7 +192,6 @@ const AlhanChat = () => {
         )}
       </AnimatePresence>
 
-      {/* Chat Window */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -109,7 +201,6 @@ const AlhanChat = () => {
             className="fixed bottom-0 right-0 left-0 z-50 sm:bottom-4 sm:right-4 sm:left-auto sm:w-96"
           >
             <div className="bg-card border border-border rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col h-[70vh] sm:h-[500px]">
-              {/* Header */}
               <div className="flex items-center gap-3 p-4 border-b border-border">
                 <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
                   <Bot className="w-5 h-5 text-primary-foreground" />
@@ -123,7 +214,6 @@ const AlhanChat = () => {
                 </button>
               </div>
 
-              {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -142,7 +232,7 @@ const AlhanChat = () => {
                     </div>
                   </div>
                 ))}
-                {loading && (
+                {loading && messages[messages.length - 1]?.role !== 'assistant' && (
                   <div className="flex justify-start">
                     <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
                       <div className="flex gap-1">
@@ -156,7 +246,6 @@ const AlhanChat = () => {
                 <div ref={messagesEnd} />
               </div>
 
-              {/* Input */}
               <div className="p-3 border-t border-border">
                 <div className="flex gap-2">
                   <input
