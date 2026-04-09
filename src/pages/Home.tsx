@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Clock, CalendarDays, Cloud, Thermometer, FileCheck, Car, MapPin, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import PersonalDashboard from '@/components/home/PersonalDashboard';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
-import WheelOfFortune from '@/components/WheelOfFortune';
 
 const Home = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [time, setTime] = useState(new Date());
   const [available, setAvailable] = useState(false);
@@ -145,10 +146,19 @@ const Home = () => {
         ))}
       </motion.div>
 
-      {/* Wheel of Fortune */}
-      <motion.div {...fadeUp} transition={{ delay: 0.6 }}>
-        <WheelOfFortune />
-      </motion.div>
+      {/* Wheel of Fortune Link */}
+      <motion.button
+        {...fadeUp}
+        transition={{ delay: 0.6 }}
+        onClick={() => navigate('/wheel')}
+        className="glass-card rounded-2xl p-4 flex items-center gap-3 w-full text-left"
+      >
+        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">🎰</div>
+        <div className="flex-1">
+          <p className="font-semibold text-foreground text-sm">{t('wheel.title')}</p>
+          <p className="text-xs text-muted-foreground">{t('wheel.spin_available')}</p>
+        </div>
+      </motion.button>
     </div>
   );
 };

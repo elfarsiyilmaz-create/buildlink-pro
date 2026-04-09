@@ -304,8 +304,10 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          approved_referrals: number | null
           avatar_url: string | null
           bio: string | null
+          bonus_per_referral: number | null
           bsn: string | null
           city: string | null
           completeness_updated_at: string | null
@@ -324,9 +326,12 @@ export type Database = {
           postal_code: string | null
           preferred_language: string | null
           profile_completeness: number | null
+          referral_code: string | null
           specialization: string | null
           specializations: string[] | null
           status: string
+          total_earned: number | null
+          total_referrals: number | null
           transport_type: string | null
           updated_at: string
           user_id: string
@@ -334,8 +339,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approved_referrals?: number | null
           avatar_url?: string | null
           bio?: string | null
+          bonus_per_referral?: number | null
           bsn?: string | null
           city?: string | null
           completeness_updated_at?: string | null
@@ -354,9 +361,12 @@ export type Database = {
           postal_code?: string | null
           preferred_language?: string | null
           profile_completeness?: number | null
+          referral_code?: string | null
           specialization?: string | null
           specializations?: string[] | null
           status?: string
+          total_earned?: number | null
+          total_referrals?: number | null
           transport_type?: string | null
           updated_at?: string
           user_id: string
@@ -364,8 +374,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approved_referrals?: number | null
           avatar_url?: string | null
           bio?: string | null
+          bonus_per_referral?: number | null
           bsn?: string | null
           city?: string | null
           completeness_updated_at?: string | null
@@ -384,13 +396,55 @@ export type Database = {
           postal_code?: string | null
           preferred_language?: string | null
           profile_completeness?: number | null
+          referral_code?: string | null
           specialization?: string | null
           specializations?: string[] | null
           status?: string
+          total_earned?: number | null
+          total_referrals?: number | null
           transport_type?: string | null
           updated_at?: string
           user_id?: string
           wizard_step?: number | null
+        }
+        Relationships: []
+      }
+      referral_invites: {
+        Row: {
+          approved_at: string | null
+          bonus_amount: number | null
+          bonus_paid: boolean | null
+          id: string
+          invited_at: string
+          invited_email: string | null
+          invited_name: string | null
+          referrer_id: string
+          registered_at: string | null
+          status: string
+        }
+        Insert: {
+          approved_at?: string | null
+          bonus_amount?: number | null
+          bonus_paid?: boolean | null
+          id?: string
+          invited_at?: string
+          invited_email?: string | null
+          invited_name?: string | null
+          referrer_id: string
+          registered_at?: string | null
+          status?: string
+        }
+        Update: {
+          approved_at?: string | null
+          bonus_amount?: number | null
+          bonus_paid?: boolean | null
+          id?: string
+          invited_at?: string
+          invited_email?: string | null
+          invited_name?: string | null
+          referrer_id?: string
+          registered_at?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -537,6 +591,122 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_spins: {
+        Row: {
+          available_spins: number | null
+          id: string
+          last_daily_spin: string | null
+          last_spin_reset: string | null
+          total_spins_used: number | null
+          user_id: string
+        }
+        Insert: {
+          available_spins?: number | null
+          id?: string
+          last_daily_spin?: string | null
+          last_spin_reset?: string | null
+          total_spins_used?: number | null
+          user_id: string
+        }
+        Update: {
+          available_spins?: number | null
+          id?: string
+          last_daily_spin?: string | null
+          last_spin_reset?: string | null
+          total_spins_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wheel_prizes: {
+        Row: {
+          bonus_amount: number | null
+          color: string
+          created_at: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          label: string
+          label_translations: Json | null
+          points_value: number | null
+          prize_type: string
+          probability: number
+          value: string | null
+        }
+        Insert: {
+          bonus_amount?: number | null
+          color?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          label: string
+          label_translations?: Json | null
+          points_value?: number | null
+          prize_type?: string
+          probability?: number
+          value?: string | null
+        }
+        Update: {
+          bonus_amount?: number | null
+          color?: string
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          label_translations?: Json | null
+          points_value?: number | null
+          prize_type?: string
+          probability?: number
+          value?: string | null
+        }
+        Relationships: []
+      }
+      wheel_spins: {
+        Row: {
+          bonus_earned: number | null
+          id: string
+          points_earned: number | null
+          prize_id: string | null
+          prize_label: string | null
+          prize_type: string | null
+          spin_source: string | null
+          spun_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_earned?: number | null
+          id?: string
+          points_earned?: number | null
+          prize_id?: string | null
+          prize_label?: string | null
+          prize_type?: string | null
+          spin_source?: string | null
+          spun_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_earned?: number | null
+          id?: string
+          points_earned?: number | null
+          prize_id?: string | null
+          prize_label?: string | null
+          prize_type?: string | null
+          spin_source?: string | null
+          spun_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wheel_spins_prize_id_fkey"
+            columns: ["prize_id"]
+            isOneToOne: false
+            referencedRelation: "wheel_prizes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
