@@ -246,4 +246,10 @@
     "androidStep1": "Dotknij menu (⋮)",
     "androidStep2": "Dotknij 'Dodaj do ekranu głównego'",
     "androidStep3": "Dotknij 'Dodaj'"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "empty": "Brak powiadomień",
+    "markAllRead": "Oznacz wszystko jako przeczytane"
   }
+}

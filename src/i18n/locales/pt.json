@@ -246,4 +246,10 @@
     "androidStep1": "Toque no menu (⋮)",
     "androidStep2": "Toque em 'Adicionar ao ecrã inicial'",
     "androidStep3": "Toque em 'Adicionar'"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "empty": "Sem notificações",
+    "markAllRead": "Marcar tudo como lido"
   }
+}

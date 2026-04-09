@@ -246,4 +246,10 @@
     "androidStep1": "Apasă pe meniu (⋮)",
     "androidStep2": "Apasă 'Adaugă pe ecranul principal'",
     "androidStep3": "Apasă 'Adaugă'"
+  },
+  "notifications": {
+    "title": "Notificări",
+    "empty": "Nicio notificare",
+    "markAllRead": "Marchează toate ca citite"
   }
+}
