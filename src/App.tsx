@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout";
+import AdminGuard from "@/components/AdminGuard";
 import Home from "@/pages/Home";
 import Profile from "@/pages/Profile";
 import Work from "@/pages/Work";
@@ -12,6 +13,7 @@ import Network from "@/pages/Network";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,7 @@ const App = () => (
               <Route path="/work" element={<Work />} />
               <Route path="/network" element={<Network />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

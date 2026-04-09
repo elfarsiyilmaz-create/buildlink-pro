@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X } from 'lucide-react';
+import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
 import Logo from './Logo';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useUserRole();
 
   const navItems = [
     { icon: Home, label: t('nav.home'), path: '/' },
@@ -17,6 +19,7 @@ const Layout = () => {
     { icon: Briefcase, label: t('nav.work'), path: '/work' },
     { icon: Users, label: t('nav.network'), path: '/network' },
     { icon: Settings, label: t('nav.settings'), path: '/settings' },
+    ...(isAdmin ? [{ icon: Shield, label: t('nav.admin'), path: '/admin' }] : []),
   ];
 
   const handleNav = (path: string) => {
