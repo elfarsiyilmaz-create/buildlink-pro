@@ -1,18 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
 import Logo from './Logo';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profile, setProfile] = useState<{ first_name: string | null; last_name: string | null; avatar_url: string | null; specialization: string | null } | null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin } = useUserRole();
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, avatar_url, specialization')
+        .eq('user_id', user.id)
+        .single();
+      if (data) setProfile(data);
+    };
+    loadProfile();
+  }, [location.pathname]); // refresh when navigating back
+
+  const initials = `${(profile?.first_name || '')[0] || ''}${(profile?.last_name || '')[0] || ''}`.toUpperCase();
+  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || "ZZP'er";
 
   const navItems = [
     { icon: Home, label: t('nav.home'), path: '/' },
@@ -40,9 +59,12 @@ const Layout = () => {
             <Menu className="w-5 h-5 text-foreground" />
           </button>
           <Logo size="sm" />
-          <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
-            <User className="w-4 h-4 text-muted-foreground" />
-          </div>
+          <Avatar className="w-9 h-9">
+            {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
+            <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+              {initials || <User className="w-4 h-4" />}
+            </AvatarFallback>
+          </Avatar>
         </div>
       </header>
 
@@ -78,12 +100,15 @@ const Layout = () => {
               {/* User Info */}
               <div className="p-5 border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center">
-                    <User className="w-5 h-5 text-muted-foreground" />
-                  </div>
+                  <Avatar className="w-11 h-11">
+                    {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
+                    <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
+                      {initials || <User className="w-5 h-5" />}
+                    </AvatarFallback>
+                  </Avatar>
                   <div>
-                    <p className="font-semibold text-foreground text-sm">ZZP'er</p>
-                    <p className="text-xs text-muted-foreground">Grondwerk</p>
+                    <p className="font-semibold text-foreground text-sm">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">{profile?.specialization || 'ZZP\'er'}</p>
                   </div>
                 </div>
               </div>
