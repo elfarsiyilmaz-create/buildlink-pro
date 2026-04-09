@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield, Trophy } from 'lucide-react';
+import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield, Trophy, Clock } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import Logo from './Logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -38,6 +38,7 @@ const Layout = () => {
     { icon: Home, label: t('nav.home'), path: '/' },
     { icon: User, label: t('nav.profile'), path: '/profile' },
     { icon: Briefcase, label: t('nav.work'), path: '/work' },
+    { icon: Clock, label: t('nav.hours'), path: '/hours' },
     { icon: Users, label: t('nav.network'), path: '/network' },
     { icon: Trophy, label: t('nav.leaderboard', 'Leaderboard'), path: '/leaderboard' },
     { icon: Settings, label: t('nav.settings'), path: '/settings' },
