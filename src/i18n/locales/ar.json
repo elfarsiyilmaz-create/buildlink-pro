@@ -69,7 +69,8 @@
     "work": "العمل",
     "network": "الشبكة",
     "settings": "الإعدادات",
-    "admin": "لوحة الإدارة"
+    "admin": "لوحة الإدارة",
+    "leaderboard": "لوحة المتصدرين"
   },
   "home": {
     "welcome": "مرحباً {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "تحديد كمقروء",
     "deleteRead": "حذف المقروءة",
     "viewAll": "عرض الكل"
+  },
+  "calendar": {
+    "title": "التوفر",
+    "morning": "صباحاً",
+    "afternoon": "ظهراً",
+    "evening": "مساءً"
+  },
+  "challenges": {
+    "title": "التحديات اليومية",
+    "points": "نقطة",
+    "alreadyDone": "تم إنجازه بالفعل!"
+  },
+  "dashboard": {
+    "title": "تقدمك",
+    "points": "نقاط",
+    "streak": "أيام متتالية",
+    "badges": "شارات"
+  },
+  "leaderboard": {
+    "title": "لوحة المتصدرين",
+    "subtitle": "أفضل ZZP'ers في Alhan Groep",
+    "empty": "لا توجد نتائج بعد. أكمل التحديات لكسب النقاط!"
   }
 }

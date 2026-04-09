@@ -260,5 +260,27 @@
     "markRead": "Mark as read",
     "deleteRead": "Delete read notifications",
     "viewAll": "View all notifications"
+  },
+  "calendar": {
+    "title": "Availability",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening"
+  },
+  "challenges": {
+    "title": "Daily Challenges",
+    "points": "pts",
+    "alreadyDone": "Already completed!"
+  },
+  "dashboard": {
+    "title": "Your Progress",
+    "points": "points",
+    "streak": "day streak",
+    "badges": "badges"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Top ZZP'ers of Alhan Groep",
+    "empty": "No scores yet. Complete challenges to earn points!"
   }
 }

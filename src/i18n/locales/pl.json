@@ -69,7 +69,8 @@
     "work": "Praca",
     "network": "Sieć",
     "settings": "Ustawienia",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "leaderboard": "Ranking"
   },
   "home": {
     "welcome": "Witaj {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "Oznacz jako przeczytane",
     "deleteRead": "Usuń przeczytane",
     "viewAll": "Pokaż wszystkie"
+  },
+  "calendar": {
+    "title": "Dostępność",
+    "morning": "Rano",
+    "afternoon": "Popołudnie",
+    "evening": "Wieczór"
+  },
+  "challenges": {
+    "title": "Codzienne wyzwania",
+    "points": "pkt",
+    "alreadyDone": "Już ukończone!"
+  },
+  "dashboard": {
+    "title": "Twój postęp",
+    "points": "punktów",
+    "streak": "dni z rzędu",
+    "badges": "odznaki"
+  },
+  "leaderboard": {
+    "title": "Ranking",
+    "subtitle": "Top ZZP'ers z Alhan Groep",
+    "empty": "Brak wyników. Ukończ wyzwania, aby zdobyć punkty!"
   }
 }
