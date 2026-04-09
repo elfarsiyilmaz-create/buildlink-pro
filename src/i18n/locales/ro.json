@@ -69,7 +69,8 @@
     "work": "Muncă",
     "network": "Rețea",
     "settings": "Setări",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "leaderboard": "Clasament"
   },
   "home": {
     "welcome": "Bun venit {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "Marchează ca citită",
     "deleteRead": "Șterge citite",
     "viewAll": "Vezi toate"
+  },
+  "calendar": {
+    "title": "Disponibilitate",
+    "morning": "Dimineață",
+    "afternoon": "După-amiază",
+    "evening": "Seară"
+  },
+  "challenges": {
+    "title": "Provocări zilnice",
+    "points": "pct",
+    "alreadyDone": "Deja finalizat!"
+  },
+  "dashboard": {
+    "title": "Progresul tău",
+    "points": "puncte",
+    "streak": "zile consecutive",
+    "badges": "insigne"
+  },
+  "leaderboard": {
+    "title": "Clasament",
+    "subtitle": "Top ZZP'ers din Alhan Groep",
+    "empty": "Încă nu există scoruri. Completează provocări pentru a câștiga puncte!"
   }
 }

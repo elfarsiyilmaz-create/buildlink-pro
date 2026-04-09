@@ -69,7 +69,8 @@
     "work": "Trabalho",
     "network": "Rede",
     "settings": "Configurações",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "leaderboard": "Classificação"
   },
   "home": {
     "welcome": "Bem-vindo {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "Marcar como lida",
     "deleteRead": "Apagar lidas",
     "viewAll": "Ver todas"
+  },
+  "calendar": {
+    "title": "Disponibilidade",
+    "morning": "Manhã",
+    "afternoon": "Tarde",
+    "evening": "Noite"
+  },
+  "challenges": {
+    "title": "Desafios diários",
+    "points": "pts",
+    "alreadyDone": "Já concluído!"
+  },
+  "dashboard": {
+    "title": "O seu progresso",
+    "points": "pontos",
+    "streak": "dias seguidos",
+    "badges": "medalhas"
+  },
+  "leaderboard": {
+    "title": "Classificação",
+    "subtitle": "Top ZZP'ers do Alhan Groep",
+    "empty": "Ainda sem pontuações. Complete desafios para ganhar pontos!"
   }
 }

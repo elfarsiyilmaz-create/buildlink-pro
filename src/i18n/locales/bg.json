@@ -69,7 +69,8 @@
     "work": "Работа",
     "network": "Мрежа",
     "settings": "Настройки",
-    "admin": "Админ Панел"
+    "admin": "Админ Панел",
+    "leaderboard": "Класация"
   },
   "home": {
     "welcome": "Добре дошли {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "Маркирай като прочетено",
     "deleteRead": "Изтрий прочетените",
     "viewAll": "Виж всички"
+  },
+  "calendar": {
+    "title": "Наличност",
+    "morning": "Сутрин",
+    "afternoon": "Следобед",
+    "evening": "Вечер"
+  },
+  "challenges": {
+    "title": "Дневни предизвикателства",
+    "points": "т.",
+    "alreadyDone": "Вече завършено!"
+  },
+  "dashboard": {
+    "title": "Вашият напредък",
+    "points": "точки",
+    "streak": "дни поред",
+    "badges": "значки"
+  },
+  "leaderboard": {
+    "title": "Класация",
+    "subtitle": "Топ ZZP'ers на Alhan Groep",
+    "empty": "Все още няма резултати. Завършете предизвикателства, за да спечелите точки!"
   }
 }

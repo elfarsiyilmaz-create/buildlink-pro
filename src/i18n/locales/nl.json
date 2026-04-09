@@ -260,5 +260,27 @@
     "markRead": "Markeer als gelezen",
     "deleteRead": "Gelezen meldingen verwijderen",
     "viewAll": "Alle meldingen bekijken"
+  },
+  "calendar": {
+    "title": "Beschikbaarheid",
+    "morning": "Ochtend",
+    "afternoon": "Middag",
+    "evening": "Avond"
+  },
+  "challenges": {
+    "title": "Dagelijkse Challenges",
+    "points": "ptn",
+    "alreadyDone": "Al voltooid!"
+  },
+  "dashboard": {
+    "title": "Jouw Voortgang",
+    "points": "punten",
+    "streak": "dagen streak",
+    "badges": "badges"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "subtitle": "Top ZZP'ers van Alhan Groep",
+    "empty": "Nog geen scores. Voltooi challenges om punten te verdienen!"
   }
 }

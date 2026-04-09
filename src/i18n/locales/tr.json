@@ -69,7 +69,8 @@
     "work": "İş",
     "network": "Ağ",
     "settings": "Ayarlar",
-    "admin": "Admin Panel"
+    "admin": "Admin Panel",
+    "leaderboard": "Sıralama"
   },
   "home": {
     "welcome": "Hoş geldin {{name}} 👋",
@@ -259,5 +260,27 @@
     "markRead": "Okundu olarak işaretle",
     "deleteRead": "Okunanları sil",
     "viewAll": "Tümünü görüntüle"
+  },
+  "calendar": {
+    "title": "Uygunluk",
+    "morning": "Sabah",
+    "afternoon": "Öğleden sonra",
+    "evening": "Akşam"
+  },
+  "challenges": {
+    "title": "Günlük görevler",
+    "points": "puan",
+    "alreadyDone": "Zaten tamamlandı!"
+  },
+  "dashboard": {
+    "title": "İlerlemeniz",
+    "points": "puan",
+    "streak": "gün üst üste",
+    "badges": "rozetler"
+  },
+  "leaderboard": {
+    "title": "Sıralama",
+    "subtitle": "Alhan Groep'in en iyi ZZP'erleri",
+    "empty": "Henüz puan yok. Puan kazanmak için görevleri tamamlayın!"
   }
 }
