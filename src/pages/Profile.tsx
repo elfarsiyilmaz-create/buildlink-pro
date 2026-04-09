@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { User, Save, Loader2 } from 'lucide-react';
+import { Save, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import CertificateSection from '@/components/CertificateSection';
+import ProfilePhotoUpload from '@/components/profile/ProfilePhotoUpload';
+import AboutTransportSection from '@/components/profile/AboutTransportSection';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'Verplicht').max(100),
@@ -30,6 +32,10 @@ const profileSchema = z.object({
   specialization: z.string().optional(),
   hourly_rate: z.number().min(0).max(999).optional().nullable(),
   preferred_language: z.string().optional(),
+  bio: z.string().max(1000).optional(),
+  transport_type: z.string().optional(),
+  has_own_equipment: z.boolean().optional(),
+  equipment_description: z.string().max(500).optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -58,6 +64,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProfileFormValues>({
@@ -73,8 +81,16 @@ const Profile = () => {
       specialization: '',
       hourly_rate: null,
       preferred_language: 'nl',
+      bio: '',
+      transport_type: '',
+      has_own_equipment: false,
+      equipment_description: '',
     },
   });
+
+  const firstName = watch('first_name');
+  const lastName = watch('last_name');
+  const initials = `${(firstName || '')[0] || ''}${(lastName || '')[0] || ''}`.toUpperCase();
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -82,6 +98,7 @@ const Profile = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
         setEmail(user.email || '');
+        setUserId(user.id);
 
         const { data, error } = await supabase
           .from('profiles')
@@ -104,8 +121,13 @@ const Profile = () => {
             hourly_rate: data.hourly_rate ? Number(data.hourly_rate) : null,
             preferred_language: data.preferred_language || 'nl',
             date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
+            bio: (data as any).bio || '',
+            transport_type: (data as any).transport_type || '',
+            has_own_equipment: (data as any).has_own_equipment || false,
+            equipment_description: (data as any).equipment_description || '',
           });
           if (data.date_of_birth) setDateOfBirth(new Date(data.date_of_birth));
+          setAvatarUrl(data.avatar_url || null);
         }
       } catch (err) {
         console.error('Error loading profile:', err);
@@ -134,6 +156,10 @@ const Profile = () => {
         specialization: values.specialization || null,
         hourly_rate: values.hourly_rate ?? null,
         preferred_language: values.preferred_language || 'nl',
+        bio: values.bio || null,
+        transport_type: values.transport_type || null,
+        has_own_equipment: values.has_own_equipment || false,
+        equipment_description: values.has_own_equipment ? (values.equipment_description || null) : null,
       };
 
       const { error } = await supabase
@@ -166,13 +192,14 @@ const Profile = () => {
     >
       <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
 
-      {/* Avatar */}
-      <div className="glass-card rounded-2xl p-6 flex flex-col items-center">
-        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-2">
-          <User className="w-8 h-8 text-muted-foreground" />
-        </div>
-        <p className="text-sm text-muted-foreground">{email}</p>
-      </div>
+      {/* Avatar Upload */}
+      <ProfilePhotoUpload
+        avatarUrl={avatarUrl}
+        initials={initials}
+        userId={userId}
+        onPhotoUpdated={setAvatarUrl}
+      />
+      <p className="text-sm text-muted-foreground text-center">{email}</p>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -292,6 +319,12 @@ const Profile = () => {
               {...register('hourly_rate', { valueAsNumber: true })}
             />
           </div>
+        </div>
+
+        {/* About / Transport / Equipment */}
+        <div className="border-t border-border pt-4 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Over jou & Uitrusting</h2>
+          <AboutTransportSection register={register} watch={watch} setValue={setValue} />
         </div>
 
         {/* Language */}

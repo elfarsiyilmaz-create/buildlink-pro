@@ -51,11 +51,14 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          bio: string | null
           bsn: string | null
           city: string | null
           created_at: string
           date_of_birth: string | null
+          equipment_description: string | null
           first_name: string | null
+          has_own_equipment: boolean | null
           hourly_rate: number | null
           id: string
           last_name: string | null
@@ -64,17 +67,21 @@ export type Database = {
           preferred_language: string | null
           specialization: string | null
           status: string
+          transport_type: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          bio?: string | null
           bsn?: string | null
           city?: string | null
           created_at?: string
           date_of_birth?: string | null
+          equipment_description?: string | null
           first_name?: string | null
+          has_own_equipment?: boolean | null
           hourly_rate?: number | null
           id?: string
           last_name?: string | null
@@ -83,17 +90,21 @@ export type Database = {
           preferred_language?: string | null
           specialization?: string | null
           status?: string
+          transport_type?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
           avatar_url?: string | null
+          bio?: string | null
           bsn?: string | null
           city?: string | null
           created_at?: string
           date_of_birth?: string | null
+          equipment_description?: string | null
           first_name?: string | null
+          has_own_equipment?: boolean | null
           hourly_rate?: number | null
           id?: string
           last_name?: string | null
@@ -102,6 +113,7 @@ export type Database = {
           preferred_language?: string | null
           specialization?: string | null
           status?: string
+          transport_type?: string | null
           updated_at?: string
           user_id?: string
         }
