@@ -10,6 +10,13 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 const Settings = () => {
   const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success(t('auth.logoutSuccess'));
+    navigate('/login', { replace: true });
+  };
 
   return (
     <motion.div
