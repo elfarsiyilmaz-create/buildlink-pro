@@ -1,122 +1,82 @@
 
 
-# Alhan Groep ZZP-Portaal — Implementatieplan
+# Profile Completeness & Wizard Plan
 
-## Samenvatting
-Een premium, mobile-first ZZP-portaal met WOW-factor voor Alhan Groep B.V. Rood/wit/donkergrijs huisstijl, 11 talen, dark mode, Supabase backend.
+## Summary
+Add profile completeness tracking with a progress ring, completeness banner, and a 5-step wizard to the existing Profile page. Includes database migration for new columns, new UI components, and i18n for all 11 languages.
 
-## Vereiste: Supabase connectie
-Het project heeft nog geen Supabase connectie. Ik zal je vragen om Lovable Cloud in te schakelen of een Supabase project te koppelen voordat de database en auth worden gebouwd. **De eerste stap na goedkeuring is dit opzetten.**
+## Database Migration
 
-## Bouwvolgorde
+Add columns to `profiles` table (note: `onboarding_completed` already exists, `wizard_step` may not):
+- `profile_completeness` integer DEFAULT 0
+- `completeness_updated_at` timestamptz
+- `wizard_step` integer DEFAULT 0
 
-### Stap 1 — Project Foundation
-- Design system: rode huisstijl (#FF0000), dark mode CSS variabelen, Inter/Poppins font
-- i18n setup met react-i18next, alle 11 talen, RTL support voor Arabisch
-- Framer Motion installeren
-- Logo component (SVG van het Alhan Groep logo)
-- Basisstructuur: layout, routing, sidebar navigatie
+## New Components
 
-**Bestanden:**
-- `src/index.css` — kleuren + dark mode
-- `src/i18n/` — config + 11 vertaalbestanden
-- `src/components/Logo.tsx`
-- `src/components/Layout.tsx` — sidebar + header
-- `src/components/LanguageSwitcher.tsx`
-- `src/components/ThemeToggle.tsx`
+### 1. `src/components/profile/ProfileCompletenessRing.tsx`
+- SVG circular progress ring around avatar
+- Color-coded: red (0-40%), orange (41-70%), blue (71-99%), green (100%)
+- Animated fill on load with Framer Motion
+- Shows percentage text below
 
-### Stap 2 — Supabase & Database
-- Lovable Cloud activeren (of Supabase koppelen)
-- Database migraties: profiles, zzp_profiles, documenten, referrals, opdrachten, opdracht_reacties
-- User roles via aparte tabel (admin/zzp)
-- RLS policies voor alle tabellen
-- Storage bucket voor documenten en avatars
-- Auth trigger voor automatische profile aanmaak
+### 2. `src/components/profile/CompletenessBanner.tsx`
+- Card shown when completeness < 100%
+- Progress bar with percentage
+- Lists missing fields with ❌ icons and "Toevoegen" buttons
+- Each item scrolls/navigates to that section or opens wizard at relevant step
+- Dismissible for 24 hours (localStorage timestamp)
 
-### Stap 3 — Authenticatie
-- Login pagina (email + wachtwoord, taalwissel, remember me)
-- Registratie pagina (met optioneel referral code veld)
-- Wachtwoord vergeten + reset pagina
-- Splash screen (2.5s, Framer Motion animatie, Alhan branding)
-- Auth guard / protected routes
+### 3. `src/components/profile/ProfileWizard.tsx`
+- Full-screen Sheet/Dialog with 5 steps:
+  1. Personal details (name, DOB, city, phone)
+  2. Profile photo (reuse existing ProfilePhotoUpload)
+  3. Specializations (multi-select grid — expanded list: Metselwerk, Stucwerk, Schilderwerk, Tegelwerk, Elektra, Loodgieter, Timmerwerk, Dakdekker, Vloeren, Isolatie, Gevelrenovatie, Overig)
+  4. Certificates (toggle common certs + upload)
+  5. Financial (BSN masked, IBAN formatted, KvK)
+- Step indicator dots, Back/Next/Skip buttons
+- Saves per step to Supabase
+- Confetti animation on completion (reuse existing achievement pattern)
 
-**Bestanden:**
-- `src/pages/Login.tsx`
-- `src/pages/Register.tsx`
-- `src/pages/ForgotPassword.tsx`
-- `src/pages/ResetPassword.tsx`
-- `src/components/SplashScreen.tsx`
-- `src/hooks/useAuth.ts`
+### 4. `src/hooks/useProfileCompleteness.ts`
+- Calculates completeness from profile data, certificates, and availability
+- Point breakdown per the spec (total 100)
+- Returns: percentage, missing fields list, color code
+- Recalculates on every profile update
 
-### Stap 4 — Home Screen
-- Welkom header met naam + avatar
-- 2x2 widget grid (tijd, datum, weer, temperatuur)
-- Open-Meteo API integratie (gratis, geen key)
-- Beschikbaarheid toggle (groot, geanimeerd, real-time Supabase update)
-- Profiel compleetheid balk
-- Quick stats rij (documenten, rijbewijs, regio, referrals)
+## Changes to Existing Files
 
-**Bestanden:**
-- `src/pages/Home.tsx`
-- `src/components/home/WeatherWidget.tsx`
-- `src/components/home/AvailabilityToggle.tsx`
-- `src/components/home/ProfileCompleteness.tsx`
-- `src/components/home/QuickStats.tsx`
+### `src/pages/Profile.tsx`
+- Import and use `useProfileCompleteness` hook
+- Add `ProfileCompletenessRing` around avatar area
+- Add `CompletenessBanner` at top
+- Add "Profiel aanvullen" button that opens wizard
+- On save: recalculate and persist `profile_completeness`
+- Award 100 points + achievement when reaching 100%
 
-### Stap 5 — Profiel & Onboarding
-- 5-staps onboarding flow met progress bar (nieuw gebruikers)
-- Profielpagina voor bestaande gebruikers (inline editing)
-- Document upload met status indicators
-- Alhan Score + badges
-- Confetti animatie bij voltooiing (canvas-confetti)
+### `src/components/profile/ProfilePhotoUpload.tsx`
+- Minor: accept optional `compact` prop for wizard mode
 
-**Bestanden:**
-- `src/pages/Profile.tsx`
-- `src/components/profile/OnboardingFlow.tsx`
-- `src/components/profile/OnboardingStep1.tsx` t/m `Step5.tsx`
-- `src/components/profile/ProfileView.tsx`
-- `src/components/profile/DocumentUpload.tsx`
-- `src/components/profile/BadgeDisplay.tsx`
+## Gamification Integration
+- On reaching 100%: insert 100 points into `leaderboard_scores`
+- Trigger achievement unlock animation
+- Toast: "+100 punten! Profiel volledig!"
 
-### Stap 6 — Werk (Opdrachten)
-- Opdrachten lijst met filter (discipline, regio)
-- Opdracht kaarten met details
-- "Ik ben beschikbaar" actie met bevestigingsanimatie
-- Empty state
+## i18n Updates (all 11 locale files)
+Add keys under `profile`:
+- `completeness_title`, `complete_your_profile`, `missing_fields`, `wizard_title`
+- `step_personal`, `step_photo`, `step_specializations`, `step_certificates`, `step_financial`
+- `profile_complete`, `points_earned`, `add_now`, `completeness_percent`
+- `missing_photo`, `missing_specialization`, `missing_bsn`, `missing_bio`, `missing_city`, `missing_phone`, `missing_certificate`, `missing_iban`, `missing_availability`
 
-**Bestanden:**
-- `src/pages/Work.tsx`
-- `src/components/work/AssignmentCard.tsx`
-- `src/components/work/AssignmentFilters.tsx`
+## Technical Notes
+- The `specialization` column currently stores a single value. For multi-select specializations in the wizard, we'll store as comma-separated or change to a text array. Recommend adding a new `specializations` text[] column via migration.
+- IBAN field doesn't exist in the profiles table yet — needs to be added via migration (`iban` text).
+- KvK field doesn't exist — needs `kvk_number` text column.
+- All new columns are nullable with sensible defaults.
 
-### Stap 7 — Netwerk (Referrals)
-- Persoonlijke referral code (kopieerbaar)
-- Deelbare kaart (WhatsApp share)
-- Referral lijst met status
-- Bonus overzicht
-
-**Bestanden:**
-- `src/pages/Network.tsx`
-- `src/components/network/ReferralCard.tsx`
-- `src/components/network/ShareCard.tsx`
-
-### Stap 8 — Instellingen
-- Taalwisselaar (11 vlaggen)
-- Dark mode toggle
-- Wachtwoord wijzigen
-- Account verwijderen
-- App info
-
-**Bestanden:**
-- `src/pages/Settings.tsx`
-
-## Technische details
-
-- **State management**: React Query voor server state, React context voor auth/theme/language
-- **Animaties**: Framer Motion voor page transitions, sidebar, toggles
-- **Weather**: Open-Meteo free API + browser Geolocation API
-- **File uploads**: Supabase Storage met RLS
-- **RTL**: `dir="rtl"` op html element wanneer Arabisch geselecteerd
-- **Dark mode**: CSS class strategy, toggle opgeslagen in localStorage
-- **Responsive**: mobile-first, Tailwind breakpoints, getest op 426px viewport
+## File Summary
+- **Migration**: Add `profile_completeness`, `wizard_step`, `iban`, `kvk_number`, `specializations` columns
+- **New files**: `ProfileCompletenessRing.tsx`, `CompletenessBanner.tsx`, `ProfileWizard.tsx`, `useProfileCompleteness.ts`
+- **Modified files**: `Profile.tsx`, `ProfilePhotoUpload.tsx`, all 11 locale files
 
