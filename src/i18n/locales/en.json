@@ -45,7 +45,8 @@
     "profile": "Profile",
     "work": "Work",
     "network": "Network",
-    "settings": "Settings"
+    "settings": "Settings",
+    "admin": "Admin Panel"
   },
   "home": {
     "welcome": "Welcome {{name}} 👋",
