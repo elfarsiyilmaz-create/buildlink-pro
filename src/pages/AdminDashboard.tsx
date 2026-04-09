@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Users, Briefcase, Calendar, Award, FileText } from 'lucide-react';
+import AdminZZPers from '@/components/admin/AdminZZPers';
 
 const TABS = [
   { id: 'users', icon: Users },
@@ -16,6 +17,23 @@ type TabId = typeof TABS[number]['id'];
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabId>('users');
+
+  const renderContent = () => {
+    if (activeTab === 'users') return <AdminZZPers />;
+
+    const Tab = TABS.find(tb => tb.id === activeTab)!;
+    return (
+      <div className="glass-card rounded-2xl p-6">
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Tab.icon className="w-12 h-12 text-muted-foreground/30 mb-4" />
+          <h2 className="text-lg font-semibold text-foreground mb-1">
+            {t(`admin.tabs.${activeTab}`)}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t('admin.comingSoon')}</p>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -46,21 +64,7 @@ const AdminDashboard = () => {
         })}
       </div>
 
-      {/* Content */}
-      <div className="glass-card rounded-2xl p-6">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          {TABS.find(t => t.id === activeTab) && (() => {
-            const Tab = TABS.find(t => t.id === activeTab)!;
-            return <Tab.icon className="w-12 h-12 text-muted-foreground/30 mb-4" />;
-          })()}
-          <h2 className="text-lg font-semibold text-foreground mb-1">
-            {t(`admin.tabs.${activeTab}`)}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t('admin.comingSoon')}
-          </p>
-        </div>
-      </div>
+      {renderContent()}
     </motion.div>
   );
 };

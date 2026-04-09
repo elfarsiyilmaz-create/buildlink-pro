@@ -181,11 +181,23 @@
     "noAccess": "Je hebt geen admin toegang",
     "comingSoon": "Dit onderdeel komt binnenkort",
     "tabs": {
-      "users": "Gebruikers",
+      "users": "ZZP'ers",
       "assignments": "Opdrachten",
       "availability": "Beschikbaarheid",
       "referrals": "Referrals",
       "certificates": "Certificaten"
-    }
+    },
+    "total": "Totaal",
+    "pending": "In behandeling",
+    "approved": "Goedgekeurd",
+    "rejected": "Afgekeurd",
+    "searchPlaceholder": "Zoek op naam...",
+    "allSpecializations": "Alle specialisaties",
+    "allStatuses": "Alle statussen",
+    "approve": "Goedkeuren",
+    "reject": "Afkeuren",
+    "statusUpdated": "Status bijgewerkt",
+    "unnamed": "Naamloos",
+    "registrationDate": "Registratiedatum"
   }
 }
