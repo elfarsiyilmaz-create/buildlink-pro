@@ -60,12 +60,15 @@ const Layout = () => {
             <Menu className="w-5 h-5 text-foreground" />
           </button>
           <Logo size="sm" />
-          <Avatar className="w-9 h-9">
-            {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
-            <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-              {initials || <User className="w-4 h-4" />}
-            </AvatarFallback>
-          </Avatar>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <Avatar className="w-9 h-9">
+              {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
+              <AvatarFallback className="text-xs bg-muted text-muted-foreground">
+                {initials || <User className="w-4 h-4" />}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </header>
 
