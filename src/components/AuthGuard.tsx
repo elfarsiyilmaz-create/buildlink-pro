@@ -12,7 +12,7 @@ interface AuthGuardProps {
 
 const AuthGuard = ({ children }: AuthGuardProps) => {
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState<'approved' | 'pending' | 'rejected' | 'unverified' | 'none'>('none');
+  const [status, setStatus] = useState<'approved' | 'pending' | 'rejected' | 'unverified' | 'onboarding' | 'none'>('none');
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -37,14 +37,21 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       // Check profile status
       const { data: profile } = await supabase
         .from('profiles')
-        .select('status')
+        .select('status, onboarding_completed')
         .eq('user_id', user.id)
         .single();
 
       const profileStatus = (profile?.status as string) || 'pending';
 
       if (profileStatus === 'approved') {
-        setStatus('approved');
+        // Check onboarding
+        const onboardingDone = (profile as any)?.onboarding_completed;
+        if (!onboardingDone && location.pathname !== '/onboarding') {
+          navigate('/onboarding', { replace: true });
+          setStatus('onboarding');
+        } else {
+          setStatus('approved');
+        }
       } else if (profileStatus === 'rejected') {
         setStatus('rejected');
       } else {
@@ -134,6 +141,8 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       </div>
     );
   }
+
+  if (status === 'onboarding') return <>{children}</>;
 
   return <>{children}</>;
 };
