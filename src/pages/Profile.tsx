@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
+import CertificateSection from '@/components/CertificateSection';
 
 const profileSchema = z.object({
   first_name: z.string().min(1, 'Verplicht').max(100),
@@ -317,6 +318,9 @@ const Profile = () => {
           {t('common.save')}
         </Button>
       </form>
+
+      {/* Certificates */}
+      <CertificateSection />
     </motion.div>
   );
 };
