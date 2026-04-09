@@ -51,7 +51,14 @@
     "passwordMismatch": "كلمات المرور غير متطابقة",
     "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
-    "logoutSuccess": "تم تسجيل الخروج بنجاح"
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
+    "resetSubtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين",
+    "sendResetLink": "إرسال الرابط",
+    "resetSentTitle": "تم إرسال البريد!",
+    "resetSentMessage": "تحقق من صندوق الوارد للحصول على رابط إعادة تعيين كلمة المرور.",
+    "newPasswordSubtitle": "أدخل كلمة المرور الجديدة أدناه",
+    "updatePassword": "تحديث كلمة المرور",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح"
   },
   "nav": {
     "home": "الرئيسية",

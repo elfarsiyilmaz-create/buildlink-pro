@@ -49,9 +49,16 @@
     "emailNotConfirmed": "Bitte bestätige zuerst deine E-Mail",
     "invalidCredentials": "Ungültige E-Mail oder Passwort",
     "passwordMismatch": "Passwörter stimmen nicht überein",
-    "passwordTooShort": "Passwort muss mindestens 6 Zeichen haben",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
     "fillAllFields": "Bitte fülle alle Pflichtfelder aus",
-    "logoutSuccess": "Erfolgreich abgemeldet"
+    "logoutSuccess": "Erfolgreich abgemeldet",
+    "resetSubtitle": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Link",
+    "sendResetLink": "Reset-Link senden",
+    "resetSentTitle": "E-Mail gesendet!",
+    "resetSentMessage": "Überprüfen Sie Ihren Posteingang für den Passwort-Reset-Link.",
+    "newPasswordSubtitle": "Geben Sie unten Ihr neues Passwort ein",
+    "updatePassword": "Passwort aktualisieren",
+    "passwordUpdated": "Passwort erfolgreich aktualisiert"
   },
   "nav": {
     "home": "Startseite",

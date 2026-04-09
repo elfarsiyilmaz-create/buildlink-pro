@@ -49,9 +49,16 @@
     "emailNotConfirmed": "Veuillez d'abord vérifier votre e-mail",
     "invalidCredentials": "E-mail ou mot de passe invalide",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
-    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "passwordTooShort": "Le mot de passe doit comporter au moins 6 caractères",
     "fillAllFields": "Veuillez remplir tous les champs obligatoires",
-    "logoutSuccess": "Déconnexion réussie"
+    "logoutSuccess": "Déconnexion réussie",
+    "resetSubtitle": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation",
+    "sendResetLink": "Envoyer le lien",
+    "resetSentTitle": "E-mail envoyé !",
+    "resetSentMessage": "Vérifiez votre boîte de réception pour le lien de réinitialisation.",
+    "newPasswordSubtitle": "Entrez votre nouveau mot de passe ci-dessous",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "passwordUpdated": "Mot de passe mis à jour avec succès"
   },
   "nav": {
     "home": "Accueil",

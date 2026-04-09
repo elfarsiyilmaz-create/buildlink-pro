@@ -51,7 +51,14 @@
     "passwordMismatch": "Паролите не съвпадат",
     "passwordTooShort": "Паролата трябва да е поне 6 символа",
     "fillAllFields": "Моля, попълнете всички задължителни полета",
-    "logoutSuccess": "Успешно излизане"
+    "logoutSuccess": "Успешно излизане",
+    "resetSubtitle": "Въведете имейла си и ще ви изпратим линк за нулиране",
+    "sendResetLink": "Изпрати линк",
+    "resetSentTitle": "Имейлът е изпратен!",
+    "resetSentMessage": "Проверете входящата си поща за линка за нулиране на паролата.",
+    "newPasswordSubtitle": "Въведете новата си парола по-долу",
+    "updatePassword": "Обнови парола",
+    "passwordUpdated": "Паролата е успешно обновена"
   },
   "nav": {
     "home": "Начало",
