@@ -21,7 +21,7 @@ const NotificationBell = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const { t, i18n } = useTranslation();
-  const locale = localeMap[i18n.language] || en;
+  const locale = localeMap[i18n.language] || enUS;
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
