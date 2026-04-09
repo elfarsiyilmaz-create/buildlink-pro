@@ -11,6 +11,7 @@ import Home from "@/pages/Home";
 import Profile from "@/pages/Profile";
 import Work from "@/pages/Work";
 import Network from "@/pages/Network";
+import Notifications from "@/pages/Notifications";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/work" element={<Work />} />
               <Route path="/network" element={<Network />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             </Route>
