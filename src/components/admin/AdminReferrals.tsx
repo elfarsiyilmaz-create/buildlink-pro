@@ -87,25 +87,41 @@ const AdminReferrals = () => {
 
       setInvites(prev => prev.map(i => i.id === id ? { ...i, ...updates } : i));
 
-      // If marking as paid, also update referrer's total_earned
-      if (updates.bonus_paid) {
-        const invite = invites.find(i => i.id === id);
-        if (invite) {
-          const { data: profile } = await supabase
+      const invite = invites.find(i => i.id === id);
+
+      // If marking as paid, also update referrer's total_earned and notify
+      if (updates.bonus_paid && invite) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_earned')
+          .eq('user_id', invite.referrer_id)
+          .single();
+        
+        if (profile) {
+          await supabase
             .from('profiles')
-            .select('total_earned')
-            .eq('user_id', invite.referrer_id)
-            .single();
-          
-          if (profile) {
-            await supabase
-              .from('profiles')
-              .update({
-                total_earned: (Number(profile.total_earned) || 0) + (Number(invite.bonus_amount) || 25),
-              } as any)
-              .eq('user_id', invite.referrer_id);
-          }
+            .update({
+              total_earned: (Number(profile.total_earned) || 0) + (Number(invite.bonus_amount) || 25),
+            } as any)
+            .eq('user_id', invite.referrer_id);
         }
+
+        await supabase.from('notifications').insert({
+          user_id: invite.referrer_id,
+          title: 'Referral bonus uitbetaald 💰',
+          message: `Je hebt €${Number(invite.bonus_amount || 25).toFixed(2)} ontvangen voor het aanbrengen van ${invite.invited_name || 'een nieuwe ZZP\'er'}.`,
+          type: 'success',
+        });
+      }
+
+      // Notify on referral approval
+      if (updates.status === 'approved' && invite) {
+        await supabase.from('notifications').insert({
+          user_id: invite.referrer_id,
+          title: 'Referral goedgekeurd 🎉',
+          message: `${invite.invited_name || 'Je referral'} is goedgekeurd als ZZP'er! Je bonus wordt binnenkort uitbetaald.`,
+          type: 'success',
+        });
       }
 
       toast.success(t('admin.statusUpdated'));
