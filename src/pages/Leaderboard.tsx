@@ -74,7 +74,7 @@ const Leaderboard = () => {
   }
 
   return (
-    <div className="space-y-5 py-5">
+    <div className="space-y-5 py-5 pb-24">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-2 mb-1">
           <Trophy className="w-6 h-6 text-primary" />

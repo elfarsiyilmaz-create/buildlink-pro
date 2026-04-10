@@ -379,7 +379,7 @@ const WheelOfFortunePage = () => {
   }
 
   return (
-    <div className="py-5 space-y-5">
+    <div className="py-5 space-y-5 pb-24">
       {/* Header */}
       <motion.div {...fadeUp} className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">🎰 {t('wheel.title')}</h1>
@@ -393,7 +393,7 @@ const WheelOfFortunePage = () => {
         <motion.div {...fadeUp} transition={{ delay: 0.1 }} className="glass-card rounded-2xl p-6 text-center space-y-3">
           <Lock className="w-16 h-16 text-muted-foreground mx-auto" />
           <p className="font-semibold text-foreground">{t('wheel.locked')}</p>
-          <p className="text-sm text-muted-foreground">{t('wheel.locked')}</p>
+          <p className="text-sm text-muted-foreground">{t('profile.complete_your_profile')}</p>
         </motion.div>
       )}
 

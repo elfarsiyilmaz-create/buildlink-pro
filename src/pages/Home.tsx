@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Clock, CalendarDays, Cloud, Thermometer, FileCheck, Car, MapPin, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import PersonalDashboard from '@/components/home/PersonalDashboard';
@@ -14,10 +15,44 @@ const Home = () => {
   const [time, setTime] = useState(new Date());
   const [available, setAvailable] = useState(false);
   const [weather, setWeather] = useState<{ temp: number; description: string } | null>(null);
+  const [userName, setUserName] = useState("ZZP'er");
+  const [profilePercentage, setProfilePercentage] = useState(0);
+  const [stats, setStats] = useState({ documents: 0, referrals: 0, city: '--' });
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Load real profile data
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const [profileRes, certsRes, referralsRes] = await Promise.all([
+          supabase.from('profiles').select('first_name, last_name, profile_completeness, city').eq('user_id', user.id).single(),
+          supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('referral_invites').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
+        ]);
+
+        if (profileRes.data) {
+          const p = profileRes.data;
+          const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || "ZZP'er";
+          setUserName(name);
+          setProfilePercentage(p.profile_completeness || 0);
+          setStats({
+            documents: certsRes.count || 0,
+            referrals: referralsRes.count || 0,
+            city: p.city || '--',
+          });
+        }
+      } catch (err) {
+        console.error('Error loading home data:', err);
+      }
+    };
+    loadData();
   }, []);
 
   useEffect(() => {
@@ -52,17 +87,16 @@ const Home = () => {
     });
   };
 
-  const profilePercentage = 35;
   const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
 
   return (
-    <div className="space-y-5 py-5">
+    <div className="space-y-5 py-5 pb-24">
       {/* Achievement unlock toast */}
       <AchievementUnlock />
 
       {/* Welcome Header */}
       <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-        <h1 className="text-2xl font-bold text-foreground">{t('home.welcome', { name: "ZZP'er" })}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('home.welcome', { name: userName })}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">{t('home.subtitle')}</p>
       </motion.div>
 
@@ -123,7 +157,7 @@ const Home = () => {
       </motion.div>
 
       {/* Profile Completeness */}
-      <motion.div {...fadeUp} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-4">
+      <motion.div {...fadeUp} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-4 cursor-pointer" onClick={() => navigate('/profile')}>
         <p className="text-sm font-medium text-foreground mb-2">{t('home.profileComplete', { percentage: profilePercentage })}</p>
         <div className="h-2.5 bg-muted rounded-full overflow-hidden">
           <motion.div initial={{ width: 0 }} animate={{ width: `${profilePercentage}%` }} transition={{ duration: 1, delay: 0.6 }} className="h-full gradient-primary rounded-full" />
@@ -133,10 +167,10 @@ const Home = () => {
       {/* Quick Stats */}
       <motion.div {...fadeUp} transition={{ delay: 0.55 }} className="grid grid-cols-4 gap-2">
         {[
-          { icon: FileCheck, label: t('home.documents'), value: '0/3' },
+          { icon: FileCheck, label: t('home.documents'), value: `${stats.documents}` },
           { icon: Car, label: t('home.license'), value: t('home.none') },
-          { icon: MapPin, label: t('home.region'), value: '--' },
-          { icon: Users, label: t('home.referrals'), value: '0' },
+          { icon: MapPin, label: t('home.region'), value: stats.city },
+          { icon: Users, label: t('home.referrals'), value: `${stats.referrals}` },
         ].map((stat, i) => (
           <div key={i} className="glass-card rounded-xl p-3 text-center">
             <stat.icon className="w-5 h-5 text-primary mx-auto mb-1.5" />
