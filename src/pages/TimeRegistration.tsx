@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Trash2, Clock, Euro, Loader2, CalendarIcon, ChevronLeft, ChevronRight, Send, FileText } from 'lucide-react';
+import { Plus, Minus, Trash2, Clock, Euro, Loader2, CalendarIcon, ChevronLeft, ChevronRight, Send, FileText, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { format, startOfWeek, endOfWeek, addWeeks, getISOWeek, getYear, eachDayOfInterval, isSameDay, parseISO } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { toast } from 'sonner';
