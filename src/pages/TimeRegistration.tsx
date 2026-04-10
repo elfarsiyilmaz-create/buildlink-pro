@@ -123,6 +123,7 @@ const TimeRegistration = () => {
         date: d,
         hours_worked: hours,
         hourly_rate: rate,
+        total_earned: hours * rate,
         description: description || null,
         job_id: selectedJob !== 'none' ? selectedJob : null,
         week_number: wn,

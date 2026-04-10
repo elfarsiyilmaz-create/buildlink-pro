@@ -136,7 +136,7 @@ const Network = () => {
   }
 
   return (
-    <div className="py-5 space-y-5">
+    <div className="py-5 space-y-5 pb-24">
       <motion.h1 {...fadeUp} className="text-2xl font-bold text-foreground">{t('network.title')}</motion.h1>
 
       {/* Hero Earnings */}
