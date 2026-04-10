@@ -22,7 +22,7 @@ const Settings = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="py-5 space-y-5"
+      className="py-5 space-y-5 pb-24"
     >
       <h1 className="text-2xl font-bold text-foreground">{t('settings.title')}</h1>
 
