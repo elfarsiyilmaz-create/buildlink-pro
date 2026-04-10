@@ -295,7 +295,6 @@ const WheelOfFortunePage = () => {
     setWonPrize(prize);
     setSpinning(false);
     setShowResult(true);
-    setAvailableSpins(prev => prev - 1);
 
     if (navigator.vibrate) navigator.vibrate([100, 50, 200]);
     if (prize.prize_type !== 'empty') {
@@ -319,13 +318,27 @@ const WheelOfFortunePage = () => {
         spin_source: 'daily',
       });
 
-      // Deduct spin
+      // Get current spin balance and update atomically
+      const { data: currentSpins } = await supabase
+        .from('user_spins')
+        .select('available_spins, total_spins_used')
+        .eq('user_id', user.id)
+        .single();
+
+      const newAvailable = Math.max(0, (currentSpins?.available_spins || 1) - 1);
+      const newUsed = (currentSpins?.total_spins_used || 0) + 1;
+
+      // Handle extra spin prize
+      const extraSpins = prize.prize_type === 'spin' ? 1 : 0;
+
       await supabase.from('user_spins').update({
-        available_spins: Math.max(0, availableSpins - 1),
-        total_spins_used: (await supabase.from('user_spins').select('total_spins_used').eq('user_id', user.id).single()).data?.total_spins_used + 1 || 1,
+        available_spins: newAvailable + extraSpins,
+        total_spins_used: newUsed,
       }).eq('user_id', user.id);
 
-      // Award prize
+      setAvailableSpins(newAvailable + extraSpins);
+
+      // Award points
       if (prize.prize_type === 'points' && prize.points_value > 0) {
         const { data: score } = await supabase
           .from('leaderboard_scores')
@@ -343,12 +356,6 @@ const WheelOfFortunePage = () => {
             total_points: prize.points_value,
           });
         }
-      } else if (prize.prize_type === 'spin') {
-        // Award extra spin
-        setAvailableSpins(prev => prev + 1);
-        await supabase.from('user_spins').update({
-          available_spins: availableSpins, // net zero after deduct + add
-        }).eq('user_id', user.id);
       }
 
       // Reload history
