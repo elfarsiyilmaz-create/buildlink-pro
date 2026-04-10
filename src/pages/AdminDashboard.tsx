@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Users, Briefcase, Calendar, Award, FileText } from 'lucide-react';
+import { Users, Briefcase, Clock, Award, FileText } from 'lucide-react';
 import AdminZZPers from '@/components/admin/AdminZZPers';
+import AdminTimeEntries from '@/components/admin/AdminTimeEntries';
+import AdminReferrals from '@/components/admin/AdminReferrals';
 
 const TABS = [
   { id: 'users', icon: Users },
-  { id: 'assignments', icon: Briefcase },
-  { id: 'availability', icon: Calendar },
+  { id: 'hours', icon: Clock },
   { id: 'referrals', icon: Award },
+  { id: 'assignments', icon: Briefcase },
   { id: 'certificates', icon: FileText },
 ] as const;
 
@@ -20,6 +22,8 @@ const AdminDashboard = () => {
 
   const renderContent = () => {
     if (activeTab === 'users') return <AdminZZPers />;
+    if (activeTab === 'hours') return <AdminTimeEntries />;
+    if (activeTab === 'referrals') return <AdminReferrals />;
 
     const Tab = TABS.find(tb => tb.id === activeTab)!;
     return (
