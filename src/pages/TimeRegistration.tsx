@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Trash2, Clock, Euro, Loader2, CalendarIcon, ChevronLeft, ChevronRight, Send, FileText } from 'lucide-react';
+import { Plus, Minus, Trash2, Clock, Euro, Loader2, CalendarIcon, ChevronLeft, ChevronRight, Send, FileText, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { format, startOfWeek, endOfWeek, addWeeks, getISOWeek, getYear, eachDayOfInterval, isSameDay, parseISO } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -188,6 +190,65 @@ const TimeRegistration = () => {
     entries.every(e => e.status === 'paid') ? 'paid' :
     entries.every(e => e.status === 'approved' || e.status === 'paid') ? 'approved' :
     entries.some(e => e.status === 'submitted') ? 'submitted' : 'draft';
+
+  const handleDownloadPDF = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: profile } = await supabase.from('profiles')
+      .select('first_name, last_name').eq('user_id', user.id).single();
+    const userName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 'ZZP\'er';
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Urenregistratie', 14, 22);
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${userName}`, 14, 30);
+    doc.text(`Week ${weekNum} — ${format(weekStart, 'dd-MM-yyyy')} t/m ${format(weekEnd, 'dd-MM-yyyy')}`, 14, 36);
+
+    // Status badge
+    const statusLabels: Record<string, string> = { draft: 'Concept', submitted: 'Ingediend', approved: 'Goedgekeurd', paid: 'Uitbetaald' };
+    if (weekStatus) {
+      doc.text(`Status: ${statusLabels[weekStatus] || weekStatus}`, 14, 42);
+    }
+
+    // Table
+    const rows = entries
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map(e => [
+        format(parseISO(e.date), 'EEEE dd-MM', { locale: nl }),
+        e.description || '—',
+        `${Number(e.hours_worked)}`,
+        `€${Number(e.hourly_rate || 0).toFixed(2)}`,
+        `€${Number(e.total_earned || 0).toFixed(2)}`,
+      ]);
+
+    autoTable(doc, {
+      startY: 48,
+      head: [['Dag', 'Omschrijving', 'Uren', 'Tarief', 'Totaal']],
+      body: rows,
+      foot: [['', 'Totaal', `${weekTotal}`, '', `€${weekEarned.toFixed(2)}`]],
+      styles: { fontSize: 10, cellPadding: 3 },
+      headStyles: { fillColor: [245, 158, 11], textColor: 255, fontStyle: 'bold' },
+      footStyles: { fillColor: [245, 245, 245], textColor: [0, 0, 0], fontStyle: 'bold' },
+      theme: 'grid',
+    });
+
+    // Footer
+    const finalY = (doc as any).lastAutoTable?.finalY || 120;
+    doc.setFontSize(9);
+    doc.setTextColor(150);
+    doc.text(`Gegenereerd op ${format(new Date(), 'dd-MM-yyyy HH:mm')}`, 14, finalY + 12);
+
+    doc.save(`uren-week-${weekNum}-${yearNum}.pdf`);
+    toast.success('PDF gedownload');
+  };
 
   // Chart data
   const chartData = weekDays.map(day => {
@@ -492,6 +553,14 @@ const TimeRegistration = () => {
               </div>
             );
           })()}
+
+          {/* PDF Download */}
+          {entries.length > 0 && (
+            <Button variant="outline" className="w-full" onClick={handleDownloadPDF}>
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+          )}
 
           {entries.length === 0 && !weekStatus && (
             <div className="glass-card rounded-2xl p-8 flex flex-col items-center text-center">
