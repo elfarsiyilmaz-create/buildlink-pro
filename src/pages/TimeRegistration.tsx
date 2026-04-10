@@ -554,6 +554,14 @@ const TimeRegistration = () => {
             );
           })()}
 
+          {/* PDF Download */}
+          {entries.length > 0 && (
+            <Button variant="outline" className="w-full" onClick={handleDownloadPDF}>
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+          )}
+
           {entries.length === 0 && !weekStatus && (
             <div className="glass-card rounded-2xl p-8 flex flex-col items-center text-center">
               <FileText className="w-12 h-12 text-muted-foreground mb-4" />
