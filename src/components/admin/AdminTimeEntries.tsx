@@ -137,6 +137,24 @@ const AdminTimeEntries = () => {
       setEntries(prev => prev.map(e =>
         ids.includes(e.id) ? { ...e, ...updateData } : e
       ));
+
+      // Send notification to the user
+      if (newStatus === 'approved' || newStatus === 'paid') {
+        const title = newStatus === 'approved'
+          ? 'Uren goedgekeurd ✅'
+          : 'Uren uitbetaald 💰';
+        const message = newStatus === 'approved'
+          ? `Je uren voor week ${group.week} (${group.totalHours}h, €${group.totalEarned.toFixed(2)}) zijn goedgekeurd.`
+          : `Je uren voor week ${group.week} (€${group.totalEarned.toFixed(2)}) zijn uitbetaald.`;
+
+        await supabase.from('notifications').insert({
+          user_id: group.userId,
+          title,
+          message,
+          type: newStatus === 'approved' ? 'success' : 'info',
+        });
+      }
+
       toast.success(t('admin.statusUpdated'));
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
