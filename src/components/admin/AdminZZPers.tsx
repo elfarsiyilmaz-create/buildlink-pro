@@ -18,7 +18,7 @@ interface ProfileRow {
   last_name: string | null;
   phone: string | null;
   date_of_birth: string | null;
-  bsn: string | null;
+  kvk_number: string | null;
   address: string | null;
   city: string | null;
   postal_code: string | null;
@@ -246,7 +246,7 @@ const AdminZZPers = () => {
                     { label: t('profile.phone'), value: selectedProfile.phone },
                     { label: t('profile.firstName'), value: selectedProfile.first_name },
                     { label: t('profile.lastName'), value: selectedProfile.last_name },
-                    { label: 'BSN', value: selectedProfile.bsn },
+                    { label: t('profile.kvk'), value: selectedProfile.kvk_number },
                     { label: 'Geboortedatum', value: selectedProfile.date_of_birth ? format(new Date(selectedProfile.date_of_birth), 'dd-MM-yyyy') : null },
                     { label: 'Adres', value: selectedProfile.address },
                     { label: 'Stad', value: selectedProfile.city },

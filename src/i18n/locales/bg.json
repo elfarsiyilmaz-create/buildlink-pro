@@ -15,7 +15,8 @@
     "filter": "Филтрирай",
     "noResults": "Няма резултати",
     "error": "Нещо се обърка",
-    "success": "Успех!"
+    "success": "Успех!",
+    "optional": "По избор"
   },
   "splash": {
     "welcome": "Добре дошли в Alhan Groep 💪"
@@ -37,6 +38,7 @@
     "orContinueWith": "или продължи с имейл",
     "fullName": "Пълно име",
     "phone": "Телефонен номер",
+    "invalidPhone": "Невалиден телефонен номер",
     "referralCode": "Код за препоръка (по избор)",
     "registerSubtitle": "Станете част от семейството Alhan",
     "loginSubtitle": "Добре дошли обратно в Alhan Groep",
@@ -164,7 +166,7 @@
     "missing_specialization": "Специализация липсва",
     "missing_certificate": "Сертификат липсва",
     "missing_bio": "Текст за мен липсва",
-    "missing_bsn": "BSN номер липсва",
+    "missing_kvk": "Липсва KvK номер",
     "missing_iban": "IBAN липсва",
     "missing_availability": "Наличността не е зададена",
     "financial_security_note": "Тези данни са защитени и се използват само за плащания"

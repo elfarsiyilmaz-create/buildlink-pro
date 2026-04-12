@@ -69,7 +69,6 @@ const ProfileWizard = ({
   const [selectedCerts, setSelectedCerts] = useState<string[]>([]);
 
   // Step 5: Financial
-  const [bsn, setBsn] = useState('');
   const [iban, setIban] = useState('');
   const [kvk, setKvk] = useState('');
 
@@ -82,7 +81,6 @@ const ProfileWizard = ({
       setBio(profileData.bio || '');
       setDateOfBirth(profileData.date_of_birth ? new Date(profileData.date_of_birth) : undefined);
       setSelectedSpecs(profileData.specializations || (profileData.specialization ? [profileData.specialization] : []));
-      setBsn(profileData.bsn || '');
       setIban(profileData.iban || '');
       setKvk(profileData.kvk_number || '');
       setStep(initialStep);
@@ -140,7 +138,6 @@ const ProfileWizard = ({
       } else if (step === 4) {
         payload = {
           ...payload,
-          bsn: bsn || null,
           iban: iban || null,
           kvk_number: kvk || null,
         };
@@ -310,16 +307,12 @@ const ProfileWizard = ({
               🔒 {t('profile.financial_security_note')}
             </div>
             <div className="space-y-1.5">
-              <Label>BSN</Label>
-              <Input value={bsn} onChange={e => setBsn(e.target.value.replace(/\D/g, '').slice(0, 9))} placeholder="•••••••••" maxLength={9} className="bg-card" />
-            </div>
-            <div className="space-y-1.5">
               <Label>IBAN</Label>
               <Input value={iban} onChange={e => setIban(e.target.value.toUpperCase())} placeholder="NL00 BANK 0000 0000 00" className="bg-card" />
             </div>
             <div className="space-y-1.5">
-              <Label>KvK nummer</Label>
-              <Input value={kvk} onChange={e => setKvk(e.target.value)} placeholder="12345678" className="bg-card" />
+              <Label>{t('profile.kvk')}</Label>
+              <Input value={kvk} onChange={e => setKvk(e.target.value.replace(/\D/g, '').slice(0, 8))} placeholder="12345678" maxLength={8} className="bg-card" />
             </div>
           </motion.div>
         );

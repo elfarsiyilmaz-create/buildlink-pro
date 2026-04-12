@@ -15,7 +15,8 @@
     "filter": "Filtrar",
     "noResults": "Sin resultados",
     "error": "Algo salió mal",
-    "success": "¡Éxito!"
+    "success": "¡Éxito!",
+    "optional": "Opcional"
   },
   "splash": {
     "welcome": "Bienvenido a Alhan Groep 💪"
@@ -37,6 +38,7 @@
     "orContinueWith": "o continuar con correo",
     "fullName": "Nombre completo",
     "phone": "Número de teléfono",
+    "invalidPhone": "Número de teléfono no válido",
     "referralCode": "Código de referencia (opcional)",
     "registerSubtitle": "Únete a la familia Alhan",
     "loginSubtitle": "Bienvenido de vuelta a Alhan Groep",
@@ -164,7 +166,7 @@
     "missing_specialization": "Especialización faltante",
     "missing_certificate": "Certificado faltante",
     "missing_bio": "Texto sobre mí faltante",
-    "missing_bsn": "Número BSN faltante",
+    "missing_kvk": "Falta el número KvK",
     "missing_iban": "IBAN faltante",
     "missing_availability": "Disponibilidad no configurada",
     "financial_security_note": "Estos datos están protegidos y solo se usan para pagos"

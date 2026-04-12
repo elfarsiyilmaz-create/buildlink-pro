@@ -15,7 +15,8 @@
     "filter": "Filtrele",
     "noResults": "Sonuç yok",
     "error": "Bir hata oluştu",
-    "success": "Başarılı!"
+    "success": "Başarılı!",
+    "optional": "İsteğe bağlı"
   },
   "splash": {
     "welcome": "Alhan Groep'e hoş geldiniz 💪"
@@ -37,6 +38,7 @@
     "orContinueWith": "veya e-posta ile devam et",
     "fullName": "Ad soyad",
     "phone": "Telefon numarası",
+    "invalidPhone": "Geçersiz telefon numarası",
     "referralCode": "Referans kodu (isteğe bağlı)",
     "registerSubtitle": "Alhan ailesine katılın",
     "loginSubtitle": "Alhan Groep'e tekrar hoş geldiniz",
@@ -164,7 +166,7 @@
     "missing_specialization": "Uzmanlık eksik",
     "missing_certificate": "Sertifika eksik",
     "missing_bio": "Hakkımda yazısı eksik",
-    "missing_bsn": "BSN numarası eksik",
+    "missing_kvk": "KvK numarası eksik",
     "missing_iban": "IBAN eksik",
     "missing_availability": "Uygunluk ayarlanmadı",
     "financial_security_note": "Bu veriler güvenlidir ve yalnızca ödemeler için kullanılır"

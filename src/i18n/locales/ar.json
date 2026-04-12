@@ -15,7 +15,8 @@
     "filter": "تصفية",
     "noResults": "لا توجد نتائج",
     "error": "حدث خطأ ما",
-    "success": "تم بنجاح!"
+    "success": "تم بنجاح!",
+    "optional": "اختياري"
   },
   "splash": {
     "welcome": "مرحباً بكم في Alhan Groep 💪"
@@ -37,6 +38,7 @@
     "orContinueWith": "أو المتابعة بالبريد الإلكتروني",
     "fullName": "الاسم الكامل",
     "phone": "رقم الهاتف",
+    "invalidPhone": "رقم هاتف غير صالح",
     "referralCode": "رمز الإحالة (اختياري)",
     "registerSubtitle": "انضم إلى عائلة الحان",
     "loginSubtitle": "مرحباً بعودتك إلى Alhan Groep",
@@ -164,7 +166,7 @@
     "missing_specialization": "التخصص مفقود",
     "missing_certificate": "الشهادة مفقودة",
     "missing_bio": "نص عنّي مفقود",
-    "missing_bsn": "رقم BSN مفقود",
+    "missing_kvk": "رقم KvK مفقود",
     "missing_iban": "IBAN مفقود",
     "missing_availability": "التوفر غير محدد",
     "financial_security_note": "هذه البيانات مؤمنة وتُستخدم فقط للمدفوعات"

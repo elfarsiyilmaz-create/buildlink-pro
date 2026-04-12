@@ -60,6 +60,15 @@ const AchievementUnlock = () => {
       if (unlockedIds.has(achievement.id)) continue;
       if (achievement.required_points !== null && totalPoints >= achievement.required_points) {
         // Unlock it!
+        const { data: existing } = await supabase
+          .from('user_achievements')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('achievement_id', achievement.id)
+          .maybeSingle();
+
+        if (existing) continue;
+
         const { error } = await supabase.from('user_achievements').insert({
           user_id: user.id,
           achievement_id: achievement.id,

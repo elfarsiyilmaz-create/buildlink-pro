@@ -24,7 +24,7 @@ interface ProfileData {
   specialization?: string | null;
   specializations?: string[] | null;
   bio?: string | null;
-  bsn?: string | null;
+  kvk_number?: string | null;
   iban?: string | null;
   preferred_language?: string | null;
 }
@@ -97,11 +97,11 @@ export function useProfileCompleteness(
       missing.push({ key: 'bio', labelKey: 'profile.missing_bio', points: 10, wizardStep: 0 });
     }
 
-    // BSN (10)
-    if (profile.bsn) {
+    // KvK number (10)
+    if (profile.kvk_number) {
       earned += 10;
     } else {
-      missing.push({ key: 'bsn', labelKey: 'profile.missing_bsn', points: 10, wizardStep: 4 });
+      missing.push({ key: 'kvk', labelKey: 'profile.missing_kvk', points: 10, wizardStep: 4 });
     }
 
     // IBAN (10)

@@ -29,7 +29,7 @@ const profileSchema = z.object({
   last_name: z.string().min(1, 'Verplicht').max(100),
   phone: z.string().min(1, 'Verplicht').regex(/^[\d\s+()-]{7,20}$/, 'Ongeldig telefoonnummer'),
   date_of_birth: z.date().optional().nullable(),
-  bsn: z.string().optional().refine(v => !v || /^\d{9}$/.test(v), 'BSN moet 9 cijfers zijn'),
+  kvk_number: z.string().optional().refine(v => !v || /^\d{8}$/.test(v), 'KVK moet 8 cijfers zijn'),
   address: z.string().max(200).optional(),
   city: z.string().max(100).optional(),
   postal_code: z.string().max(10).optional(),
@@ -133,10 +133,19 @@ const Profile = () => {
           .single();
 
         if (achievement) {
-          await supabase.from('user_achievements').insert({
-            user_id: userId,
-            achievement_id: achievement.id,
-          });
+          const { data: existing } = await supabase
+            .from('user_achievements')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('achievement_id', achievement.id)
+            .maybeSingle();
+
+          if (!existing) {
+            await supabase.from('user_achievements').insert({
+              user_id: userId,
+              achievement_id: achievement.id,
+            });
+          }
         }
 
         // Show toast
@@ -154,7 +163,7 @@ const Profile = () => {
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      first_name: '', last_name: '', phone: '', bsn: '', address: '', city: '',
+      first_name: '', last_name: '', phone: '', kvk_number: '', address: '', city: '',
       postal_code: '', specialization: '', hourly_rate: null, preferred_language: 'nl',
       bio: '', transport_type: '', has_own_equipment: false, equipment_description: '',
     },
@@ -185,7 +194,7 @@ const Profile = () => {
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
-          bsn: data.bsn || '',
+          kvk_number: data.kvk_number || '',
           address: data.address || '',
           city: data.city || '',
           postal_code: data.postal_code || '',
@@ -237,7 +246,7 @@ const Profile = () => {
         last_name: values.last_name,
         phone: values.phone,
         date_of_birth: values.date_of_birth ? format(values.date_of_birth, 'yyyy-MM-dd') : null,
-        bsn: values.bsn || null,
+        kvk_number: values.kvk_number || null,
         address: values.address || null,
         city: values.city || null,
         postal_code: values.postal_code || null,
@@ -356,9 +365,9 @@ const Profile = () => {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="bsn">BSN</Label>
-          <Input id="bsn" {...register('bsn')} maxLength={9} placeholder="123456789" className="bg-card" />
-          {errors.bsn && <p className="text-xs text-destructive">{errors.bsn.message}</p>}
+          <Label htmlFor="kvk_number">KVK nummer</Label>
+          <Input id="kvk_number" {...register('kvk_number')} maxLength={8} placeholder="12345678" className="bg-card" />
+          {errors.kvk_number && <p className="text-xs text-destructive">{errors.kvk_number.message}</p>}
         </div>
 
         <div className="space-y-1.5">

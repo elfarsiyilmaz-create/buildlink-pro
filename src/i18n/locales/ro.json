@@ -15,7 +15,8 @@
     "filter": "Filtrează",
     "noResults": "Niciun rezultat",
     "error": "Ceva nu a mers bine",
-    "success": "Succes!"
+    "success": "Succes!",
+    "optional": "Opțional"
   },
   "splash": {
     "welcome": "Bun venit la Alhan Groep 💪"
@@ -37,6 +38,7 @@
     "orContinueWith": "sau continuă cu e-mail",
     "fullName": "Nume complet",
     "phone": "Număr de telefon",
+    "invalidPhone": "Număr de telefon invalid",
     "referralCode": "Cod de recomandare (opțional)",
     "registerSubtitle": "Alătură-te familiei Alhan",
     "loginSubtitle": "Bine ai revenit la Alhan Groep",
@@ -164,7 +166,7 @@
     "missing_specialization": "Specializare lipsă",
     "missing_certificate": "Certificat lipsă",
     "missing_bio": "Text despre mine lipsă",
-    "missing_bsn": "Număr BSN lipsă",
+    "missing_kvk": "Număr KvK lipsă",
     "missing_iban": "IBAN lipsă",
     "missing_availability": "Disponibilitate nesetată",
     "financial_security_note": "Aceste date sunt securizate și folosite doar pentru plăți"

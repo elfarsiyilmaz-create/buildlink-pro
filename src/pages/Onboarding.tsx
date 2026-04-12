@@ -45,18 +45,47 @@ const Onboarding = () => {
   };
 
   const handleContinueToTutorial = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from('profiles').update({ preferred_language: selectedLang }).eq('user_id', user.id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({ 
+            user_id: user.id,
+            preferred_language: selectedLang 
+          }, { 
+            onConflict: 'user_id' 
+          });
+        if (error) throw error;
+      }
+      setStep('tutorial');
+    } catch (err) {
+      console.error('Error saving language preference:', err);
+      setStep('tutorial');
     }
-    setStep('tutorial');
   };
 
   const handleComplete = useCallback(async () => {
-    // Mark onboarding as shown for this session so AuthGuard lets user through
-    sessionStorage.setItem('onboarding_shown', 'true');
-    toast.info(t('onboarding.profileTip'));
-    navigate('/', { replace: true });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({ 
+            user_id: user.id,
+            onboarding_completed: true 
+          }, { 
+            onConflict: 'user_id' 
+          });
+        if (error) throw error;
+      }
+    } catch (err) {
+      console.error('Error completing onboarding:', err);
+    } finally {
+      sessionStorage.setItem('onboarding_shown', 'true');
+      toast.info(t('onboarding.profileTip'));
+      navigate('/', { replace: true });
+    }
   }, [navigate, t]);
 
   const handleSkip = () => handleComplete();

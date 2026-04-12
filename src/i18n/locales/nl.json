@@ -15,7 +15,8 @@
     "filter": "Filteren",
     "noResults": "Geen resultaten",
     "error": "Er is iets misgegaan",
-    "success": "Gelukt!"
+    "success": "Gelukt!",
+    "optional": "Optioneel"
   },
   "splash": { "welcome": "Welkom bij Alhan Groep 💪" },
   "auth": {
@@ -25,6 +26,7 @@
     "noAccount": "Nog geen account?", "hasAccount": "Al een account?",
     "continueWithGoogle": "Doorgaan met Google", "continueWithApple": "Doorgaan met Apple",
     "orContinueWith": "of ga verder met e-mail", "fullName": "Volledige naam", "phone": "Telefoonnummer",
+    "invalidPhone": "Ongeldig telefoonnummer",
     "referralCode": "Referral code (optioneel)", "registerSubtitle": "Word onderdeel van de Alhan familie",
     "loginSubtitle": "Welkom terug bij Alhan Groep", "resetSent": "Herstel e-mail verzonden! Controleer je inbox.",
     "logout": "Uitloggen", "verifyEmailTitle": "Controleer je e-mail",
@@ -64,7 +66,7 @@
     "add_now": "Toevoegen", "missing_name": "Volledige naam ontbreekt", "missing_phone": "Telefoonnummer ontbreekt",
     "missing_photo": "Profielfoto ontbreekt", "missing_dob": "Geboortedatum ontbreekt", "missing_city": "Woonplaats ontbreekt",
     "missing_specialization": "Specialisatie ontbreekt", "missing_certificate": "Certificaat ontbreekt",
-    "missing_bio": "Over mij tekst ontbreekt", "missing_bsn": "BSN nummer ontbreekt", "missing_iban": "IBAN ontbreekt",
+    "missing_bio": "Over mij tekst ontbreekt", "missing_kvk": "KvK nummer ontbreekt", "missing_iban": "IBAN ontbreekt",
     "missing_availability": "Beschikbaarheid niet ingesteld",
     "financial_security_note": "Deze gegevens zijn beveiligd en worden alleen gebruikt voor uitbetalingen"
   },

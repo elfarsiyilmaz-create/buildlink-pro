@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { lovable } from '@/integrations/lovable/index';
 import { toast } from 'sonner';
 import Logo from '@/components/Logo';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -53,18 +52,16 @@ const Login = () => {
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
     setSocialLoading(provider);
     try {
-      const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin,
+        },
       });
 
-      if (result.error) {
-        toast.error(result.error.message || t('common.error'));
-        return;
+      if (error) {
+        toast.error(error.message || t('common.error'));
       }
-
-      if (result.redirected) return;
-
-      navigate('/', { replace: true });
     } catch (err: any) {
       toast.error(err.message || t('common.error'));
     } finally {
@@ -87,7 +84,6 @@ const Login = () => {
             <p className="text-muted-foreground text-sm">{t('auth.loginSubtitle')}</p>
           </div>
 
-          {/* Social Login Buttons */}
           <div className="space-y-3">
             <Button
               type="button"
@@ -95,6 +91,7 @@ const Login = () => {
               className="w-full h-12 rounded-xl text-base font-medium gap-3"
               onClick={() => handleSocialLogin('google')}
               disabled={!!socialLoading}
+              aria-label={t('auth.continueWithGoogle')}
             >
               {socialLoading === 'google' ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -115,6 +112,7 @@ const Login = () => {
               className="w-full h-12 rounded-xl text-base font-medium gap-3"
               onClick={() => handleSocialLogin('apple')}
               disabled={!!socialLoading}
+              aria-label={t('auth.continueWithApple')}
             >
               {socialLoading === 'apple' ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -127,7 +125,6 @@ const Login = () => {
             </Button>
           </div>
 
-          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
@@ -146,6 +143,7 @@ const Login = () => {
                 onChange={e => setEmail(e.target.value)}
                 className="rounded-xl h-12 border-border focus:ring-primary"
                 placeholder="naam@email.nl"
+                aria-label={t('auth.email')}
                 required
               />
             </div>
@@ -157,6 +155,7 @@ const Login = () => {
                 onChange={e => setPassword(e.target.value)}
                 className="rounded-xl h-12 border-border focus:ring-primary"
                 placeholder="••••••••"
+                aria-label={t('auth.password')}
                 required
               />
             </div>
