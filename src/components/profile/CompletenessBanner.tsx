@@ -43,10 +43,12 @@ const CompletenessBanner = ({ percentage, missingFields, color, onOpenWizard }: 
         className="glass-card rounded-2xl p-4 space-y-3 relative"
       >
         <button
+          type="button"
           onClick={handleDismiss}
-          className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+          className="absolute top-3 right-3 text-foreground/70 hover:text-foreground"
+          aria-label={t('common.closeMenu')}
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4" aria-hidden />
         </button>
 
         <div className="flex items-center gap-2">
@@ -57,7 +59,7 @@ const CompletenessBanner = ({ percentage, missingFields, color, onOpenWizard }: 
         </div>
 
         <Progress value={percentage} className="h-2" />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-foreground/80">
           {100 - percentage} {t('profile.points_remaining')}
         </p>
 
@@ -65,14 +67,16 @@ const CompletenessBanner = ({ percentage, missingFields, color, onOpenWizard }: 
           {missingFields.slice(0, 4).map((field) => (
             <button
               key={field.key}
+              type="button"
               onClick={() => onOpenWizard(field.wizardStep)}
               className="flex items-center justify-between w-full text-left text-sm py-1.5 px-2 rounded-lg hover:bg-accent transition-colors"
+              aria-label={t(field.labelKey)}
             >
               <span className="flex items-center gap-2">
-                <span className="text-destructive">❌</span>
+                <span className="text-destructive" aria-hidden>❌</span>
                 <span className="text-foreground">{t(field.labelKey)}</span>
               </span>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <ChevronRight className="w-4 h-4 text-foreground/70" aria-hidden />
             </button>
           ))}
         </div>

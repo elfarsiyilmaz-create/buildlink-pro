@@ -208,7 +208,7 @@ const AdminTimeEntries = () => {
 
       {/* Grouped entries */}
       {grouped.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground text-sm">
+        <div className="text-center py-12 text-foreground/80 text-sm">
           {t('common.noResults')}
         </div>
       ) : (
@@ -219,23 +219,26 @@ const AdminTimeEntries = () => {
               <div key={group.key} className="glass-card rounded-xl overflow-hidden">
                 {/* Header */}
                 <button
+                  type="button"
                   onClick={() => setExpandedWeek(isExpanded ? null : group.key)}
                   className="w-full p-4 flex items-center gap-3 text-left hover:bg-muted/30 transition-colors"
+                  aria-expanded={isExpanded}
+                  aria-label={`${group.userName}, ${t('hours.week')} ${group.week}`}
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{group.userName}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-foreground/75">
                       {t('hours.week')} {group.week}, {group.year} • {group.entries.length} {t('admin.entries')}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-foreground">{group.totalHours}h</p>
-                    <p className="text-xs text-muted-foreground">€{group.totalEarned.toFixed(2)}</p>
+                    <p className="text-xs text-foreground/75">€{group.totalEarned.toFixed(2)}</p>
                   </div>
                   <Badge variant="outline" className={cn('text-xs border shrink-0', STATUS_COLORS[group.status] || '')}>
                     {t(`hours.status_${group.status}`)}
                   </Badge>
-                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  {isExpanded ? <ChevronUp className="w-4 h-4 text-foreground/70" aria-hidden /> : <ChevronDown className="w-4 h-4 text-foreground/70" aria-hidden />}
                 </button>
 
                 {/* Expanded detail */}

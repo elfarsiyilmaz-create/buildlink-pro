@@ -97,16 +97,20 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Skip */}
       {step === 'tutorial' && (
         <div className="absolute top-4 right-4 z-10">
-          <button onClick={handleSkip} className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5">
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="text-sm text-foreground/80 hover:text-foreground transition-colors px-3 py-1.5"
+            aria-label={t('onboarding.skip')}
+          >
             {t('onboarding.skip')}
           </button>
         </div>
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10">
+      <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <AnimatePresence mode="wait">
           {step === 'language' && (
             <motion.div
@@ -125,20 +129,24 @@ const Onboarding = () => {
                 {LANGUAGES.map((lang) => (
                   <button
                     key={lang.code}
+                    type="button"
                     onClick={() => handleLanguageSelect(lang.code)}
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all ${
                       selectedLang === lang.code
                         ? 'border-primary bg-primary/5 shadow-md'
-                        : 'border-border hover:border-muted-foreground/30'
+                        : 'border-border hover:border-foreground/25'
                     }`}
+                    aria-label={`${t('onboarding.selectLanguage')}: ${lang.label}`}
+                    aria-pressed={selectedLang === lang.code}
                   >
-                    <span className="text-2xl">{FLAG_MAP[lang.code]}</span>
+                    <span className="text-2xl" aria-hidden>{FLAG_MAP[lang.code]}</span>
                     <span className="text-xs font-medium text-foreground truncate w-full text-center">{lang.label}</span>
                   </button>
                 ))}
               </div>
 
               <button
+                type="button"
                 onClick={handleContinueToTutorial}
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
               >
@@ -171,9 +179,9 @@ const Onboarding = () => {
                   transition={{ duration: 0.25 }}
                   className="text-center space-y-4"
                 >
-                  <div className="text-7xl">{slides[slideIndex].emoji}</div>
+                  <div className="text-7xl" aria-hidden>{slides[slideIndex].emoji}</div>
                   <h2 className="text-xl font-bold text-foreground">{t(slides[slideIndex].titleKey)}</h2>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{t(slides[slideIndex].textKey)}</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed">{t(slides[slideIndex].textKey)}</p>
                 </motion.div>
               </AnimatePresence>
 
@@ -182,10 +190,12 @@ const Onboarding = () => {
                 {slides.map((_, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => setSlideIndex(i)}
                     className={`w-2.5 h-2.5 rounded-full transition-all ${
-                      i === slideIndex ? 'bg-primary w-6' : 'bg-muted-foreground/30'
+                      i === slideIndex ? 'bg-primary w-6' : 'bg-foreground/25'
                     }`}
+                    aria-label={`${i + 1} / ${slides.length}`}
                   />
                 ))}
               </div>
@@ -193,6 +203,7 @@ const Onboarding = () => {
               {/* Action button */}
               {slideIndex === slides.length - 1 ? (
                 <button
+                  type="button"
                   onClick={handleComplete}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
                 >
@@ -200,6 +211,7 @@ const Onboarding = () => {
                 </button>
               ) : (
                 <button
+                  type="button"
                   onClick={() => setSlideIndex(s => s + 1)}
                   className="w-full py-3 rounded-xl border border-border text-foreground font-medium text-sm hover:bg-muted transition-colors"
                 >
@@ -209,7 +221,7 @@ const Onboarding = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </main>
     </div>
   );
 };

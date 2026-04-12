@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Camera, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,6 +46,7 @@ function cropToSquare(file: File): Promise<Blob> {
 }
 
 const ProfilePhotoUpload = ({ avatarUrl, initials, userId, onPhotoUpdated }: ProfilePhotoUploadProps) => {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewBlob, setPreviewBlob] = useState<Blob | null>(null);
@@ -155,8 +157,9 @@ const ProfilePhotoUpload = ({ avatarUrl, initials, userId, onPhotoUpdated }: Pro
             size="sm"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
+            aria-label={t('profile.uploadPhoto')}
           >
-            <Camera className="w-4 h-4 mr-1.5" />
+            <Camera className="w-4 h-4 mr-1.5" aria-hidden />
             Foto wijzigen
           </Button>
           {avatarUrl && (
@@ -167,8 +170,9 @@ const ProfilePhotoUpload = ({ avatarUrl, initials, userId, onPhotoUpdated }: Pro
               onClick={handleRemove}
               disabled={uploading}
               className="text-destructive hover:text-destructive"
+              aria-label={t('common.delete')}
             >
-              {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              {uploading ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : <Trash2 className="w-4 h-4" aria-hidden />}
             </Button>
           )}
         </div>

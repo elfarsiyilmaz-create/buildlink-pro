@@ -121,7 +121,7 @@ const AvailabilityCalendar = () => {
             {dayParts.map(({ key, icon: Icon }) => (
               <tr key={key}>
                 <td className="pr-1 py-1">
-                  <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+                  <Icon className="w-3.5 h-3.5 text-foreground/70" aria-hidden />
                 </td>
                 {weekDays.map(d => {
                   const dateKey = formatDateKey(d);
@@ -129,12 +129,15 @@ const AvailabilityCalendar = () => {
                   return (
                     <td key={dateKey} className="px-0.5 py-1">
                       <button
+                        type="button"
                         onClick={() => toggleSlot(d, key)}
                         className={`w-8 h-8 rounded-lg transition-all duration-200 ${
                           isAvail
                             ? 'bg-success text-success-foreground shadow-sm scale-105'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                            : 'bg-muted text-foreground/75 hover:bg-muted/80'
                         }`}
+                        aria-label={`${formatDayName(d)} ${formatDayNum(d)} ${dayParts.find(p => p.key === key)?.label ?? key}: ${isAvail ? t('home.available') : t('home.unavailable')}`}
+                        aria-pressed={isAvail}
                       >
                         {isAvail ? '✓' : ''}
                       </button>

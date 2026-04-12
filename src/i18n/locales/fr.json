@@ -16,7 +16,11 @@
     "noResults": "Aucun résultat",
     "error": "Une erreur est survenue",
     "success": "Réussi !",
-    "optional": "Optionnel"
+    "optional": "Optionnel",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "openAssistant": "Ouvrir l’assistant de chat",
+    "sendMessage": "Envoyer le message"
   },
   "splash": {
     "welcome": "Bienvenue chez Alhan Groep 💪"

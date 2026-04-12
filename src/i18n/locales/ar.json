@@ -16,7 +16,11 @@
     "noResults": "لا توجد نتائج",
     "error": "حدث خطأ ما",
     "success": "تم بنجاح!",
-    "optional": "اختياري"
+    "optional": "اختياري",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "openAssistant": "فتح مساعد الدردشة",
+    "sendMessage": "إرسال الرسالة"
   },
   "splash": {
     "welcome": "مرحباً بكم في Alhan Groep 💪"

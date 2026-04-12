@@ -86,10 +86,14 @@ const NotificationBell = () => {
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
         className="p-2 rounded-xl hover:bg-muted transition-colors relative"
+        aria-label={t('notifications.title')}
+        aria-expanded={open}
+        aria-haspopup="dialog"
       >
-        <Bell className="w-5 h-5 text-foreground" />
+        <Bell className="w-5 h-5 text-foreground" aria-hidden />
         {unreadCount > 0 && (
           <motion.span
             initial={{ scale: 0 }}
@@ -124,18 +128,22 @@ const NotificationBell = () => {
                 <div className="flex items-center gap-1">
                   {unreadCount > 0 && (
                     <button
+                      type="button"
                       onClick={markAllRead}
                       className="p-1.5 rounded-lg hover:bg-muted transition-colors"
                       title={t('notifications.markAllRead')}
+                      aria-label={t('notifications.markAllRead')}
                     >
-                      <CheckCheck className="w-4 h-4 text-muted-foreground" />
+                      <CheckCheck className="w-4 h-4 text-foreground/80" aria-hidden />
                     </button>
                   )}
                   <button
+                    type="button"
                     onClick={() => setOpen(false)}
                     className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                    aria-label={t('common.closeMenu')}
                   >
-                    <X className="w-4 h-4 text-muted-foreground" />
+                    <X className="w-4 h-4 text-foreground/80" aria-hidden />
                   </button>
                 </div>
               </div>
@@ -145,7 +153,7 @@ const NotificationBell = () => {
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center">
                     <Bell className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-40" />
-                    <p className="text-sm text-muted-foreground">{t('notifications.empty')}</p>
+                    <p className="text-sm text-foreground/80">{t('notifications.empty')}</p>
                   </div>
                 ) : (
                   notifications.map(n => (
@@ -169,17 +177,21 @@ const NotificationBell = () => {
                         <div className="flex flex-col gap-1">
                           {!n.read && (
                             <button
+                              type="button"
                               onClick={() => markAsRead(n.id)}
                               className="p-1 rounded hover:bg-muted transition-colors"
+                              aria-label={t('notifications.markRead')}
                             >
-                              <Check className="w-3.5 h-3.5 text-muted-foreground" />
+                              <Check className="w-3.5 h-3.5 text-foreground/80" aria-hidden />
                             </button>
                           )}
                           <button
+                            type="button"
                             onClick={() => deleteNotification(n.id)}
                             className="p-1 rounded hover:bg-destructive/10 transition-colors"
+                            aria-label={t('common.delete')}
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-muted-foreground" />
+                            <Trash2 className="w-3.5 h-3.5 text-foreground/80" aria-hidden />
                           </button>
                         </div>
                       </div>
@@ -191,6 +203,7 @@ const NotificationBell = () => {
               {/* View all link */}
               {notifications.length > 0 && (
                 <button
+                  type="button"
                   onClick={() => { setOpen(false); navigate('/notifications'); }}
                   className="w-full px-4 py-2.5 text-xs font-medium text-primary hover:bg-muted/50 transition-colors border-t border-border text-center"
                 >

@@ -101,17 +101,19 @@ const Notifications = () => {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => setFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+              filter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground/80'
             }`}
           >
             {t('notifications.all')} ({notifications.length})
           </button>
           <button
+            type="button"
             onClick={() => setFilter('unread')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'unread' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+              filter === 'unread' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground/80'
             }`}
           >
             {t('notifications.unread')} ({unreadCount})
@@ -139,8 +141,8 @@ const Notifications = () => {
         </div>
       ) : filtered.length === 0 ? (
         <div className="glass-card rounded-2xl p-10 text-center">
-          <Bell className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-30" />
-          <p className="text-muted-foreground text-sm">{t('notifications.empty')}</p>
+          <Bell className="w-12 h-12 text-foreground/50 mx-auto mb-3" aria-hidden />
+          <p className="text-foreground/80 text-sm">{t('notifications.empty')}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -157,22 +159,22 @@ const Notifications = () => {
                 <div className="flex gap-3">
                   <span className="text-xl mt-0.5">{typeIcon(n.type)}</span>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${!n.read ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
+                    <p className={`text-sm ${!n.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
                       {n.title}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">{n.message}</p>
-                    <p className="text-[10px] text-muted-foreground mt-2">
+                    <p className="text-xs text-foreground/75 mt-1">{n.message}</p>
+                    <p className="text-[10px] text-foreground/70 mt-2">
                       {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale })}
                     </p>
                   </div>
                   <div className="flex items-start gap-1">
                     {!n.read && (
-                      <button onClick={() => markAsRead(n.id)} className="p-1.5 rounded-lg hover:bg-muted transition-colors" title={t('notifications.markRead')}>
-                        <Check className="w-4 h-4 text-muted-foreground" />
+                      <button type="button" onClick={() => markAsRead(n.id)} className="p-1.5 rounded-lg hover:bg-muted transition-colors" title={t('notifications.markRead')} aria-label={t('notifications.markRead')}>
+                        <Check className="w-4 h-4 text-foreground/80" aria-hidden />
                       </button>
                     )}
-                    <button onClick={() => deleteNotification(n.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors" title={t('common.delete')}>
-                      <Trash2 className="w-4 h-4 text-muted-foreground" />
+                    <button type="button" onClick={() => deleteNotification(n.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors" title={t('common.delete')} aria-label={t('common.delete')}>
+                      <Trash2 className="w-4 h-4 text-foreground/80" aria-hidden />
                     </button>
                   </div>
                 </div>

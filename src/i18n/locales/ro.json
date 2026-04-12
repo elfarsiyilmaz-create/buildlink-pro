@@ -16,7 +16,11 @@
     "noResults": "Niciun rezultat",
     "error": "Ceva nu a mers bine",
     "success": "Succes!",
-    "optional": "Opțional"
+    "optional": "Opțional",
+    "openMenu": "Deschide meniul",
+    "closeMenu": "Închide meniul",
+    "openAssistant": "Deschide chatul asistentului",
+    "sendMessage": "Trimite mesajul"
   },
   "splash": {
     "welcome": "Bun venit la Alhan Groep 💪"

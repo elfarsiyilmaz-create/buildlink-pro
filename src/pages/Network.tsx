@@ -179,13 +179,15 @@ const Network = () => {
             {referralCode}
           </div>
           <button
+            type="button"
             onClick={copyCode}
             className="p-3 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            aria-label={t('network.copy')}
           >
-            <Copy className="w-5 h-5" />
+            <Copy className="w-5 h-5" aria-hidden />
           </button>
         </div>
-        <p className="text-xs text-muted-foreground text-center break-all">
+        <p className="text-xs text-foreground/80 text-center break-all">
           🔗 {referralLink}
         </p>
       </motion.div>
@@ -193,6 +195,7 @@ const Network = () => {
       {/* Share Buttons */}
       <motion.div {...fadeUp} transition={{ delay: 0.3 }} className="grid grid-cols-2 gap-3">
         <button
+          type="button"
           onClick={shareWhatsApp}
           className="flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-colors"
           style={{ backgroundColor: '#25D366', color: 'white' }}
@@ -200,22 +203,25 @@ const Network = () => {
           📱 WhatsApp
         </button>
         <button
+          type="button"
           onClick={shareEmail}
           className="flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
         >
-          <Mail className="w-4 h-4" /> Email
+          <Mail className="w-4 h-4" aria-hidden /> Email
         </button>
         <button
+          type="button"
           onClick={copyLink}
           className="flex items-center justify-center gap-2 bg-muted text-foreground py-3 rounded-xl font-semibold text-sm hover:bg-muted/80 transition-colors"
         >
-          <Link2 className="w-4 h-4" /> {t('network.copy_link')}
+          <Link2 className="w-4 h-4" aria-hidden /> {t('network.copy_link')}
         </button>
         <button
+          type="button"
           onClick={shareNative}
           className="flex items-center justify-center gap-2 bg-muted text-foreground py-3 rounded-xl font-semibold text-sm hover:bg-muted/80 transition-colors"
         >
-          <Share2 className="w-4 h-4" /> {t('network.share_more')}
+          <Share2 className="w-4 h-4" aria-hidden /> {t('network.share_more')}
         </button>
       </motion.div>
 

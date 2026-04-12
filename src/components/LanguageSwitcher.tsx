@@ -20,6 +20,7 @@ const LanguageSwitcher = ({ compact = false }: LanguageSwitcherProps) => {
         {languages.map(lang => (
           <button
             key={lang.code}
+            type="button"
             onClick={() => changeLanguage(lang.code)}
             className={`text-2xl p-1.5 rounded-lg transition-all ${
               i18n.language === lang.code
@@ -27,8 +28,10 @@ const LanguageSwitcher = ({ compact = false }: LanguageSwitcherProps) => {
                 : 'hover:bg-muted'
             }`}
             title={lang.name}
+            aria-label={lang.name}
+            aria-pressed={(i18n.language || 'nl').replace('_', '-').split('-')[0] === lang.code}
           >
-            {lang.flag}
+            <span aria-hidden>{lang.flag}</span>
           </button>
         ))}
       </div>

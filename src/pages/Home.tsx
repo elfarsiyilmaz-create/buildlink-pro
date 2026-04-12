@@ -117,22 +117,25 @@ const Home = () => {
         <div className="glass-card rounded-2xl p-4">
           <Cloud className="w-5 h-5 text-primary mb-2" />
           <p className="text-sm font-semibold text-foreground">{weather?.description || '...'}</p>
-          <p className="text-xs text-muted-foreground mt-1">Weer</p>
+          <p className="text-xs text-foreground/75 mt-1">Weer</p>
         </div>
         <div className="glass-card rounded-2xl p-4">
           <Thermometer className="w-5 h-5 text-primary mb-2" />
           <p className="text-2xl font-bold text-foreground">{weather?.temp ?? '--'}°C</p>
-          <p className="text-xs text-muted-foreground mt-1">Temperatuur</p>
+          <p className="text-xs text-foreground/75 mt-1">Temperatuur</p>
         </div>
       </motion.div>
 
       {/* Availability Toggle */}
       <motion.div {...fadeUp} transition={{ delay: 0.3 }}>
         <button
+          type="button"
           onClick={() => setAvailable(!available)}
           className={`w-full rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ${
             available ? 'bg-success text-success-foreground pulse-green' : 'bg-destructive text-destructive-foreground'
           }`}
+          aria-label={available ? t('home.available') : t('home.unavailable')}
+          aria-pressed={available}
         >
           <span className="font-bold text-lg">{available ? t('home.available') : t('home.unavailable')}</span>
           <div className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${available ? 'bg-white/30' : 'bg-white/20'}`}>

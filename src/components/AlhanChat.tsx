@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Bot } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,6 +91,7 @@ async function streamChat({
 }
 
 const AlhanChat = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
     { role: 'assistant', content: 'Hoi! 👋 Ik ben Alhan, je AI profiel-coach. Vraag me alles over je profiel, opdrachten, of hoe je meer punten kunt verdienen!' },
@@ -180,14 +182,16 @@ const AlhanChat = () => {
       <AnimatePresence>
         {!open && (
           <motion.button
+            type="button"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setOpen(true)}
             className="fixed bottom-6 right-4 z-50 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:shadow-2xl transition-shadow"
+            aria-label={t('common.openAssistant')}
           >
-            <Bot className="w-6 h-6" />
+            <Bot className="w-6 h-6" aria-hidden />
           </motion.button>
         )}
       </AnimatePresence>
@@ -207,10 +211,15 @@ const AlhanChat = () => {
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-foreground text-sm">Alhan AI</p>
-                  <p className="text-xs text-muted-foreground">Jouw profiel-coach</p>
+                  <p className="text-xs text-foreground/80">Jouw profiel-coach</p>
                 </div>
-                <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                  <X className="w-4 h-4 text-muted-foreground" />
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  aria-label={t('common.closeMenu')}
+                >
+                  <X className="w-4 h-4 text-foreground/80" aria-hidden />
                 </button>
               </div>
 
@@ -253,14 +262,17 @@ const AlhanChat = () => {
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && send()}
                     placeholder="Stel een vraag..."
-                    className="flex-1 bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                    aria-label={t('common.sendMessage')}
+                    className="flex-1 bg-muted rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/55 outline-none focus:ring-2 focus:ring-primary/30"
                   />
                   <button
+                    type="button"
                     onClick={send}
                     disabled={!input.trim() || loading}
                     className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 transition-opacity"
+                    aria-label={t('common.sendMessage')}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4" aria-hidden />
                   </button>
                 </div>
               </div>

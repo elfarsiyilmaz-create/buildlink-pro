@@ -57,18 +57,22 @@ const Layout = () => {
       <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
           <button
+            type="button"
             onClick={() => setSidebarOpen(true)}
             className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors"
+            aria-label={t('common.openMenu')}
+            aria-expanded={sidebarOpen}
+            aria-controls="app-sidebar"
           >
-            <Menu className="w-5 h-5 text-foreground" />
+            <Menu className="w-5 h-5 text-foreground" aria-hidden />
           </button>
           <Logo size="sm" />
           <div className="flex items-center gap-1">
             <NotificationBell />
             <Avatar className="w-9 h-9">
               {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
-              <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-                {initials || <User className="w-4 h-4" />}
+              <AvatarFallback className="text-xs bg-muted text-foreground/80">
+                {initials || <User className="w-4 h-4" aria-hidden />}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -79,14 +83,17 @@ const Layout = () => {
       <AnimatePresence>
         {sidebarOpen && (
           <>
-            <motion.div
+            <motion.button
+              type="button"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 z-50 m-0 border-0 bg-black/50 p-0 backdrop-blur-sm cursor-default"
+              aria-label={t('common.closeMenu')}
               onClick={() => setSidebarOpen(false)}
             />
             <motion.aside
+              id="app-sidebar"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -97,10 +104,12 @@ const Layout = () => {
               <div className="p-5 border-b border-border flex items-center justify-between">
                 <Logo size="sm" />
                 <button
+                  type="button"
                   onClick={() => setSidebarOpen(false)}
                   className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+                  aria-label={t('common.closeMenu')}
                 >
-                  <X className="w-4 h-4 text-muted-foreground" />
+                  <X className="w-4 h-4 text-foreground/80" aria-hidden />
                 </button>
               </div>
 
@@ -109,13 +118,13 @@ const Layout = () => {
                 <div className="flex items-center gap-3">
                   <Avatar className="w-11 h-11">
                     {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
-                    <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                      {initials || <User className="w-5 h-5" />}
+                    <AvatarFallback className="bg-muted text-foreground/80 font-semibold">
+                      {initials || <User className="w-5 h-5" aria-hidden />}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-semibold text-foreground text-sm">{displayName}</p>
-                    <p className="text-xs text-muted-foreground">{profile?.specialization || 'ZZP\'er'}</p>
+                    <p className="text-xs text-foreground/75">{profile?.specialization || 'ZZP\'er'}</p>
                   </div>
                 </div>
               </div>
@@ -127,14 +136,16 @@ const Layout = () => {
                   return (
                     <button
                       key={item.path}
+                      type="button"
                       onClick={() => handleNav(item.path)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                         isActive
                           ? 'bg-primary text-primary-foreground shadow-md'
                           : 'text-foreground hover:bg-muted'
                       }`}
+                      aria-current={isActive ? 'page' : undefined}
                     >
-                      <item.icon className="w-5 h-5" />
+                      <item.icon className="w-5 h-5" aria-hidden />
                       {item.label}
                     </button>
                   );
@@ -144,6 +155,7 @@ const Layout = () => {
               {/* Logout */}
               <div className="p-3 border-t border-border">
                 <button
+                  type="button"
                   onClick={async () => {
                     await supabase.auth.signOut();
                     navigate('/login', { replace: true });
@@ -151,7 +163,7 @@ const Layout = () => {
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-5 h-5" aria-hidden />
                   {t('auth.logout')}
                 </button>
               </div>
@@ -160,8 +172,7 @@ const Layout = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <main className="pt-14 pb-6 px-4 max-w-lg mx-auto">
+      <main id="main-content" className="pt-14 pb-6 px-4 max-w-lg mx-auto">
         <Outlet />
       </main>
     </div>

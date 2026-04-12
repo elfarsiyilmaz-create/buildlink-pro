@@ -182,8 +182,10 @@ const AdminZZPers = () => {
           {filtered.map(profile => (
             <button
               key={profile.id}
+              type="button"
               onClick={() => setSelectedProfile(profile)}
               className="w-full glass-card rounded-xl p-4 flex items-center gap-3 text-left hover:bg-muted/50 transition-colors"
+              aria-label={getFullName(profile)}
             >
               {/* Avatar */}
               {profile.avatar_url ? (
@@ -197,7 +199,7 @@ const AdminZZPers = () => {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground truncate">{getFullName(profile)}</p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-xs text-foreground/75 truncate">
                   {profile.specialization || '—'} • {format(new Date(profile.created_at), 'dd-MM-yyyy')}
                 </p>
               </div>

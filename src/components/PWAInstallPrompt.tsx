@@ -85,24 +85,26 @@ const PWAInstallPrompt = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-foreground text-sm">{t('pwa.title')}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{t('pwa.description')}</p>
+                  <p className="text-xs text-foreground/80 mt-0.5">{t('pwa.description')}</p>
                 </div>
-                <button onClick={handleDismiss} className="p-1 hover:bg-muted rounded-lg transition-colors">
-                  <X className="w-4 h-4 text-muted-foreground" />
+                <button type="button" onClick={handleDismiss} className="p-1 hover:bg-muted rounded-lg transition-colors" aria-label={t('common.closeMenu')}>
+                  <X className="w-4 h-4 text-foreground/80" aria-hidden />
                 </button>
               </div>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={handleDismiss}
                   className="flex-1 py-2.5 rounded-xl border border-border text-foreground text-sm font-medium hover:bg-muted transition-colors"
                 >
                   {t('pwa.notNow')}
                 </button>
                 <button
+                  type="button"
                   onClick={handleInstall}
                   className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4" aria-hidden />
                   {t('pwa.install')}
                 </button>
               </div>
@@ -111,24 +113,25 @@ const PWAInstallPrompt = () => {
             <div className="p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-foreground text-sm">{t('pwa.howToInstall')}</h3>
-                <button onClick={() => setShowInstructions(false)} className="p-1 hover:bg-muted rounded-lg">
-                  <X className="w-4 h-4 text-muted-foreground" />
+                <button type="button" onClick={() => setShowInstructions(false)} className="p-1 hover:bg-muted rounded-lg" aria-label={t('common.closeMenu')}>
+                  <X className="w-4 h-4 text-foreground/80" aria-hidden />
                 </button>
               </div>
               {isIOS() ? (
-                <ol className="text-sm text-muted-foreground space-y-2">
+                <ol className="text-sm text-foreground/80 space-y-2">
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">1.</span> {t('pwa.iosStep1')}</li>
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">2.</span> {t('pwa.iosStep2')}</li>
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">3.</span> {t('pwa.iosStep3')}</li>
                 </ol>
               ) : (
-                <ol className="text-sm text-muted-foreground space-y-2">
+                <ol className="text-sm text-foreground/80 space-y-2">
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">1.</span> {t('pwa.androidStep1')}</li>
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">2.</span> {t('pwa.androidStep2')}</li>
                   <li className="flex items-start gap-2"><span className="font-bold text-foreground">3.</span> {t('pwa.androidStep3')}</li>
                 </ol>
               )}
               <button
+                type="button"
                 onClick={handleDismiss}
                 className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
               >

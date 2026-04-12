@@ -78,6 +78,7 @@ const Register = () => {
   if (success) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <main id="main-content" className="w-full max-w-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -85,21 +86,22 @@ const Register = () => {
         >
           <div className="flex justify-center"><Logo size="lg" /></div>
           <div className="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto">
-            <Mail className="w-10 h-10 text-success" />
+            <Mail className="w-10 h-10 text-success" aria-hidden />
           </div>
           <h2 className="text-xl font-bold text-foreground">{t('auth.verifyEmailTitle')}</h2>
-          <p className="text-sm text-muted-foreground">{t('auth.verifyEmailMessage')}</p>
-          <Link to="/login">
+          <p className="text-sm text-foreground/80">{t('auth.verifyEmailMessage')}</p>
+          <Link to="/login" aria-label={t('auth.backToLogin')}>
             <Button variant="outline" className="w-full mt-4">{t('auth.backToLogin')}</Button>
           </Link>
         </motion.div>
+        </main>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-10">
+      <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -109,7 +111,7 @@ const Register = () => {
             <div className="flex justify-center mb-4">
               <Logo size="lg" />
             </div>
-            <p className="text-muted-foreground text-sm">{t('auth.registerSubtitle')}</p>
+            <p className="text-sm text-foreground/80">{t('auth.registerSubtitle')}</p>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-4">
@@ -120,6 +122,7 @@ const Register = () => {
                 onChange={e => setFullName(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="Jan de Vries"
+                aria-label={t('auth.fullName')}
                 required
               />
             </div>
@@ -131,6 +134,7 @@ const Register = () => {
                 onChange={e => setEmail(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="naam@email.nl"
+                aria-label={t('auth.email')}
                 required
               />
             </div>
@@ -142,6 +146,7 @@ const Register = () => {
                 onChange={e => setPhone(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="+31 6 1234 5678"
+                aria-label={t('auth.phone')}
               />
             </div>
             <div>
@@ -152,6 +157,7 @@ const Register = () => {
                 onChange={e => setPassword(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="••••••••"
+                aria-label={t('auth.password')}
                 required
                 minLength={6}
               />
@@ -164,6 +170,7 @@ const Register = () => {
                 onChange={e => setConfirmPassword(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="••••••••"
+                aria-label={t('auth.confirmPassword')}
                 required
               />
             </div>
@@ -174,6 +181,7 @@ const Register = () => {
                 onChange={e => setReferralCode(e.target.value)}
                 className="rounded-xl h-12"
                 placeholder="ALHAN-XXXX"
+                aria-label={t('auth.referralCode')}
               />
             </div>
 
@@ -182,13 +190,13 @@ const Register = () => {
               disabled={loading}
               className="w-full h-12 rounded-xl text-base font-semibold gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
             >
-              {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden />}
               {t('auth.register')}
             </Button>
 
-            <p className="text-center text-sm text-muted-foreground">
+            <p className="text-center text-sm text-foreground/80">
               {t('auth.hasAccount')}{' '}
-              <Link to="/login" className="text-primary font-semibold hover:underline">
+              <Link to="/login" className="text-primary font-semibold underline-offset-2 hover:underline">
                 {t('auth.login')}
               </Link>
             </p>
@@ -198,7 +206,7 @@ const Register = () => {
             <LanguageSwitcher compact />
           </div>
         </motion.div>
-      </div>
+      </main>
     </div>
   );
 };

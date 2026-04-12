@@ -1,3 +1,5 @@
+import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -7,26 +9,33 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout";
 import AuthGuard from "@/components/AuthGuard";
 import AdminGuard from "@/components/AdminGuard";
-import Home from "@/pages/Home";
-import Profile from "@/pages/Profile";
-import Work from "@/pages/Work";
-import Network from "@/pages/Network";
-import Notifications from "@/pages/Notifications";
-import Settings from "@/pages/Settings";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import ForgotPassword from "@/pages/ForgotPassword";
-import ResetPassword from "@/pages/ResetPassword";
-import AdminDashboard from "@/pages/AdminDashboard";
-import Onboarding from "@/pages/Onboarding";
-import Leaderboard from "@/pages/Leaderboard";
-import TimeRegistration from "@/pages/TimeRegistration";
-import WheelOfFortunePage from "@/pages/WheelOfFortunePage";
-import NotFound from "@/pages/NotFound";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import AlhanChat from "@/components/AlhanChat";
 
+const Home = lazy(() => import("@/pages/Home"));
+const Profile = lazy(() => import("@/pages/Profile"));
+const Work = lazy(() => import("@/pages/Work"));
+const Network = lazy(() => import("@/pages/Network"));
+const Notifications = lazy(() => import("@/pages/Notifications"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
+const TimeRegistration = lazy(() => import("@/pages/TimeRegistration"));
+const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
 const queryClient = new QueryClient();
+
+const routeFallback = (
+  <div className="flex items-center justify-center min-h-screen">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -35,34 +44,36 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/onboarding" element={
-              <AuthGuard>
-                <Onboarding />
-              </AuthGuard>
-            } />
-            <Route element={
-              <AuthGuard>
-                <Layout />
-              </AuthGuard>
-            }>
-              <Route path="/" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/work" element={<Work />} />
-              <Route path="/network" element={<Network />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/hours" element={<TimeRegistration />} />
-              <Route path="/wheel" element={<WheelOfFortunePage />} />
-              <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={routeFallback}>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/onboarding" element={
+                <AuthGuard>
+                  <Onboarding />
+                </AuthGuard>
+              } />
+              <Route element={
+                <AuthGuard>
+                  <Layout />
+                </AuthGuard>
+              }>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/work" element={<Work />} />
+                <Route path="/network" element={<Network />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/hours" element={<TimeRegistration />} />
+                <Route path="/wheel" element={<WheelOfFortunePage />} />
+                <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
           <PWAInstallPrompt />
           <AlhanChat />
         </BrowserRouter>

@@ -35,14 +35,17 @@ const Settings = () => {
       {/* Dark Mode */}
       <div className="glass-card rounded-2xl p-5">
         <button
+          type="button"
           onClick={toggleTheme}
           className="w-full flex items-center justify-between"
+          aria-label={t('settings.darkMode')}
+          aria-pressed={theme === 'dark'}
         >
           <div className="flex items-center gap-3">
             {theme === 'dark' ? (
-              <Moon className="w-5 h-5 text-primary" />
+              <Moon className="w-5 h-5 text-primary" aria-hidden />
             ) : (
-              <Sun className="w-5 h-5 text-primary" />
+              <Sun className="w-5 h-5 text-primary" aria-hidden />
             )}
             <span className="font-medium text-foreground">{t('settings.darkMode')}</span>
           </div>
@@ -58,33 +61,35 @@ const Settings = () => {
 
       {/* Actions */}
       <div className="glass-card rounded-2xl divide-y divide-border">
-        <button className="w-full flex items-center gap-3 px-5 py-4 text-foreground hover:bg-muted/50 transition-colors">
-          <Lock className="w-5 h-5 text-muted-foreground" />
+        <button type="button" className="w-full flex items-center gap-3 px-5 py-4 text-foreground hover:bg-muted/50 transition-colors" aria-label={t('settings.changePassword')}>
+          <Lock className="w-5 h-5 text-foreground/75" aria-hidden />
           <span className="font-medium text-sm">{t('settings.changePassword')}</span>
         </button>
-        <button className="w-full flex items-center gap-3 px-5 py-4 text-destructive hover:bg-destructive/5 transition-colors">
-          <Trash2 className="w-5 h-5" />
+        <button type="button" className="w-full flex items-center gap-3 px-5 py-4 text-destructive hover:bg-destructive/5 transition-colors" aria-label={t('settings.deleteAccount')}>
+          <Trash2 className="w-5 h-5" aria-hidden />
           <span className="font-medium text-sm">{t('settings.deleteAccount')}</span>
         </button>
         <button
+          type="button"
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-5 py-4 text-destructive hover:bg-destructive/5 transition-colors"
+          aria-label={t('auth.logout')}
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-5 h-5" aria-hidden />
           <span className="font-medium text-sm">{t('auth.logout')}</span>
         </button>
       </div>
 
       {/* App Info */}
       <div className="glass-card rounded-2xl p-5 space-y-2">
-        <p className="text-xs text-muted-foreground">{t('settings.version')}: 1.0.0</p>
-        <p className="text-xs text-muted-foreground">{t('settings.contact')}:</p>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Mail className="w-3.5 h-3.5" />
+        <p className="text-xs text-foreground/80">{t('settings.version')}: 1.0.0</p>
+        <p className="text-xs text-foreground/80">{t('settings.contact')}:</p>
+        <div className="flex items-center gap-2 text-xs text-foreground/80">
+          <Mail className="w-3.5 h-3.5" aria-hidden />
           info@alhangroep.nl
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Phone className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-2 text-xs text-foreground/80">
+          <Phone className="w-3.5 h-3.5" aria-hidden />
           +31 6 21 95 00 66
         </div>
       </div>

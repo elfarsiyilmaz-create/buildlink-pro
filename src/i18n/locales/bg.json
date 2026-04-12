@@ -16,7 +16,11 @@
     "noResults": "Няма резултати",
     "error": "Нещо се обърка",
     "success": "Успех!",
-    "optional": "По избор"
+    "optional": "По избор",
+    "openMenu": "Отвори меню",
+    "closeMenu": "Затвори меню",
+    "openAssistant": "Отвори чат асистент",
+    "sendMessage": "Изпрати съобщение"
   },
   "splash": {
     "welcome": "Добре дошли в Alhan Groep 💪"

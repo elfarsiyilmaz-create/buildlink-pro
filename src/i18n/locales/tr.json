@@ -16,7 +16,11 @@
     "noResults": "Sonuç yok",
     "error": "Bir hata oluştu",
     "success": "Başarılı!",
-    "optional": "İsteğe bağlı"
+    "optional": "İsteğe bağlı",
+    "openMenu": "Menüyü aç",
+    "closeMenu": "Menüyü kapat",
+    "openAssistant": "Asistan sohbetini aç",
+    "sendMessage": "Mesaj gönder"
   },
   "splash": {
     "welcome": "Alhan Groep'e hoş geldiniz 💪"

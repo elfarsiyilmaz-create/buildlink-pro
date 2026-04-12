@@ -16,7 +16,11 @@
     "noResults": "Geen resultaten",
     "error": "Er is iets misgegaan",
     "success": "Gelukt!",
-    "optional": "Optioneel"
+    "optional": "Optioneel",
+    "openMenu": "Menu openen",
+    "closeMenu": "Menu sluiten",
+    "openAssistant": "Chat-assistent openen",
+    "sendMessage": "Bericht versturen"
   },
   "splash": { "welcome": "Welkom bij Alhan Groep 💪" },
   "auth": {
