@@ -7,12 +7,11 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https'
   },
-  ios: {
-    contentInset: 'always',
-    scrollEnabled: true,
-    backgroundColor: '#FFFFFF'
-  },
+  // Custom URL scheme for OAuth deep links (App.addListener('appUrlOpen', …))
   plugins: {
+    App: {
+      urlScheme: 'buildlinkpro'
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
@@ -23,7 +22,12 @@ const config: CapacitorConfig = {
       iosSpinnerStyle: 'small',
       spinnerColor: '#FFFFFF'
     }
-  }
+  },
+  ios: {
+    contentInset: 'always',
+    scrollEnabled: true,
+    backgroundColor: '#FFFFFF'
+  },
 };
 
 export default config;

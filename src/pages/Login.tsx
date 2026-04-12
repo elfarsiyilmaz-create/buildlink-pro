@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import { SignInWithApple } from '@capacitor/sign-in-with-apple';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Logo from '@/components/Logo';
@@ -54,48 +54,27 @@ const Login = () => {
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
     setSocialLoading(provider);
     try {
-      if (
-        provider === 'apple' &&
-        Capacitor.isNativePlatform() &&
-        Capacitor.getPlatform() === 'ios'
-      ) {
-        const clientId = 'nl.alhangroep.app';
-        const redirectURI = `${import.meta.env.VITE_SUPABASE_URL}/auth/v1/callback`;
+      const nativeRedirect = 'buildlinkpro://login-callback';
+      const redirectTo = Capacitor.isNativePlatform()
+        ? nativeRedirect
+        : window.location.origin;
 
-        const appleResult = await SignInWithApple.authorize({
-          clientId,
-          redirectURI,
-          scopes: 'email name',
-        });
-
-        const identityToken = appleResult.response.identityToken;
-        if (!identityToken) {
-          toast.error(t('common.error'));
-          return;
-        }
-
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: 'apple',
-          token: identityToken,
-        });
-
-        if (error) {
-          toast.error(error.message || t('common.error'));
-        } else {
-          navigate('/', { replace: true });
-        }
-        return;
-      }
-
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin,
+          redirectTo,
+          skipBrowserRedirect: Capacitor.isNativePlatform(),
         },
       });
 
       if (error) {
         toast.error(error.message || t('common.error'));
+        return;
+      }
+
+      if (Capacitor.isNativePlatform() && data?.url) {
+        await Browser.open({ url: data.url });
+        return;
       }
     } catch (err: any) {
       toast.error(err.message || t('common.error'));

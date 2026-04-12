@@ -1,7 +1,12 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 import { Loader2 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,6 +42,37 @@ const routeFallback = (
   </div>
 );
 
+const NativeOAuthDeepLinkHandler = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const registration = CapacitorApp.addListener("appUrlOpen", async ({ url }) => {
+      if (!url.includes("login-callback")) return;
+      try {
+        const parsed = new URL(url);
+        const { error } = await supabase.auth.exchangeCodeForSession(parsed.search);
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+        await Browser.close();
+        navigate("/", { replace: true });
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        toast.error(message);
+      }
+    });
+
+    return () => {
+      void registration.then(h => h.remove());
+    };
+  }, [navigate]);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
@@ -44,6 +80,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <NativeOAuthDeepLinkHandler />
           <Suspense fallback={routeFallback}>
             <Routes>
               <Route path="/login" element={<Login />} />
