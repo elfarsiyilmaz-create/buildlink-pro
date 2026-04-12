@@ -70,7 +70,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pt-safe">
       <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}

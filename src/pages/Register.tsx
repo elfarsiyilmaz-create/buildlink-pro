@@ -77,7 +77,7 @@ const Register = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 pt-safe">
         <main id="main-content" className="w-full max-w-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -100,7 +100,7 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pt-safe">
       <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -114,7 +114,7 @@ const Register = () => {
             <p className="text-sm text-foreground/80">{t('auth.registerSubtitle')}</p>
           </div>
 
-          <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4 pb-24">
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">{t('auth.fullName')}</label>
               <Input
