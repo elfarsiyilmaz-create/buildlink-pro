@@ -196,8 +196,8 @@ const TimeRegistration = () => {
     if (!user) return;
 
     const { data: profile } = await supabase.from('profiles')
-      .select('first_name, last_name').eq('user_id', user.id).single();
-    const userName = profile ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() : 'ZZP\'er';
+      .select('full_name').eq('user_id', user.id).single();
+    const userName = profile?.full_name?.trim() || 'ZZP\'er';
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();

@@ -8,10 +8,11 @@ import Logo from './Logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
+import { initialsFromFullName } from '@/lib/utils';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [profile, setProfile] = useState<{ first_name: string | null; last_name: string | null; avatar_url: string | null; specialization: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null; specialization: string | null } | null>(null);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,7 +24,7 @@ const Layout = () => {
       if (!user) return;
       const { data } = await supabase
         .from('profiles')
-        .select('first_name, last_name, avatar_url, specialization')
+        .select('full_name, avatar_url, specialization')
         .eq('user_id', user.id)
         .single();
       if (data) setProfile(data);
@@ -31,8 +32,8 @@ const Layout = () => {
     loadProfile();
   }, [location.pathname]); // refresh when navigating back
 
-  const initials = `${(profile?.first_name || '')[0] || ''}${(profile?.last_name || '')[0] || ''}`.toUpperCase();
-  const displayName = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || "ZZP'er";
+  const initials = initialsFromFullName(profile?.full_name);
+  const displayName = profile?.full_name?.trim() || "ZZP'er";
 
   const navItems = [
     { icon: Home, label: t('nav.home'), path: '/' },

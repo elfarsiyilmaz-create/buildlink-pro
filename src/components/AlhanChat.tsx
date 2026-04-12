@@ -120,7 +120,7 @@ const AlhanChat = () => {
       { data: certs },
       { data: completions },
     ] = await Promise.all([
-      supabase.from('profiles').select('first_name, last_name, specialization, city, hourly_rate, bio, transport_type, has_own_equipment, status, avatar_url').eq('user_id', user.id).single(),
+      supabase.from('profiles').select('full_name, specialization, city, hourly_rate, bio, transport_type, has_own_equipment, status, avatar_url').eq('user_id', user.id).single(),
       supabase.from('leaderboard_scores').select('total_points, current_streak, level, challenges_completed').eq('user_id', user.id).single(),
       supabase.from('user_achievements').select('achievement_id, achievements(name)').eq('user_id', user.id),
       supabase.from('certificates').select('name, expiry_date').eq('user_id', user.id),

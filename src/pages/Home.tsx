@@ -32,14 +32,14 @@ const Home = () => {
         if (!user) return;
 
         const [profileRes, certsRes, referralsRes] = await Promise.all([
-          supabase.from('profiles').select('first_name, last_name, profile_completeness, city').eq('user_id', user.id).single(),
+          supabase.from('profiles').select('full_name, profile_completeness, city').eq('user_id', user.id).single(),
           supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('referral_invites').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
         ]);
 
         if (profileRes.data) {
           const p = profileRes.data;
-          const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || "ZZP'er";
+          const name = p.full_name?.trim() || "ZZP'er";
           setUserName(name);
           setProfilePercentage(p.profile_completeness || 0);
           setStats({

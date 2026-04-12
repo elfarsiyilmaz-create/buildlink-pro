@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Trophy, Medal, Flame, Crown, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { initialsFromFullName } from '@/lib/utils';
 
 interface LeaderboardEntry {
   user_id: string;
@@ -11,7 +12,7 @@ interface LeaderboardEntry {
   current_streak: number;
   level: number;
   challenges_completed: number;
-  profile?: { first_name: string | null; last_name: string | null; avatar_url: string | null };
+  profile?: { full_name: string | null; avatar_url: string | null };
 }
 
 const Leaderboard = () => {
@@ -40,7 +41,7 @@ const Leaderboard = () => {
     const userIds = scores.map(s => s.user_id);
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('user_id, first_name, last_name, avatar_url')
+      .select('user_id, full_name, avatar_url')
       .in('user_id', userIds);
 
     const profileMap = new Map(profiles?.map(p => [p.user_id, p]));
@@ -92,8 +93,8 @@ const Leaderboard = () => {
         <div className="space-y-2">
           {entries.map((entry, index) => {
             const isMe = entry.user_id === currentUserId;
-            const initials = `${(entry.profile?.first_name || '')[0] || ''}${(entry.profile?.last_name || '')[0] || ''}`.toUpperCase();
-            const name = [entry.profile?.first_name, entry.profile?.last_name].filter(Boolean).join(' ') || 'ZZP\'er';
+            const initials = initialsFromFullName(entry.profile?.full_name);
+            const name = entry.profile?.full_name?.trim() || 'ZZP\'er';
 
             return (
               <motion.div

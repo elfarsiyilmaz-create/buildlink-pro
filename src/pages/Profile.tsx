@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+import { cn, initialsFromFullName } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import CertificateSection from '@/components/CertificateSection';
 import ProfilePhotoUpload from '@/components/profile/ProfilePhotoUpload';
@@ -25,8 +25,7 @@ import ProfileWizard from '@/components/profile/ProfileWizard';
 import { useProfileCompleteness } from '@/hooks/useProfileCompleteness';
 
 const profileSchema = z.object({
-  first_name: z.string().min(1, 'Verplicht').max(100),
-  last_name: z.string().min(1, 'Verplicht').max(100),
+  full_name: z.string().min(1, 'Verplicht').max(200),
   phone: z.string().min(1, 'Verplicht').regex(/^[\d\s+()-]{7,20}$/, 'Ongeldig telefoonnummer'),
   date_of_birth: z.date().optional().nullable(),
   kvk_number: z.string().optional().refine(v => !v || /^\d{8}$/.test(v), 'KVK moet 8 cijfers zijn'),
@@ -163,15 +162,14 @@ const Profile = () => {
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      first_name: '', last_name: '', phone: '', kvk_number: '', address: '', city: '',
+      full_name: '', phone: '', kvk_number: '', address: '', city: '',
       postal_code: '', specialization: '', hourly_rate: null, preferred_language: 'nl',
       bio: '', transport_type: '', has_own_equipment: false, equipment_description: '',
     },
   });
 
-  const firstName = watch('first_name');
-  const lastName = watch('last_name');
-  const initials = `${(firstName || '')[0] || ''}${(lastName || '')[0] || ''}`.toUpperCase();
+  const fullNameWatch = watch('full_name');
+  const initials = initialsFromFullName(fullNameWatch);
 
   const loadProfile = async () => {
     try {
@@ -191,8 +189,7 @@ const Profile = () => {
       if (data) {
         setProfileData(data);
         reset({
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
+          full_name: data.full_name || '',
           phone: data.phone || '',
           kvk_number: data.kvk_number || '',
           address: data.address || '',
@@ -242,8 +239,7 @@ const Profile = () => {
       if (!user) throw new Error('Not authenticated');
 
       const payload = {
-        first_name: values.first_name,
-        last_name: values.last_name,
+        full_name: values.full_name,
         phone: values.phone,
         date_of_birth: values.date_of_birth ? format(values.date_of_birth, 'yyyy-MM-dd') : null,
         kvk_number: values.kvk_number || null,
@@ -325,17 +321,10 @@ const Profile = () => {
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="first_name">{t('profile.firstName')}</Label>
-            <Input id="first_name" {...register('first_name')} className="bg-card" />
-            {errors.first_name && <p className="text-xs text-destructive">{errors.first_name.message}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="last_name">{t('profile.lastName')}</Label>
-            <Input id="last_name" {...register('last_name')} className="bg-card" />
-            {errors.last_name && <p className="text-xs text-destructive">{errors.last_name.message}</p>}
-          </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="full_name">{t('auth.fullName')}</Label>
+          <Input id="full_name" {...register('full_name')} className="bg-card" />
+          {errors.full_name && <p className="text-xs text-destructive">{errors.full_name.message}</p>}
         </div>
 
         <div className="space-y-1.5">

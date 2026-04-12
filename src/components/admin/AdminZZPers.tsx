@@ -9,13 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { cn, initialsFromFullName } from '@/lib/utils';
 
 interface ProfileRow {
   id: string;
   user_id: string;
-  first_name: string | null;
-  last_name: string | null;
+  full_name: string | null;
   phone: string | null;
   date_of_birth: string | null;
   kvk_number: string | null;
@@ -69,7 +68,7 @@ const AdminZZPers = () => {
 
   const filtered = useMemo(() => {
     return profiles.filter(p => {
-      const name = `${p.first_name || ''} ${p.last_name || ''}`.toLowerCase();
+      const name = (p.full_name || '').toLowerCase();
       const matchSearch = !search || name.includes(search.toLowerCase());
       const matchSpec = filterSpec === 'all' || p.specialization === filterSpec;
       const matchStatus = filterStatus === 'all' || p.status === filterStatus;
@@ -104,14 +103,10 @@ const AdminZZPers = () => {
     }
   };
 
-  const getInitials = (p: ProfileRow) => {
-    const f = p.first_name?.[0] || '';
-    const l = p.last_name?.[0] || '';
-    return (f + l).toUpperCase() || '?';
-  };
+  const getInitials = (p: ProfileRow) => initialsFromFullName(p.full_name);
 
   const getFullName = (p: ProfileRow) => {
-    const name = `${p.first_name || ''} ${p.last_name || ''}`.trim();
+    const name = (p.full_name || '').trim();
     return name || t('admin.unnamed');
   };
 
@@ -244,8 +239,7 @@ const AdminZZPers = () => {
                 <div className="grid grid-cols-1 gap-3">
                   {[
                     { label: t('profile.phone'), value: selectedProfile.phone },
-                    { label: t('profile.firstName'), value: selectedProfile.first_name },
-                    { label: t('profile.lastName'), value: selectedProfile.last_name },
+                    { label: t('auth.fullName'), value: selectedProfile.full_name },
                     { label: t('profile.kvk'), value: selectedProfile.kvk_number },
                     { label: 'Geboortedatum', value: selectedProfile.date_of_birth ? format(new Date(selectedProfile.date_of_birth), 'dd-MM-yyyy') : null },
                     { label: 'Adres', value: selectedProfile.address },

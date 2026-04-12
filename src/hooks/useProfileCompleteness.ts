@@ -15,8 +15,7 @@ interface CompletenessResult {
 }
 
 interface ProfileData {
-  first_name?: string | null;
-  last_name?: string | null;
+  full_name?: string | null;
   phone?: string | null;
   avatar_url?: string | null;
   date_of_birth?: string | null;
@@ -41,7 +40,7 @@ export function useProfileCompleteness(
     let earned = 0;
 
     // Full name (10)
-    if (profile.first_name && profile.last_name) {
+    if (profile.full_name?.trim()) {
       earned += 10;
     } else {
       missing.push({ key: 'name', labelKey: 'profile.missing_name', points: 10, wizardStep: 0 });

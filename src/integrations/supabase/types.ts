@@ -314,14 +314,12 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           equipment_description: string | null
-          first_name: string | null
           full_name: string | null
           has_own_equipment: boolean | null
           hourly_rate: number | null
           iban: string | null
           id: string
           kvk_number: string | null
-          last_name: string | null
           onboarding_completed: boolean | null
           phone: string | null
           postal_code: string | null
@@ -351,14 +349,12 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           equipment_description?: string | null
-          first_name?: string | null
           full_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
           iban?: string | null
           id?: string
           kvk_number?: string | null
-          last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null
@@ -388,14 +384,12 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           equipment_description?: string | null
-          first_name?: string | null
           full_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
           iban?: string | null
           id?: string
           kvk_number?: string | null
-          last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
           postal_code?: string | null

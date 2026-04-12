@@ -39,17 +39,12 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const [firstName, ...lastParts] = fullName.trim().split(' ');
-      const lastName = lastParts.join(' ');
-
       const { error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
           data: {
             full_name: fullName.trim(),
-            first_name: firstName,
-            last_name: lastName,
             phone: phone.trim(),
           },
         },
@@ -64,8 +59,6 @@ const Register = () => {
           .upsert({
             id: user.id,
             full_name: fullName.trim(),
-            first_name: firstName,
-            last_name: lastName || null,
             phone: phone.trim() || null,
             referral_code_used: referralCode.trim() || null,
           }, {

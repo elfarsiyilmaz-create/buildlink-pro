@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+import { cn, initialsFromFullName } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import ProfilePhotoUpload from './ProfilePhotoUpload';
@@ -55,8 +55,7 @@ const ProfileWizard = ({
   const [showConfetti, setShowConfetti] = useState(false);
 
   // Step 1: Personal
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [city, setCity] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
@@ -74,8 +73,7 @@ const ProfileWizard = ({
 
   useEffect(() => {
     if (open && profileData) {
-      setFirstName(profileData.first_name || '');
-      setLastName(profileData.last_name || '');
+      setFullName(profileData.full_name || '');
       setPhone(profileData.phone || '');
       setCity(profileData.city || '');
       setBio(profileData.bio || '');
@@ -93,15 +91,14 @@ const ProfileWizard = ({
       let payload: any = { wizard_step: step + 1 };
 
       if (step === 0) {
-        if (!firstName || !lastName) {
+        if (!fullName.trim()) {
           toast.error(t('auth.fillAllFields'));
           setSaving(false);
           return false;
         }
         payload = {
           ...payload,
-          first_name: firstName,
-          last_name: lastName,
+          full_name: fullName.trim(),
           phone: phone || null,
           city: city || null,
           date_of_birth: dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : null,
@@ -180,7 +177,7 @@ const ProfileWizard = ({
     if (step > 0) setStep(step - 1);
   };
 
-  const initials = `${(firstName || '')[0] || ''}${(lastName || '')[0] || ''}`.toUpperCase();
+  const initials = initialsFromFullName(fullName);
 
   const stepVariants = {
     enter: { x: 50, opacity: 0 },
@@ -194,15 +191,9 @@ const ProfileWizard = ({
         return (
           <motion.div key="step0" variants={stepVariants} initial="enter" animate="center" exit="exit" className="space-y-4">
             <h2 className="text-lg font-semibold">{t('profile.step_personal')}</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label>{t('profile.firstName')} *</Label>
-                <Input value={firstName} onChange={e => setFirstName(e.target.value)} className="bg-card" />
-              </div>
-              <div className="space-y-1.5">
-                <Label>{t('profile.lastName')} *</Label>
-                <Input value={lastName} onChange={e => setLastName(e.target.value)} className="bg-card" />
-              </div>
+            <div className="space-y-1.5">
+              <Label>{t('auth.fullName')} *</Label>
+              <Input value={fullName} onChange={e => setFullName(e.target.value)} className="bg-card" />
             </div>
             <div className="space-y-1.5">
               <Label>{t('profile.phone')}</Label>

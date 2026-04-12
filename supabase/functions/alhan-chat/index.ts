@@ -12,7 +12,7 @@ function buildProfileSummary(ctx: any): string {
   const p = ctx.profile;
 
   if (p) {
-    const name = [p.first_name, p.last_name].filter(Boolean).join(" ");
+    const name = (p.full_name || "").trim();
     if (name) parts.push(`Naam: ${name}`);
     if (p.specialization) parts.push(`Specialisatie: ${p.specialization}`);
     if (p.city) parts.push(`Woonplaats: ${p.city}`);

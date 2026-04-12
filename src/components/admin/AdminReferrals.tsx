@@ -43,14 +43,14 @@ const AdminReferrals = () => {
     setLoading(true);
     const [invitesRes, profilesRes] = await Promise.all([
       supabase.from('referral_invites').select('*').order('invited_at', { ascending: false }),
-      supabase.from('profiles').select('user_id, first_name, last_name'),
+      supabase.from('profiles').select('user_id, full_name'),
     ]);
 
     if (invitesRes.data) setInvites(invitesRes.data);
     if (profilesRes.data) {
       const map: Record<string, string> = {};
       profilesRes.data.forEach((p: any) => {
-        map[p.user_id] = `${p.first_name || ''} ${p.last_name || ''}`.trim() || t('admin.unnamed');
+        map[p.user_id] = (p.full_name || '').trim() || t('admin.unnamed');
       });
       setProfiles(map);
     }

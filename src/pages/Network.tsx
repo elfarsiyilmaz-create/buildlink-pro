@@ -28,7 +28,7 @@ const Network = () => {
       // Get or generate referral code
       const { data: profile } = await supabase
         .from('profiles')
-        .select('referral_code, first_name, total_earned, approved_referrals')
+        .select('referral_code, full_name, total_earned, approved_referrals')
         .eq('user_id', user.id)
         .single();
 
@@ -36,7 +36,7 @@ const Network = () => {
         setReferralCode(profile.referral_code);
       } else {
         // Generate code: first 3 letters of name + 4 random digits
-        const name = (profile?.first_name || 'USR').substring(0, 3).toUpperCase();
+        const name = (profile?.full_name || 'USR').replace(/\s+/g, '').substring(0, 3).toUpperCase() || 'USR';
         const digits = Math.floor(1000 + Math.random() * 9000);
         const code = `${name}${digits}`;
         await supabase.from('profiles').update({ referral_code: code }).eq('user_id', user.id);
