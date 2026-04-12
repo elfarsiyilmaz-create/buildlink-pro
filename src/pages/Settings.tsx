@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Moon, Sun, Lock, Trash2, Mail, Phone, LogOut } from 'lucide-react';
+import { Moon, Sun, Lock, Trash2, Mail, Phone, LogOut, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -93,6 +93,17 @@ const Settings = () => {
           +31 6 21 95 00 66
         </div>
       </div>
+
+      <a
+        href="https://elfarsiyilmaz-create.github.io/buildlink-pro/privacy-policy.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="glass-card rounded-2xl flex items-center gap-3 px-5 py-4 text-primary hover:bg-muted/40 transition-colors font-medium text-sm"
+        aria-label="Privacybeleid lezen (opent in nieuw tabblad)"
+      >
+        <FileText className="w-5 h-5 shrink-0" aria-hidden />
+        Privacybeleid lezen
+      </a>
     </motion.div>
   );
 };
