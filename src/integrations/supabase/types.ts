@@ -315,6 +315,7 @@ export type Database = {
           date_of_birth: string | null
           equipment_description: string | null
           first_name: string | null
+          full_name: string | null
           has_own_equipment: boolean | null
           hourly_rate: number | null
           iban: string | null
@@ -327,6 +328,7 @@ export type Database = {
           preferred_language: string | null
           profile_completeness: number | null
           referral_code: string | null
+          referral_code_used: string | null
           specialization: string | null
           specializations: string[] | null
           status: string
@@ -350,6 +352,7 @@ export type Database = {
           date_of_birth?: string | null
           equipment_description?: string | null
           first_name?: string | null
+          full_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
           iban?: string | null
@@ -362,6 +365,7 @@ export type Database = {
           preferred_language?: string | null
           profile_completeness?: number | null
           referral_code?: string | null
+          referral_code_used?: string | null
           specialization?: string | null
           specializations?: string[] | null
           status?: string
@@ -385,6 +389,7 @@ export type Database = {
           date_of_birth?: string | null
           equipment_description?: string | null
           first_name?: string | null
+          full_name?: string | null
           has_own_equipment?: boolean | null
           hourly_rate?: number | null
           iban?: string | null
@@ -397,6 +402,7 @@ export type Database = {
           preferred_language?: string | null
           profile_completeness?: number | null
           referral_code?: string | null
+          referral_code_used?: string | null
           specialization?: string | null
           specializations?: string[] | null
           status?: string

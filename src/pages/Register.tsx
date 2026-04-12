@@ -57,14 +57,21 @@ const Register = () => {
 
       if (error) throw error;
 
-      // Update profile with name and phone
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('profiles').update({
-          first_name: firstName,
-          last_name: lastName || null,
-          phone: phone.trim() || null,
-        }).eq('user_id', user.id);
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            full_name: fullName.trim(),
+            first_name: firstName,
+            last_name: lastName || null,
+            phone: phone.trim() || null,
+            referral_code_used: referralCode.trim() || null,
+          }, {
+            onConflict: 'id'
+          });
+        if (profileError) console.error('Profile error:', profileError);
       }
 
       setSuccess(true);
