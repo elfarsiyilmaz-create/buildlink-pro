@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { FileCheck, Car, MapPin, Users, Loader2 } from 'lucide-react';
+import { FileCheck, Car, MapPin, Users, Loader2, Sun, Cloud, CloudRain, Bot } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
@@ -10,7 +11,7 @@ import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import PersonalDashboard from '@/components/home/PersonalDashboard';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
-import { fetchDashboardCoachLine, truncateWords } from '@/lib/dashboardCoachStream';
+import { fetchDashboardSmartBlock } from '@/lib/fetchDashboardSmartBlock';
 
 const DISPLAY_NAME_FALLBACK = 'Vakman';
 
@@ -26,48 +27,6 @@ function yesterdayLocalISO(): string {
   return `${y}-${m}-${day}`;
 }
 
-function emojiFromConditionCode(code: number | null, isDay: number | null): string {
-  if (code == null) return '🌤️';
-  const day = isDay === 1;
-  if (code === 1000) return day ? '☀️' : '🌙';
-  if ([1003, 1006, 1009].includes(code)) return '☁️';
-  if ([1030, 1135, 1147].includes(code)) return '🌫️';
-  if ([1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1240, 1243, 1246].includes(code)) return '🌧️';
-  if ([1066, 1069, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258].includes(code)) return '🌨️';
-  if ([1087, 1273, 1276, 1279, 1282].includes(code)) return '⛈️';
-  if ([1114, 1117, 1195, 1204, 1237, 1249, 1252, 1261, 1264].includes(code)) return '🌧️';
-  return '🌤️';
-}
-
-function isWeatherWarning(
-  wind: number | null,
-  temp: number | null,
-  code: number | null,
-  text: string,
-): boolean {
-  const w = wind ?? 0;
-  const tLow = (temp ?? 20) <= 1;
-  const windy = w >= 35;
-  const lower = text.toLowerCase();
-  const nasty =
-    lower.includes('rain') ||
-    lower.includes('snow') ||
-    lower.includes('thunder') ||
-    lower.includes('sleet') ||
-    lower.includes('drizzle') ||
-    lower.includes('blizzard') ||
-    lower.includes('ice');
-  const codes = [1087, 1273, 1276, 1279, 1282, 1195, 1246, 1264];
-  return windy || tLow || nasty || (code != null && codes.includes(code));
-}
-
-function smartUrgencyLevel(params: { hoursYesterday: boolean; rank: number | null }): 'green' | 'orange' | 'red' {
-  const { hoursYesterday, rank } = params;
-  if (!hoursYesterday) return 'red';
-  if (rank == null || rank > 10) return 'orange';
-  return 'green';
-}
-
 type LiveWeather = {
   temp_c: number | null;
   conditionText: string;
@@ -76,9 +35,42 @@ type LiveWeather = {
   is_day: number | null;
 };
 
+type WeatherKind = 'sunny' | 'rain' | 'cloud';
+
+function weatherPresentation(live: LiveWeather | null, offline: boolean): { kind: WeatherKind; Icon: LucideIcon } {
+  if (offline || !live) {
+    return { kind: 'cloud', Icon: Cloud };
+  }
+  const code = live.conditionCode;
+  const text = (live.conditionText || '').toLowerCase();
+  const rainCodes = [
+    1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1240, 1243, 1246, 1066, 1069, 1114, 1117, 1195, 1204, 1237, 1249, 1252,
+    1261, 1264, 1087, 1273, 1276, 1279, 1282,
+  ];
+  if (code != null && rainCodes.includes(code)) {
+    return { kind: 'rain', Icon: CloudRain };
+  }
+  if (
+    text.includes('rain') ||
+    text.includes('drizzle') ||
+    text.includes('snow') ||
+    text.includes('thunder') ||
+    text.includes('sleet')
+  ) {
+    return { kind: 'rain', Icon: CloudRain };
+  }
+  if (code === 1000 && live.is_day === 1) {
+    return { kind: 'sunny', Icon: Sun };
+  }
+  return { kind: 'cloud', Icon: Cloud };
+}
+
+type CoachUi = 'loading' | 'ready' | 'error' | 'timeout';
+
 const Home = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { t: td } = useTranslation('dashboard');
   const [available, setAvailable] = useState(false);
   const [displayName, setDisplayName] = useState(DISPLAY_NAME_FALLBACK);
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -88,13 +80,13 @@ const Home = () => {
 
   const [weatherLive, setWeatherLive] = useState<LiveWeather | null>(null);
   const [weatherOffline, setWeatherOffline] = useState(false);
-  const [smartUrgency, setSmartUrgency] = useState<'green' | 'orange' | 'red'>('green');
-  const [coachLine, setCoachLine] = useState('');
-  const [coachLoading, setCoachLoading] = useState(true);
+  const [coachMessage, setCoachMessage] = useState('');
+  const [coachPriority, setCoachPriority] = useState<'low' | 'medium' | 'high'>('low');
+  const [coachUi, setCoachUi] = useState<CoachUi>('loading');
 
   useEffect(() => {
     const loadWeatherAndCoach = async (userId: string) => {
-      setCoachLoading(true);
+      setCoachUi('loading');
       setWeatherOffline(false);
       let lat = AMSTERDAM.lat;
       let lon = AMSTERDAM.lon;
@@ -180,26 +172,39 @@ const Home = () => {
           .gt('total_points', myScore.total_points);
         rank = (above ?? 0) + 1;
       }
-      setSmartUrgency(smartUrgencyLevel({ hoursYesterday: hoursY, rank }));
 
-      const condText = live?.conditionText?.trim() || t('home.weatherUnavailable');
-      const tempStr = live?.temp_c != null ? String(live.temp_c) : '?';
-      const rankStr = rank != null ? `#${rank}` : 'nog geen plek';
-      const ctx = `Je bent Alhan AI Coach. Geef een korte motiverende boodschap van maximaal 10 woorden voor een ZZP'er in de bouw. Weer: ${condText}, ${tempStr}°C, uren gisteren: ${hoursY ? 'ja' : 'nee'}, leaderboard: ${rankStr}. Direct en motiverend.`;
+      const condText = live?.conditionText?.trim() || '';
+      const tempNum = live?.temp_c != null && Number.isFinite(live.temp_c) ? live.temp_c : 0;
 
-      try {
-        const raw = await fetchDashboardCoachLine(ctx, null);
-        setCoachLine(truncateWords(raw || '💪 Blijf knappen!', 10));
-      } catch {
-        setCoachLine('💪 Blijf knappen!');
-      } finally {
-        setCoachLoading(false);
+      const result = await fetchDashboardSmartBlock({
+        weather: condText || t('home.weatherUnavailable'),
+        temperature: tempNum,
+        hoursLoggedYesterday: hoursY,
+        leaderboardPosition: rank ?? 0,
+        context: 'dashboard_smart_block',
+      });
+
+      if (result.status === 'timeout') {
+        setCoachUi('timeout');
+        setCoachMessage('');
+        return;
       }
+      if (result.status === 'error') {
+        setCoachUi('error');
+        setCoachMessage('');
+        return;
+      }
+
+      setCoachMessage(result.data.message);
+      setCoachPriority(result.data.priority ?? 'low');
+      setCoachUi('ready');
     };
 
     const loadData = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
           setProfileLoaded(true);
           navigate('/login', { replace: true });
@@ -217,7 +222,8 @@ const Home = () => {
         ]);
 
         const p = profileRes.data;
-        const name = (p?.full_name?.trim() && p.full_name.trim().length > 0 ? p.full_name.trim() : null) || DISPLAY_NAME_FALLBACK;
+        const name =
+          (p?.full_name?.trim() && p.full_name.trim().length > 0 ? p.full_name.trim() : null) || DISPLAY_NAME_FALLBACK;
         setDisplayName(name);
         setOnboardingCompleted(!!p?.onboarding_completed);
         setProfilePercentage(p?.profile_completeness || 0);
@@ -246,16 +252,14 @@ const Home = () => {
 
   const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
 
-  const weatherWarning =
-    weatherLive &&
-    isWeatherWarning(weatherLive.wind_kph, weatherLive.temp_c, weatherLive.conditionCode, weatherLive.conditionText);
+  const { kind: weatherKind, Icon: WeatherIcon } = weatherPresentation(weatherLive, weatherOffline);
+  const glowClass = weatherKind === 'sunny' ? 'bg-yellow-50/30' : 'bg-blue-50/30';
 
-  const smartBlockClass =
-    smartUrgency === 'red'
-      ? 'border-red-500/50 bg-red-500/15 text-red-950 dark:text-red-50'
-      : smartUrgency === 'orange'
-        ? 'border-orange-500/50 bg-orange-500/15 text-orange-950 dark:text-orange-50'
-        : 'border-emerald-500/50 bg-emerald-500/15 text-emerald-950 dark:text-emerald-50';
+  const weatherCaptionKey =
+    weatherKind === 'sunny' ? 'weatherSunny' : weatherKind === 'rain' ? 'weatherRainy' : 'weatherCloudy';
+
+  const coachTextClass =
+    coachPriority === 'high' ? 'text-primary' : coachPriority === 'medium' ? 'text-foreground' : 'text-foreground';
 
   return (
     <div className="space-y-5 py-5 pb-24">
@@ -284,44 +288,54 @@ const Home = () => {
         )}
       </motion.div>
 
-      {/* Smart Weather Bar + Action row */}
       <motion.div {...fadeUp} transition={{ delay: 0.15 }} className="space-y-3">
-        <div className="glass-card rounded-2xl px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="text-sm font-semibold text-foreground capitalize">{shortDate}</span>
-          <span className="text-xl" aria-hidden>
-            {weatherOffline || !weatherLive
-              ? '🌤️'
-              : emojiFromConditionCode(weatherLive.conditionCode, weatherLive.is_day)}
-          </span>
-          <span className="text-lg font-bold text-foreground tabular-nums">
-            {weatherOffline || weatherLive?.temp_c == null ? '—' : `${weatherLive.temp_c}°C`}
-          </span>
-          <span className="text-xs text-muted-foreground flex-1 min-w-[8rem]">
-            {weatherOffline ? t('home.weatherUnavailable') : weatherWarning ? t('home.weatherWarning') : t('home.weatherGood')}
-          </span>
+        <div className="pt-safe">
+          <div className="relative overflow-hidden rounded-2xl border border-border/60">
+            <div className={`absolute inset-0 ${glowClass}`} style={{ willChange: 'transform' }} aria-hidden />
+            <div className="relative isolate flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-border/40 bg-background/45 px-4 py-3 backdrop-blur-md [contain:layout] dark:bg-background/35">
+              <span className="text-sm font-semibold capitalize text-foreground">{shortDate}</span>
+              <WeatherIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
+              <span className="text-lg font-bold tabular-nums text-foreground">
+                {weatherOffline || weatherLive?.temp_c == null ? '—' : `${weatherLive.temp_c}°C`}
+              </span>
+              <span className="min-w-[8rem] flex-1 text-xs text-muted-foreground">{td(weatherCaptionKey)}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-2 items-stretch">
+        <div className="grid grid-cols-2 gap-3">
           <Link
             to="/time-registration"
-            className="flex-[0.7] min-w-0 min-h-12 rounded-2xl gradient-primary text-primary-foreground font-semibold text-base flex items-center justify-center gap-2 px-3 shadow-md hover:opacity-90 transition-opacity"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-2xl bg-primary px-3 text-base font-semibold text-primary-foreground shadow-md transition-opacity hover:opacity-90"
           >
             <span aria-hidden>✍️</span>
-            <span className="truncate">{t('home.writeHours')}</span>
+            <span className="truncate">{td('writeHours')}</span>
           </Link>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('alhan-chat:open'))}
-            className={`flex-[0.3] min-w-[44px] min-h-11 rounded-2xl border px-2 py-2 text-left text-xs font-medium leading-snug flex flex-col justify-center ${smartBlockClass}`}
+            className="flex min-h-[44px] min-w-[44px] flex-col justify-center gap-1 rounded-2xl border border-border/60 bg-secondary/90 px-3 py-2 text-left shadow-sm dark:bg-secondary/40"
+            aria-label={t('common.openAssistant')}
           >
-            {coachLoading ? (
-              <span className="flex items-center gap-1.5">
-                <Loader2 className="w-4 h-4 animate-spin shrink-0" aria-hidden />
-                <span className="line-clamp-3">{t('home.smartBlockLoading')}</span>
+            <div className="flex items-center gap-2">
+              <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl bg-background/80">
+                <Bot className="h-6 w-6 text-primary" aria-hidden />
               </span>
-            ) : (
-              <span className="line-clamp-4">{coachLine}</span>
-            )}
+              {coachUi === 'loading' ? (
+                <div className="min-h-[44px] flex-1 animate-pulse space-y-2 py-1.5">
+                  <span className="sr-only">{td('aiLoading')}</span>
+                  <div className="h-2.5 w-3/4 rounded bg-muted" />
+                  <div className="h-2.5 w-full rounded bg-muted" />
+                  <div className="h-2.5 w-5/6 rounded bg-muted" />
+                </div>
+              ) : coachUi === 'error' ? (
+                <span className="min-h-[44px] flex-1 text-xs leading-snug text-muted-foreground">{td('aiError')}</span>
+              ) : coachUi === 'timeout' ? (
+                <span className="min-h-[44px] flex-1 text-xs leading-snug text-muted-foreground">{td('aiTimeout')}</span>
+              ) : (
+                <span className={`line-clamp-4 flex-1 text-xs font-medium leading-snug ${coachTextClass}`}>{coachMessage}</span>
+              )}
+            </div>
           </button>
         </div>
       </motion.div>
@@ -330,15 +344,21 @@ const Home = () => {
         <button
           type="button"
           onClick={() => setAvailable(!available)}
-          className={`w-full rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ${
+          className={`flex w-full items-center justify-between rounded-2xl p-5 transition-all duration-300 ${
             available ? 'bg-success text-success-foreground pulse-green' : 'bg-destructive text-destructive-foreground'
           }`}
           aria-label={available ? t('home.available') : t('home.unavailable')}
           aria-pressed={available}
         >
-          <span className="font-bold text-lg">{available ? t('home.available') : t('home.unavailable')}</span>
-          <div className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${available ? 'bg-white/30' : 'bg-white/20'}`}>
-            <motion.div layout className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-md" style={{ left: available ? 'calc(100% - 28px)' : '4px' }} />
+          <span className="text-lg font-bold">{available ? t('home.available') : t('home.unavailable')}</span>
+          <div
+            className={`relative h-8 w-14 rounded-full transition-colors duration-300 ${available ? 'bg-white/30' : 'bg-white/20'}`}
+          >
+            <motion.div
+              layout
+              className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"
+              style={{ left: available ? 'calc(100% - 28px)' : '4px' }}
+            />
           </div>
         </button>
       </motion.div>
@@ -355,10 +375,20 @@ const Home = () => {
         <DailyChallenges />
       </motion.div>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.5 }} className="glass-card rounded-2xl p-4 cursor-pointer" onClick={() => navigate('/profile')}>
-        <p className="text-sm font-medium text-foreground mb-2">{t('home.profileComplete', { percentage: profilePercentage })}</p>
-        <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-          <motion.div initial={{ width: 0 }} animate={{ width: `${profilePercentage}%` }} transition={{ duration: 1, delay: 0.6 }} className="h-full gradient-primary rounded-full" />
+      <motion.div
+        {...fadeUp}
+        transition={{ delay: 0.5 }}
+        className="glass-card cursor-pointer rounded-2xl p-4"
+        onClick={() => navigate('/profile')}
+      >
+        <p className="mb-2 text-sm font-medium text-foreground">{t('home.profileComplete', { percentage: profilePercentage })}</p>
+        <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${profilePercentage}%` }}
+            transition={{ duration: 1, delay: 0.6 }}
+            className="h-full rounded-full gradient-primary"
+          />
         </div>
       </motion.div>
 
@@ -370,9 +400,9 @@ const Home = () => {
           { icon: Users, label: t('home.referrals'), value: `${stats.referrals}` },
         ].map((stat, i) => (
           <div key={i} className="glass-card rounded-xl p-3 text-center">
-            <stat.icon className="w-5 h-5 text-primary mx-auto mb-1.5" />
+            <stat.icon className="mx-auto mb-1.5 h-5 w-5 text-primary" />
             <p className="text-xs font-bold text-foreground">{stat.value}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{stat.label}</p>
+            <p className="mt-0.5 text-[10px] text-muted-foreground">{stat.label}</p>
           </div>
         ))}
       </motion.div>
@@ -381,11 +411,11 @@ const Home = () => {
         {...fadeUp}
         transition={{ delay: 0.6 }}
         onClick={() => navigate('/wheel')}
-        className="glass-card rounded-2xl p-4 flex items-center gap-3 w-full text-left"
+        className="glass-card flex w-full items-center gap-3 rounded-2xl p-4 text-left"
       >
-        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">🎰</div>
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-2xl">🎰</div>
         <div className="flex-1">
-          <p className="font-semibold text-foreground text-sm">{t('wheel.title')}</p>
+          <p className="text-sm font-semibold text-foreground">{t('wheel.title')}</p>
           <p className="text-xs text-muted-foreground">{t('wheel.spin_available')}</p>
         </div>
       </motion.button>

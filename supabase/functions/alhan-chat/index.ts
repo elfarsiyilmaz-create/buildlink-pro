@@ -53,14 +53,114 @@ function buildProfileSummary(ctx: any): string {
   return parts.join("\n");
 }
 
+function parseJsonAssistantContent(raw: string): { message: string; priority?: string } | null {
+  const trimmed = raw.trim();
+  const withoutFence = trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+  try {
+    const obj = JSON.parse(withoutFence) as { message?: unknown; priority?: unknown };
+    if (typeof obj.message !== "string") return null;
+    return {
+      message: obj.message.trim(),
+      priority: typeof obj.priority === "string" ? obj.priority : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function handleDashboardSmartBlock(body: Record<string, unknown>, geminiKey: string): Promise<Response> {
+  const weather = String(body.weather ?? "");
+  const temperature = typeof body.temperature === "number" ? body.temperature : Number(body.temperature);
+  const hoursLoggedYesterday = Boolean(body.hoursLoggedYesterday);
+  const leaderboardPosition = typeof body.leaderboardPosition === "number"
+    ? body.leaderboardPosition
+    : Number(body.leaderboardPosition);
+
+  const tempStr = Number.isFinite(temperature) ? `${temperature}` : "?";
+  const rankStr = leaderboardPosition > 0 ? String(leaderboardPosition) : "geen";
+
+  const systemPrompt =
+    `Je bent Alhan AI coach (dashboard smart block) voor ZZP'ers in de bouw.
+Antwoord ALLEEN met JSON (geen markdown), exact dit formaat:
+{"message":"...","priority":"low"|"medium"|"high"}
+
+Regels priority:
+- "high" als uren gisteren niet zijn ingeschreven (hoursLoggedYesterday false).
+- "medium" als leaderboardpositie > 10 of 0.
+- "low" als uren gisteren wél zijn ingeschreven én positie 1–10.
+
+message: maximaal 12 woorden, motiverend, in het Nederlands.`;
+
+  const userContent =
+    `Context: dashboard_smart_block. Weer: ${weather}, ${tempStr}°C. Uren gisteren ingeschreven: ${
+      hoursLoggedYesterday ? "ja" : "nee"
+    }. Leaderboard positie: ${rankStr}.`;
+
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key=" + geminiKey,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gemini-2.0-flash",
+        stream: false,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userContent },
+        ],
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const t = await response.text();
+    console.error("dashboard smart block gateway error:", response.status, t);
+    return new Response(JSON.stringify({ error: "AI fout" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const data = await response.json();
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== "string") {
+    return new Response(JSON.stringify({ error: "Ongeldig AI antwoord" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const parsed = parseJsonAssistantContent(content);
+  if (!parsed?.message) {
+    return new Response(JSON.stringify({ error: "Ongeldig JSON van AI" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  let priority: "low" | "medium" | "high" | undefined;
+  const p = parsed.priority?.toLowerCase();
+  if (p === "low" || p === "medium" || p === "high") priority = p;
+
+  return new Response(JSON.stringify({ message: parsed.message, priority }), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, profileContext, dashboardCoachContext } = await req.json();
+    const body = await req.json();
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
+    if (body?.context === "dashboard_smart_block") {
+      return await handleDashboardSmartBlock(body as Record<string, unknown>, GEMINI_API_KEY);
+    }
+
+    const { messages, profileContext, dashboardCoachContext } = body;
     const profileSummary = buildProfileSummary(profileContext);
 
     const dashboardBlock =

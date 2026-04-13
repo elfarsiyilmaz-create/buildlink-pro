@@ -4,6 +4,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import nl from './locales/nl.json';
 import en from './locales/en.json';
+import dashboardEn from './locales/dashboard/en.json';
+import dashboardNl from './locales/dashboard/nl.json';
 import de from './locales/de.json';
 import fr from './locales/fr.json';
 import pl from './locales/pl.json';
@@ -34,18 +36,20 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    ns: ['translation', 'dashboard'],
+    defaultNS: 'translation',
     resources: {
-      nl: { translation: nl },
-      en: { translation: en },
-      de: { translation: de },
-      fr: { translation: fr },
-      pl: { translation: pl },
-      ro: { translation: ro },
-      bg: { translation: bg },
-      pt: { translation: pt },
-      es: { translation: es },
-      tr: { translation: tr },
-      ar: { translation: ar },
+      nl: { translation: nl, dashboard: dashboardNl },
+      en: { translation: en, dashboard: dashboardEn },
+      de: { translation: de, dashboard: dashboardEn },
+      fr: { translation: fr, dashboard: dashboardEn },
+      pl: { translation: pl, dashboard: dashboardEn },
+      ro: { translation: ro, dashboard: dashboardEn },
+      bg: { translation: bg, dashboard: dashboardEn },
+      pt: { translation: pt, dashboard: dashboardEn },
+      es: { translation: es, dashboard: dashboardEn },
+      tr: { translation: tr, dashboard: dashboardEn },
+      ar: { translation: ar, dashboard: dashboardEn },
     },
     fallbackLng: 'nl',
     interpolation: { escapeValue: false },

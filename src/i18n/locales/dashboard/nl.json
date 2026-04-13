@@ -1,0 +1,9 @@
+{
+  "weatherSunny": "Perfect weer om aan de slag te gaan!",
+  "weatherRainy": "Nat weer — let op veiligheid op de bouw.",
+  "weatherCloudy": "Bewolkt — kleed je naar het weer.",
+  "writeHours": "Uren schrijven",
+  "aiLoading": "Coach denkt na…",
+  "aiError": "Kon je coachtip niet laden. Probeer het later opnieuw.",
+  "aiTimeout": "De coach doet er te lang over. Probeer het zo weer."
+}

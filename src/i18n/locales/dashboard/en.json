@@ -1,0 +1,9 @@
+{
+  "weatherSunny": "Great weather to get work done!",
+  "weatherRainy": "Wet conditions — stay safe on site.",
+  "weatherCloudy": "Typical weather — dress for the day.",
+  "writeHours": "Log hours",
+  "aiLoading": "Coach is thinking…",
+  "aiError": "Could not load your coach tip. Try again later.",
+  "aiTimeout": "Coach is taking too long. Try again in a moment."
+}

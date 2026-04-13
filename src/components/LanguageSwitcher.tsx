@@ -29,7 +29,7 @@ const LanguageSwitcher = ({ compact = false }: LanguageSwitcherProps) => {
             }`}
             title={lang.name}
             aria-label={lang.name}
-            aria-pressed={(i18n.language || 'nl').replace('_', '-').split('-')[0] === lang.code}
+            aria-pressed={(i18n.language || 'en').replace('_', '-').split('-')[0] === lang.code}
           >
             <span aria-hidden>{lang.flag}</span>
           </button>
