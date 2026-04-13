@@ -49,17 +49,45 @@ const NativeOAuthDeepLinkHandler = () => {
     if (!Capacitor.isNativePlatform()) return;
 
     const registration = CapacitorApp.addListener("appUrlOpen", async ({ url }) => {
+      console.log("[OAuth deeplink] appUrlOpen raw url:", url);
+
       if (!url.includes("login-callback")) return;
+
       try {
         const parsed = new URL(url);
-        const { error } = await supabase.auth.exchangeCodeForSession(parsed.search);
+        const searchParams = parsed.searchParams;
+        const search = parsed.search;
+
+        console.log("[OAuth deeplink] pathname:", parsed.pathname);
+        console.log("[OAuth deeplink] full search (query string):", search);
+        console.log(
+          "[OAuth deeplink] parsed entries:",
+          Object.fromEntries(searchParams.entries()),
+        );
+
+        const code = searchParams.get("code");
+        if (!code) {
+          console.warn("[OAuth deeplink] missing ?code= in URL");
+          toast.error("OAuth callback mist authorization code");
+          return;
+        }
+
+        // Supabase PKCE: exchangeCodeForSession expects the raw `code` value from the
+        // redirect URL (same as params.code in web PKCE flow), not the literal "?code=…" string.
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
         if (error) {
+          console.error("[OAuth deeplink] exchangeCodeForSession error:", error);
           toast.error(error.message);
           return;
         }
+
+        console.log("[OAuth deeplink] session ok:", !!data?.session, "user:", !!data?.user);
+
         await Browser.close();
         navigate("/", { replace: true });
       } catch (e: unknown) {
+        console.error("[OAuth deeplink] exception:", e);
         const message = e instanceof Error ? e.message : String(e);
         toast.error(message);
       }
