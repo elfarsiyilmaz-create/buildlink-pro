@@ -34,11 +34,18 @@ async function streamChat({
   onDone: () => void;
   onError: (msg: string) => void;
 }) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const accessToken = session?.access_token;
+  if (!accessToken) {
+    onError('Log in om de chat te gebruiken.');
+    return;
+  }
+
   const resp = await fetch(CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${accessToken}`,
       apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     },
     body: JSON.stringify({
@@ -49,6 +56,10 @@ async function streamChat({
   });
 
   if (!resp.ok || !resp.body) {
+    if (resp.status === 401) {
+      onError('Log in om de chat te gebruiken.');
+      return;
+    }
     if (resp.status === 429) {
       onError('Te veel verzoeken, probeer het later opnieuw.');
       return;

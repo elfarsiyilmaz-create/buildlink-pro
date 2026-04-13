@@ -98,7 +98,10 @@ export async function fetchDashboardSmartBlock(
 
   try {
     const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const token = sessionData.session?.access_token;
+    if (!token) {
+      return { status: 'error' };
+    }
 
     const resp = await fetch(CHAT_URL, {
       method: 'POST',

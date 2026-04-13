@@ -61,6 +61,63 @@ function jsonError(message: string, status: number): Response {
   });
 }
 
+/** Returns Response on auth failure, null when authenticated. */
+async function requireAuth(req: Request): Promise<Response | null> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return jsonError("Unauthorized", 401);
+  }
+  const token = authHeader.slice(7).trim();
+  if (!token) {
+    return jsonError("Unauthorized", 401);
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("alhan-chat: SUPABASE_URL or SUPABASE_ANON_KEY missing");
+    return jsonError("Interne fout", 500);
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !user) {
+    return jsonError("Unauthorized", 401);
+  }
+  return null;
+}
+
+function validateChatBody(body: Record<string, unknown>): { ok: true } | { ok: false; message: string } {
+  if (!Array.isArray(body.messages)) {
+    return { ok: false, message: "Invalid messages" };
+  }
+  if (body.messages.length === 0 || body.messages.length > 20) {
+    return { ok: false, message: "Invalid messages" };
+  }
+  for (const item of body.messages) {
+    if (typeof item !== "object" || item === null) {
+      return { ok: false, message: "Invalid messages" };
+    }
+    const m = item as Record<string, unknown>;
+    if (typeof m.role !== "string" || typeof m.content !== "string") {
+      return { ok: false, message: "Invalid messages" };
+    }
+    if (m.content.length > 2000) {
+      return { ok: false, message: "Invalid messages" };
+    }
+  }
+
+  if ("dashboardCoachContext" in body && body.dashboardCoachContext !== undefined && body.dashboardCoachContext !== null) {
+    if (typeof body.dashboardCoachContext !== "string" || body.dashboardCoachContext.length > 500) {
+      return { ok: false, message: "Invalid dashboardCoachContext" };
+    }
+  }
+
+  return { ok: true };
+}
+
 function parseJsonAssistantContent(raw: string): { message: string; priority?: string } | null {
   const trimmed = raw.trim();
   const withoutFence = trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
@@ -76,34 +133,7 @@ function parseJsonAssistantContent(raw: string): { message: string; priority?: s
   }
 }
 
-async function handleDashboardSmartBlock(
-  req: Request,
-  body: Record<string, unknown>,
-  geminiKey: string,
-): Promise<Response> {
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return jsonError("Unauthorized", 401);
-  }
-  const token = authHeader.slice(7).trim();
-  if (!token) {
-    return jsonError("Unauthorized", 401);
-  }
-
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return jsonError("Server misconfiguration", 500);
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !user) {
-    return jsonError("Unauthorized", 401);
-  }
-
+async function handleDashboardSmartBlock(body: Record<string, unknown>, geminiKey: string): Promise<Response> {
   if (typeof body.weather !== "string" || body.weather.length > 100) {
     return jsonError("Invalid weather", 400);
   }
@@ -166,8 +196,8 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
   );
 
   if (!response.ok) {
-    const t = await response.text();
-    console.error("dashboard smart block gateway error:", response.status, t);
+    await response.text();
+    console.error("dashboard smart block gateway error:", response.status, "[body geredacteerd]");
     return new Response(JSON.stringify({ error: "AI fout" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -205,15 +235,30 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const body = await req.json();
+    const body = await req.json() as Record<string, unknown>;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
-
-    if (body?.context === "dashboard_smart_block") {
-      return await handleDashboardSmartBlock(req, body as Record<string, unknown>, GEMINI_API_KEY);
+    if (!GEMINI_API_KEY) {
+      console.error("alhan-chat: GEMINI_API_KEY is not configured");
+      return jsonError("Interne fout", 500);
     }
 
-    const { messages, profileContext, dashboardCoachContext } = body;
+    const authFailure = await requireAuth(req);
+    if (authFailure) return authFailure;
+
+    if (body?.context === "dashboard_smart_block") {
+      return await handleDashboardSmartBlock(body, GEMINI_API_KEY);
+    }
+
+    const chatCheck = validateChatBody(body);
+    if (!chatCheck.ok) {
+      return jsonError(chatCheck.message, 400);
+    }
+
+    const { messages, profileContext, dashboardCoachContext } = body as {
+      messages: unknown[];
+      profileContext?: unknown;
+      dashboardCoachContext?: string;
+    };
     const profileSummary = buildProfileSummary(profileContext);
 
     const dashboardBlock =
@@ -243,47 +288,50 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key=" + GEMINI_API_KEY,
       {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gemini-2.0-flash",
+          messages: [
+            { role: "system", content: systemPrompt },
+            ...messages,
+          ],
+          stream: true,
+        }),
       },
-      body: JSON.stringify({
-        model: "gemini-2.0-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-        stream: true,
-      }),
-    },
     );
 
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Te veel verzoeken, probeer het later opnieuw." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "Tegoed op, neem contact op met de beheerder." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      await response.text();
+      console.error("AI gateway error:", response.status, "[body geredacteerd]");
       return new Response(JSON.stringify({ error: "AI fout" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Stream the SSE response directly to the client
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     console.error("chat error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Onbekende fout" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return new Response(JSON.stringify({ error: "Interne fout" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
