@@ -22,6 +22,11 @@
     "openAssistant": "Chat-assistent openen",
     "sendMessage": "Bericht versturen"
   },
+  "chat": {
+    "teaserWelcome": "Welkom bij Alhan Groep! 🛠️ Ik ben je persoonlijke AI-coach. Ik sta aan de andere kant klaar om je te helpen met je carrière, je profiel en al je vragen over het werk. Registreer je snel, dan spreken we elkaar daar!",
+    "teaserUrgency": "Trouwens... andere vakmannen in jouw regio zijn je al voor gegaan. 👷",
+    "registerNow": "Registreer nu"
+  },
   "splash": { "welcome": "Welkom bij Alhan Groep 💪" },
   "auth": {
     "login": "Inloggen", "register": "Registreren", "email": "E-mailadres", "password": "Wachtwoord",

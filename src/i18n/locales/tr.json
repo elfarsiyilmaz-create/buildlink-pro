@@ -22,6 +22,11 @@
     "openAssistant": "Asistan sohbetini aç",
     "sendMessage": "Mesaj gönder"
   },
+  "chat": {
+    "teaserWelcome": "Alhan Groep'e hoş geldin! 🛠️ Ben kişisel yapay zeka koçunum. Kariyerin, profilin ve işle ilgili tüm sorularında yardımcı olmaya hazırım. Hemen kayıt ol — orada konuşuruz!",
+    "teaserUrgency": "Bu arada... bölgendeki diğer usta eller senden önce davrandı. 👷",
+    "registerNow": "Şimdi kayıt ol"
+  },
   "splash": {
     "welcome": "Alhan Groep'e hoş geldiniz 💪"
   },

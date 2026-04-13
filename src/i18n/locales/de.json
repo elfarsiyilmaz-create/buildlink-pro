@@ -22,6 +22,11 @@
     "openAssistant": "Assistenten-Chat öffnen",
     "sendMessage": "Nachricht senden"
   },
+  "chat": {
+    "teaserWelcome": "Willkommen bei Alhan Groep! 🛠️ Ich bin dein persönlicher KI-Coach. Ich bin bereit, dir bei deiner Karriere, deinem Profil und allen Fragen rund um die Arbeit zu helfen. Registriere dich schnell — dort sprechen wir uns!",
+    "teaserUrgency": "Übrigens... andere Fachkräfte in deiner Region sind dir schon voraus. 👷",
+    "registerNow": "Jetzt registrieren"
+  },
   "splash": {
     "welcome": "Willkommen bei Alhan Groep 💪"
   },

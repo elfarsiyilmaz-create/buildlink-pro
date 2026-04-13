@@ -22,6 +22,11 @@
     "openAssistant": "Abrir assistente de chat",
     "sendMessage": "Enviar mensagem"
   },
+  "chat": {
+    "teaserWelcome": "Bem-vindo à Alhan Groep! 🛠️ Sou o teu coach de IA pessoal. Estou pronto para ajudar com a tua carreira, o teu perfil e todas as tuas dúvidas sobre o trabalho. Regista-te já — falamos lá!",
+    "teaserUrgency": "A propósito... outros profissionais na tua região já foram à tua frente. 👷",
+    "registerNow": "Registar agora"
+  },
   "splash": {
     "welcome": "Bem-vindo ao Alhan Groep 💪"
   },

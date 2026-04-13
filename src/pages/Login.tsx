@@ -85,7 +85,11 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col pt-safe">
-      <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
+      {/*
+        Taalvlaggen zitten in een vaste footer met pb-safe (STAP 3).
+        De AI-chat FAB op /login wordt in AlhanChat hoger gezet zodat hij boven deze footer staat (min. 44×44px).
+      */}
+      <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10 min-h-0">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -202,12 +206,13 @@ const Login = () => {
               </Link>
             </p>
           </form>
-
-          <div className="pt-4">
-            <LanguageSwitcher compact />
-          </div>
         </motion.div>
       </main>
+      <footer className="shrink-0 w-full border-t border-border/60 bg-background/95 px-6 pt-3 pb-safe backdrop-blur supports-[backdrop-filter]:bg-background/85">
+        <div className="max-w-sm mx-auto w-full flex justify-center">
+          <LanguageSwitcher compact />
+        </div>
+      </footer>
     </div>
   );
 };
