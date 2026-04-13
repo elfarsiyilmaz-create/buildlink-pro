@@ -10,6 +10,7 @@ export type AlhanChatResponse = {
   priority?: 'low' | 'medium' | 'high';
 };
 
+/** leaderboardPosition: 1–999999 (API); client gebruikt 999999 als sentinel voor geen plek. */
 export type DashboardSmartBlockRequest = {
   weather: string;
   temperature: number;

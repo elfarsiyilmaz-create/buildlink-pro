@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -53,6 +54,13 @@ function buildProfileSummary(ctx: any): string {
   return parts.join("\n");
 }
 
+function jsonError(message: string, status: number): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 function parseJsonAssistantContent(raw: string): { message: string; priority?: string } | null {
   const trimmed = raw.trim();
   const withoutFence = trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
@@ -68,16 +76,61 @@ function parseJsonAssistantContent(raw: string): { message: string; priority?: s
   }
 }
 
-async function handleDashboardSmartBlock(body: Record<string, unknown>, geminiKey: string): Promise<Response> {
-  const weather = String(body.weather ?? "");
-  const temperature = typeof body.temperature === "number" ? body.temperature : Number(body.temperature);
-  const hoursLoggedYesterday = Boolean(body.hoursLoggedYesterday);
-  const leaderboardPosition = typeof body.leaderboardPosition === "number"
-    ? body.leaderboardPosition
-    : Number(body.leaderboardPosition);
+async function handleDashboardSmartBlock(
+  req: Request,
+  body: Record<string, unknown>,
+  geminiKey: string,
+): Promise<Response> {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return jsonError("Unauthorized", 401);
+  }
+  const token = authHeader.slice(7).trim();
+  if (!token) {
+    return jsonError("Unauthorized", 401);
+  }
 
-  const tempStr = Number.isFinite(temperature) ? `${temperature}` : "?";
-  const rankStr = leaderboardPosition > 0 ? String(leaderboardPosition) : "geen";
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return jsonError("Server misconfiguration", 500);
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !user) {
+    return jsonError("Unauthorized", 401);
+  }
+
+  if (typeof body.weather !== "string" || body.weather.length > 100) {
+    return jsonError("Invalid weather", 400);
+  }
+  const weather = body.weather;
+
+  if (typeof body.temperature !== "number" || !Number.isFinite(body.temperature)) {
+    return jsonError("Invalid temperature", 400);
+  }
+  const temperature = body.temperature;
+
+  if (typeof body.hoursLoggedYesterday !== "boolean") {
+    return jsonError("Invalid hoursLoggedYesterday", 400);
+  }
+  const hoursLoggedYesterday = body.hoursLoggedYesterday;
+
+  if (
+    typeof body.leaderboardPosition !== "number" ||
+    !Number.isInteger(body.leaderboardPosition) ||
+    body.leaderboardPosition < 1 ||
+    body.leaderboardPosition > 999_999
+  ) {
+    return jsonError("Invalid leaderboardPosition", 400);
+  }
+  const leaderboardPosition = body.leaderboardPosition;
+
+  const tempStr = `${temperature}`;
+  const rankStr = leaderboardPosition === 999_999 ? "geen" : String(leaderboardPosition);
 
   const systemPrompt =
     `Je bent Alhan AI coach (dashboard smart block) voor ZZP'ers in de bouw.
@@ -86,7 +139,7 @@ Antwoord ALLEEN met JSON (geen markdown), exact dit formaat:
 
 Regels priority:
 - "high" als uren gisteren niet zijn ingeschreven (hoursLoggedYesterday false).
-- "medium" als leaderboardpositie > 10 of 0.
+- "medium" als leaderboardpositie > 10 of "geen" (geen plek).
 - "low" als uren gisteren wél zijn ingeschreven én positie 1–10.
 
 message: maximaal 12 woorden, motiverend, in het Nederlands.`;
@@ -138,9 +191,9 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
     });
   }
 
-  let priority: "low" | "medium" | "high" | undefined;
-  const p = parsed.priority?.toLowerCase();
-  if (p === "low" || p === "medium" || p === "high") priority = p;
+  const rawP = typeof parsed.priority === "string" ? parsed.priority.toLowerCase() : "";
+  const priority: "low" | "medium" | "high" =
+    rawP === "low" || rawP === "medium" || rawP === "high" ? rawP : "low";
 
   return new Response(JSON.stringify({ message: parsed.message, priority }), {
     status: 200,
@@ -157,7 +210,7 @@ serve(async (req) => {
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     if (body?.context === "dashboard_smart_block") {
-      return await handleDashboardSmartBlock(body as Record<string, unknown>, GEMINI_API_KEY);
+      return await handleDashboardSmartBlock(req, body as Record<string, unknown>, GEMINI_API_KEY);
     }
 
     const { messages, profileContext, dashboardCoachContext } = body;

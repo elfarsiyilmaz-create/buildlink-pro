@@ -180,7 +180,7 @@ const Home = () => {
         weather: condText || t('home.weatherUnavailable'),
         temperature: tempNum,
         hoursLoggedYesterday: hoursY,
-        leaderboardPosition: rank ?? 0,
+        leaderboardPosition: rank != null && rank >= 1 ? rank : 999_999,
         context: 'dashboard_smart_block',
       });
 
