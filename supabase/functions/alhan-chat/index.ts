@@ -1,10 +1,31 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "capacitor://localhost",
+  "https://localhost",
+] as const;
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = ALLOWED_ORIGINS as readonly string[];
+  const allowedOrigin = allowed.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  };
+}
+
+function jsonHeaders(req: Request): Record<string, string> {
+  return { ...getCorsHeaders(req), "Content-Type": "application/json" };
+}
+
+function sseHeaders(req: Request): Record<string, string> {
+  return { ...getCorsHeaders(req), "Content-Type": "text/event-stream" };
+}
 
 function buildProfileSummary(ctx: any): string {
   if (!ctx) return "";
@@ -54,10 +75,10 @@ function buildProfileSummary(ctx: any): string {
   return parts.join("\n");
 }
 
-function jsonError(message: string, status: number): Response {
+function jsonError(req: Request, message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: jsonHeaders(req),
   });
 }
 
@@ -65,18 +86,18 @@ function jsonError(message: string, status: number): Response {
 async function requireAuth(req: Request): Promise<Response | null> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return jsonError("Unauthorized", 401);
+    return jsonError(req, "Unauthorized", 401);
   }
   const token = authHeader.slice(7).trim();
   if (!token) {
-    return jsonError("Unauthorized", 401);
+    return jsonError(req, "Unauthorized", 401);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error("alhan-chat: SUPABASE_URL or SUPABASE_ANON_KEY missing");
-    return jsonError("Interne fout", 500);
+    return jsonError(req, "Interne fout", 500);
   }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -84,12 +105,115 @@ async function requireAuth(req: Request): Promise<Response | null> {
   });
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);
   if (authError || !user) {
-    return jsonError("Unauthorized", 401);
+    return jsonError(req, "Unauthorized", 401);
   }
   return null;
 }
 
-function validateChatBody(body: Record<string, unknown>): { ok: true } | { ok: false; message: string } {
+/** Strips unknown profile keys; validates listed fields. Pass-through scores/achievements/recentActivity when well-typed. */
+function validateProfileContext(
+  raw: unknown,
+): { ok: false; message: string } | { ok: true; value: Record<string, unknown> | null } {
+  if (raw === undefined || raw === null) {
+    return { ok: true, value: null };
+  }
+  if (typeof raw !== "object" || Array.isArray(raw)) {
+    return { ok: false, message: "Invalid profileContext" };
+  }
+
+  const src = raw as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+
+  if (src.profile !== undefined && src.profile !== null) {
+    if (typeof src.profile !== "object" || Array.isArray(src.profile)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    const p = src.profile as Record<string, unknown>;
+    const profileOut: Record<string, string> = {};
+    const limits: Record<string, number> = {
+      full_name: 100,
+      bio: 500,
+      city: 100,
+      specialization: 100,
+    };
+    for (const key of Object.keys(limits) as (keyof typeof limits)[]) {
+      if (!(key in p)) continue;
+      const v = p[key];
+      if (v === undefined || v === null) continue;
+      if (typeof v !== "string") {
+        return { ok: false, message: "Invalid profileContext" };
+      }
+      if (v.length > limits[key]) {
+        return { ok: false, message: "Invalid profileContext" };
+      }
+      profileOut[key] = v;
+    }
+    if (Object.keys(profileOut).length > 0) {
+      out.profile = profileOut;
+    }
+  }
+
+  if (src.certificates !== undefined && src.certificates !== null) {
+    if (!Array.isArray(src.certificates)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    if (src.certificates.length > 10) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    const certsOut: { name: string; expiry_date?: string }[] = [];
+    for (const item of src.certificates) {
+      if (typeof item === "string") {
+        if (item.length > 200) return { ok: false, message: "Invalid profileContext" };
+        certsOut.push({ name: item });
+      } else if (typeof item === "object" && item !== null && !Array.isArray(item)) {
+        const c = item as Record<string, unknown>;
+        if (typeof c.name !== "string" || c.name.length > 200) {
+          return { ok: false, message: "Invalid profileContext" };
+        }
+        const entry: { name: string; expiry_date?: string } = { name: c.name };
+        if (typeof c.expiry_date === "string" && c.expiry_date.length <= 50) {
+          entry.expiry_date = c.expiry_date;
+        }
+        certsOut.push(entry);
+      } else {
+        return { ok: false, message: "Invalid profileContext" };
+      }
+    }
+    out.certificates = certsOut;
+  }
+
+  if (src.scores !== undefined && src.scores !== null) {
+    if (typeof src.scores !== "object" || Array.isArray(src.scores)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    out.scores = src.scores;
+  }
+
+  if (src.achievements !== undefined && src.achievements !== null) {
+    if (!Array.isArray(src.achievements)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    if (!src.achievements.every((x): x is string => typeof x === "string")) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    out.achievements = src.achievements;
+  }
+
+  if (src.recentActivity !== undefined && src.recentActivity !== null) {
+    if (typeof src.recentActivity !== "number" || !Number.isFinite(src.recentActivity)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+    out.recentActivity = src.recentActivity;
+  }
+
+  return { ok: true, value: Object.keys(out).length > 0 ? out : null };
+}
+
+function validateChatBody(
+  body: Record<string, unknown>,
+):
+  | { ok: true; profileContext: Record<string, unknown> | null }
+  | { ok: false; message: string } {
   if (!Array.isArray(body.messages)) {
     return { ok: false, message: "Invalid messages" };
   }
@@ -115,7 +239,12 @@ function validateChatBody(body: Record<string, unknown>): { ok: true } | { ok: f
     }
   }
 
-  return { ok: true };
+  const pc = validateProfileContext(body.profileContext);
+  if (!pc.ok) {
+    return { ok: false, message: pc.message };
+  }
+
+  return { ok: true, profileContext: pc.value };
 }
 
 function parseJsonAssistantContent(raw: string): { message: string; priority?: string } | null {
@@ -133,19 +262,23 @@ function parseJsonAssistantContent(raw: string): { message: string; priority?: s
   }
 }
 
-async function handleDashboardSmartBlock(body: Record<string, unknown>, geminiKey: string): Promise<Response> {
+async function handleDashboardSmartBlock(
+  req: Request,
+  body: Record<string, unknown>,
+  geminiKey: string,
+): Promise<Response> {
   if (typeof body.weather !== "string" || body.weather.length > 100) {
-    return jsonError("Invalid weather", 400);
+    return jsonError(req, "Invalid weather", 400);
   }
   const weather = body.weather;
 
   if (typeof body.temperature !== "number" || !Number.isFinite(body.temperature)) {
-    return jsonError("Invalid temperature", 400);
+    return jsonError(req, "Invalid temperature", 400);
   }
   const temperature = body.temperature;
 
   if (typeof body.hoursLoggedYesterday !== "boolean") {
-    return jsonError("Invalid hoursLoggedYesterday", 400);
+    return jsonError(req, "Invalid hoursLoggedYesterday", 400);
   }
   const hoursLoggedYesterday = body.hoursLoggedYesterday;
 
@@ -155,7 +288,7 @@ async function handleDashboardSmartBlock(body: Record<string, unknown>, geminiKe
     body.leaderboardPosition < 1 ||
     body.leaderboardPosition > 999_999
   ) {
-    return jsonError("Invalid leaderboardPosition", 400);
+    return jsonError(req, "Invalid leaderboardPosition", 400);
   }
   const leaderboardPosition = body.leaderboardPosition;
 
@@ -200,7 +333,7 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
     console.error("dashboard smart block gateway error:", response.status, "[body geredacteerd]");
     return new Response(JSON.stringify({ error: "AI fout" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders(req),
     });
   }
 
@@ -209,7 +342,7 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
   if (typeof content !== "string") {
     return new Response(JSON.stringify({ error: "Ongeldig AI antwoord" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders(req),
     });
   }
 
@@ -217,7 +350,7 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
   if (!parsed?.message) {
     return new Response(JSON.stringify({ error: "Ongeldig JSON van AI" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders(req),
     });
   }
 
@@ -227,39 +360,42 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
 
   return new Response(JSON.stringify({ message: parsed.message, priority }), {
     status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: jsonHeaders(req),
   });
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: getCorsHeaders(req) });
+  }
 
   try {
     const body = await req.json() as Record<string, unknown>;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
       console.error("alhan-chat: GEMINI_API_KEY is not configured");
-      return jsonError("Interne fout", 500);
+      return jsonError(req, "Interne fout", 500);
     }
 
     const authFailure = await requireAuth(req);
     if (authFailure) return authFailure;
 
     if (body?.context === "dashboard_smart_block") {
-      return await handleDashboardSmartBlock(body, GEMINI_API_KEY);
+      return await handleDashboardSmartBlock(req, body, GEMINI_API_KEY);
     }
 
     const chatCheck = validateChatBody(body);
     if (!chatCheck.ok) {
-      return jsonError(chatCheck.message, 400);
+      return jsonError(req, chatCheck.message, 400);
     }
+    const sanitizedProfile = chatCheck.profileContext;
 
-    const { messages, profileContext, dashboardCoachContext } = body as {
+    const { messages, dashboardCoachContext } = body as {
       messages: unknown[];
       profileContext?: unknown;
       dashboardCoachContext?: string;
     };
-    const profileSummary = buildProfileSummary(profileContext);
+    const profileSummary = buildProfileSummary(sanitizedProfile);
 
     const dashboardBlock =
       dashboardCoachContext && String(dashboardCoachContext).trim()
@@ -307,31 +443,31 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Te veel verzoeken, probeer het later opnieuw." }), {
           status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders(req),
         });
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "Tegoed op, neem contact op met de beheerder." }), {
           status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: jsonHeaders(req),
         });
       }
       await response.text();
       console.error("AI gateway error:", response.status, "[body geredacteerd]");
       return new Response(JSON.stringify({ error: "AI fout" }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: jsonHeaders(req),
       });
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      headers: sseHeaders(req),
     });
   } catch (e) {
     console.error("chat error:", e);
     return new Response(JSON.stringify({ error: "Interne fout" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: jsonHeaders(req),
     });
   }
 });
