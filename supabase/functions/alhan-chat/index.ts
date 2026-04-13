@@ -57,14 +57,19 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, profileContext } = await req.json();
+    const { messages, profileContext, dashboardCoachContext } = await req.json();
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
     const profileSummary = buildProfileSummary(profileContext);
 
-    const systemPrompt = `Je bent Alhan, de AI profiel-coach van Alhan Groep B.V. — een uitzendbureau voor ZZP'ers in de bouw en infra sector in Nederland.
+    const dashboardBlock =
+      dashboardCoachContext && String(dashboardCoachContext).trim()
+        ? `\n\n## DASHBOARD COACH CONTEXT\n${String(dashboardCoachContext).trim()}\n`
+        : "";
 
+    const systemPrompt = `Je bent Alhan, de AI profiel-coach van Alhan Groep B.V. — een uitzendbureau voor ZZP'ers in de bouw en infra sector in Nederland.
+${dashboardBlock}
 ${profileSummary ? `## PROFIEL VAN DEZE GEBRUIKER
 ${profileSummary}
 

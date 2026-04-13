@@ -47,6 +47,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Alhan Groep gebruikt je locatie om het weer op je werklocatie te tonen.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

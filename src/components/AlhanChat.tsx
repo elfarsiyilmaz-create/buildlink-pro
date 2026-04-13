@@ -22,12 +22,14 @@ const LOGGED_IN_GREETING: Msg = {
 async function streamChat({
   messages,
   profileContext,
+  dashboardCoachContext,
   onDelta,
   onDone,
   onError,
 }: {
   messages: { role: string; content: string }[];
   profileContext: Record<string, unknown> | null;
+  dashboardCoachContext?: string;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (msg: string) => void;
@@ -37,8 +39,13 @@ async function streamChat({
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
     },
-    body: JSON.stringify({ messages, profileContext }),
+    body: JSON.stringify({
+      messages,
+      profileContext,
+      ...(dashboardCoachContext ? { dashboardCoachContext } : {}),
+    }),
   });
 
   if (!resp.ok || !resp.body) {
@@ -126,6 +133,12 @@ const AlhanChat = () => {
   const [authReady, setAuthReady] = useState(false);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const prevAuthUserIdRef = useRef<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener('alhan-chat:open', onOpen as EventListener);
+    return () => window.removeEventListener('alhan-chat:open', onOpen as EventListener);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -246,6 +259,7 @@ const AlhanChat = () => {
       await streamChat({
         messages: newMessages.map(m => ({ role: m.role, content: m.content })),
         profileContext,
+        dashboardCoachContext: undefined,
         onDelta: chunk => upsertAssistant(chunk),
         onDone: () => setLoading(false),
         onError: msg => {

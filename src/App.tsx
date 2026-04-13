@@ -134,6 +134,7 @@ const App = () => (
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/hours" element={<TimeRegistration />} />
+                <Route path="/time-registration" element={<Navigate to="/hours" replace />} />
                 <Route path="/wheel" element={<WheelOfFortunePage />} />
                 <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               </Route>
