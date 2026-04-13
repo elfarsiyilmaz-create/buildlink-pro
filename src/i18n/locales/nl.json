@@ -52,7 +52,7 @@
     "passwordUpdated": "Wachtwoord succesvol bijgewerkt"
   },
   "nav": { "home": "Home", "profile": "Profiel", "work": "Werk", "network": "Netwerk", "settings": "Instellingen", "admin": "Admin Panel", "leaderboard": "Leaderboard", "hours": "Uren" },
-  "home": { "welcome": "Welkom {{name}} 👋", "subtitle": "Alhan Groep — Bouwen met vertrouwen", "available": "Beschikbaar", "unavailable": "Niet beschikbaar", "profileComplete": "Jouw profiel is {{percentage}}% compleet", "documents": "Documenten", "license": "Rijbewijs", "region": "Regio", "referrals": "Referrals", "none": "Geen" },
+  "home": { "welcome": "Welkom {{name}} 👋", "welcomeGuest": "Welkom bij Alhan Groep 👋", "welcomeNew": "Welkom, {{name}} 👋", "welcomeBack": "Welkom terug, {{name}} 👋", "registerHere": "Registreer hier", "completeProfile": "Maak je profiel compleet", "tagline": "Alhan Groep — Bouwen met vertrouwen", "subtitle": "Alhan Groep — Bouwen met vertrouwen", "available": "Beschikbaar", "unavailable": "Niet beschikbaar", "profileComplete": "Jouw profiel is {{percentage}}% compleet", "documents": "Documenten", "license": "Rijbewijs", "region": "Regio", "referrals": "Referrals", "none": "Geen" },
   "profile": {
     "title": "Profiel", "step1Title": "Wie ben jij?", "step2Title": "Wat doe jij?", "step3Title": "Jouw gegevens",
     "step4Title": "Rijbewijs & Materiaal", "step5Title": "Jouw documenten", "firstName": "Voornaam", "lastName": "Achternaam",

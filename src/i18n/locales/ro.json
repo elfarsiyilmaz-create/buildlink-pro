@@ -86,6 +86,12 @@
   },
   "home": {
     "welcome": "Bun venit {{name}} 👋",
+    "welcomeGuest": "Welcome to Alhan Groep 👋",
+    "welcomeNew": "Welcome, {{name}} 👋",
+    "welcomeBack": "Welcome back, {{name}} 👋",
+    "registerHere": "Register here",
+    "completeProfile": "Complete your profile",
+    "tagline": "Alhan Groep — Building with trust",
     "subtitle": "Alhan Groep — Construim cu încredere",
     "available": "Disponibil",
     "unavailable": "Indisponibil",

@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Clock, CalendarDays, Cloud, Thermometer, FileCheck, Car, MapPin, Users } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Clock, CalendarDays, Cloud, Thermometer, FileCheck, Car, MapPin, Users, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import PersonalDashboard from '@/components/home/PersonalDashboard';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
+
+const DISPLAY_NAME_FALLBACK = 'Vakman';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -15,7 +17,9 @@ const Home = () => {
   const [time, setTime] = useState(new Date());
   const [available, setAvailable] = useState(false);
   const [weather, setWeather] = useState<{ temp: number; description: string } | null>(null);
-  const [userName, setUserName] = useState("ZZP'er");
+  const [displayName, setDisplayName] = useState(DISPLAY_NAME_FALLBACK);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const [profilePercentage, setProfilePercentage] = useState(0);
   const [stats, setStats] = useState({ documents: 0, referrals: 0, city: '--' });
 
@@ -24,36 +28,45 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Load real profile data
+  // Load real profile data (Home is behind AuthGuard — user is always authenticated here)
   useEffect(() => {
     const loadData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          setProfileLoaded(true);
+          navigate('/login', { replace: true });
+          return;
+        }
 
         const [profileRes, certsRes, referralsRes] = await Promise.all([
-          supabase.from('profiles').select('full_name, profile_completeness, city').eq('user_id', user.id).single(),
+          supabase
+            .from('profiles')
+            .select('full_name, profile_completeness, city, onboarding_completed')
+            .eq('user_id', user.id)
+            .single(),
           supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('referral_invites').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
         ]);
 
-        if (profileRes.data) {
-          const p = profileRes.data;
-          const name = p.full_name?.trim() || "ZZP'er";
-          setUserName(name);
-          setProfilePercentage(p.profile_completeness || 0);
-          setStats({
-            documents: certsRes.count || 0,
-            referrals: referralsRes.count || 0,
-            city: p.city || '--',
-          });
-        }
+        const p = profileRes.data;
+        const name = (p?.full_name?.trim() && p.full_name.trim().length > 0 ? p.full_name.trim() : null) || DISPLAY_NAME_FALLBACK;
+        setDisplayName(name);
+        setOnboardingCompleted(!!p?.onboarding_completed);
+        setProfilePercentage(p?.profile_completeness || 0);
+        setStats({
+          documents: certsRes.count || 0,
+          referrals: referralsRes.count || 0,
+          city: p?.city || '--',
+        });
       } catch (err) {
         console.error('Error loading home data:', err);
+      } finally {
+        setProfileLoaded(true);
       }
     };
-    loadData();
-  }, []);
+    void loadData();
+  }, [navigate]);
 
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
@@ -96,8 +109,26 @@ const Home = () => {
 
       {/* Welcome Header */}
       <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
-        <h1 className="text-2xl font-bold text-foreground">{t('home.welcome', { name: userName })}</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">{t('home.subtitle')}</p>
+        {!profileLoaded ? (
+          <div className="flex items-center gap-2 py-1 min-h-[2.5rem]">
+            <Loader2 className="w-6 h-6 animate-spin text-primary shrink-0" aria-hidden />
+            <span className="text-sm text-muted-foreground">{t('common.loading')}</span>
+          </div>
+        ) : !onboardingCompleted ? (
+          <>
+            <h1 className="text-2xl font-bold text-foreground">{t('home.welcomeNew', { name: displayName })}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              <Link to="/onboarding" className="text-primary font-medium underline-offset-2 hover:underline">
+                {t('home.completeProfile')}
+              </Link>
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold text-foreground">{t('home.welcomeBack', { name: displayName })}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{t('home.tagline')}</p>
+          </>
+        )}
       </motion.div>
 
       {/* Widget Grid */}
