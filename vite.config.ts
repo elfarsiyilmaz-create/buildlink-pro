@@ -70,19 +70,23 @@ export default defineConfig(({ mode }) => ({
     cssCodeSplit: true,
     rollupOptions: {
       output: {
+        experimentalMinChunkSize: 0,
         manualChunks: {
-          "vendor-react": ["react", "react-dom", "react-router-dom"],
-          "vendor-supabase": ["@supabase/supabase-js"],
-          "vendor-ui": [
-            "framer-motion",
+          core: ["react", "react-dom", "react-router-dom"],
+          supabase: ["@supabase/supabase-js"],
+          query: ["@tanstack/react-query"],
+          motion: ["framer-motion"],
+          ui: [
             "@radix-ui/react-dialog",
             "@radix-ui/react-select",
             "@radix-ui/react-popover",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-toast",
           ],
-          "vendor-query": ["@tanstack/react-query"],
-          "vendor-charts": ["recharts"],
-          "vendor-i18n": ["i18next", "react-i18next"],
-          "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
+          i18n: ["i18next", "react-i18next"],
+          forms: ["react-hook-form", "@hookform/resolvers", "zod"],
         },
       },
     },

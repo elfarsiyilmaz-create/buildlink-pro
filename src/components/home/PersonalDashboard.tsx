@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { BarChart3, Trophy, Flame, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+const PersonalDashboardChart = lazy(() => import('@/components/home/PersonalDashboardChart'));
 
 const PersonalDashboard = () => {
   const { t } = useTranslation();
@@ -104,21 +104,9 @@ const PersonalDashboard = () => {
       {/* Weekly Activity Chart */}
       {weekData.length > 0 && (
         <div className="h-32">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weekData}>
-              <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis hide />
-              <Tooltip
-                contentStyle={{
-                  background: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
-                  fontSize: '12px',
-                }}
-              />
-              <Bar dataKey="punten" fill="hsl(0, 100%, 50%)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <Suspense fallback={<div className="h-32 animate-pulse rounded-lg bg-muted/30" />}>
+            <PersonalDashboardChart data={weekData} />
+          </Suspense>
         </div>
       )}
     </motion.div>

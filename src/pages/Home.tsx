@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { FileCheck, Car, MapPin, Users, Loader2, Sun, Cloud, CloudRain, Bot } from 'lucide-react';
@@ -9,7 +9,6 @@ import { Geolocation } from '@capacitor/geolocation';
 import { supabase } from '@/integrations/supabase/client';
 import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
-import PersonalDashboard from '@/components/home/PersonalDashboard';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
 import { fetchDashboardSmartBlock } from '@/lib/fetchDashboardSmartBlock';
 
@@ -66,6 +65,7 @@ function weatherPresentation(live: LiveWeather | null, offline: boolean): { kind
 }
 
 type CoachUi = 'loading' | 'ready' | 'error' | 'timeout';
+const PersonalDashboard = lazy(() => import('@/components/home/PersonalDashboard'));
 
 const Home = () => {
   const navigate = useNavigate();
@@ -83,6 +83,23 @@ const Home = () => {
   const [coachMessage, setCoachMessage] = useState('');
   const [coachPriority, setCoachPriority] = useState<'low' | 'medium' | 'high'>('low');
   const [coachUi, setCoachUi] = useState<CoachUi>('loading');
+  const [mountSmartBlock, setMountSmartBlock] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: number | null = null;
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(() => setMountSmartBlock(true));
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    timeoutId = window.setTimeout(() => setMountSmartBlock(true), 0);
+    return () => {
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const loadWeatherAndCoach = async (userId: string) => {
@@ -292,7 +309,7 @@ const Home = () => {
         <div className="pt-safe">
           <div className="relative overflow-hidden rounded-2xl border border-border/60">
             <div className={`absolute inset-0 ${glowClass}`} style={{ willChange: 'transform' }} aria-hidden />
-            <div className="relative isolate flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-border/40 bg-background/45 px-4 py-3 backdrop-blur-md [contain:layout] dark:bg-background/35">
+            <div className="relative isolate flex min-h-[64px] flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-border/40 bg-background/45 px-4 py-3 backdrop-blur-md [contain:layout] dark:bg-background/35">
               <span className="text-sm font-semibold capitalize text-foreground">{shortDate}</span>
               <WeatherIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
               <span className="text-lg font-bold tabular-nums text-foreground">
@@ -321,8 +338,8 @@ const Home = () => {
               <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl bg-background/80">
                 <Bot className="h-6 w-6 text-primary" aria-hidden />
               </span>
-              {coachUi === 'loading' ? (
-                <div className="min-h-[44px] flex-1 animate-pulse space-y-2 py-1.5">
+              {!mountSmartBlock || coachUi === 'loading' ? (
+                <div className="min-h-[56px] flex-1 animate-pulse space-y-2 py-1.5">
                   <span className="sr-only">{td('aiLoading')}</span>
                   <div className="h-2.5 w-3/4 rounded bg-muted" />
                   <div className="h-2.5 w-full rounded bg-muted" />
@@ -368,7 +385,9 @@ const Home = () => {
       </motion.div>
 
       <motion.div {...fadeUp} transition={{ delay: 0.4 }}>
-        <PersonalDashboard />
+        <Suspense fallback={<div className="glass-card min-h-[260px] rounded-2xl p-4 animate-pulse" />}>
+          <PersonalDashboard />
+        </Suspense>
       </motion.div>
 
       <motion.div {...fadeUp} transition={{ delay: 0.45 }}>
