@@ -1,22 +1,57 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.8";
 
-const ALLOWED_ORIGINS = [
+const CORS_ALLOW_HEADERS = [
+  "authorization",
+  "x-client-info",
+  "apikey",
+  "content-type",
+  "x-supabase-client-platform",
+  "x-supabase-client-platform-version",
+  "x-supabase-client-runtime",
+  "x-supabase-client-runtime-version",
+].join(", ");
+
+const envOrigins = Deno.env.get("ALLOWED_ORIGINS") ?? "";
+const parsedEnvOrigins = envOrigins
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const ALLOWED_ORIGINS = new Set([
   "http://localhost:5173",
   "http://localhost:4173",
   "capacitor://localhost",
   "https://localhost",
-] as const;
+  ...parsedEnvOrigins,
+]);
+
+const isProduction =
+  Deno.env.get("ENVIRONMENT") === "production" ||
+  Deno.env.get("DENO_DEPLOYMENT_ID") !== undefined;
+
+if (isProduction && parsedEnvOrigins.length === 0) {
+  console.error(
+    "[SECURITY] ALLOWED_ORIGINS is niet geconfigureerd in productie. " +
+      "Alleen dev-origins zijn actief. " +
+      "Stel ALLOWED_ORIGINS in via Supabase secrets.",
+  );
+}
 
 function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get("Origin") ?? "";
-  const allowed = ALLOWED_ORIGINS as readonly string[];
-  const allowedOrigin = allowed.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  const origin = req.headers.get("origin") ?? "";
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": CORS_ALLOW_HEADERS,
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
   };
+
+  if (ALLOWED_ORIGINS.has(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+
+  return headers;
 }
 
 function jsonHeaders(req: Request): Record<string, string> {
@@ -110,6 +145,49 @@ async function requireAuth(req: Request): Promise<Response | null> {
   return null;
 }
 
+function validateScores(
+  src: unknown,
+): { ok: true; scores: Record<string, number> } | { ok: false; message: string } {
+  if (src === undefined || src === null) {
+    return { ok: true, scores: {} };
+  }
+
+  if (typeof src !== "object" || Array.isArray(src)) {
+    return { ok: false, message: "Invalid profileContext" };
+  }
+
+  const ALLOWED_FIELDS: Record<string, { min: number; max: number }> = {
+    level: { min: 0, max: 1_000 },
+    total_points: { min: 0, max: 10_000_000 },
+    current_streak: { min: 0, max: 100_000 },
+    challenges_completed: { min: 0, max: 1_000_000 },
+  };
+
+  const raw = src as Record<string, unknown>;
+  const out: Record<string, number> = {};
+
+  for (const key of Object.keys(raw)) {
+    if (!(key in ALLOWED_FIELDS)) {
+      return { ok: false, message: "Invalid profileContext" };
+    }
+  }
+
+  for (const [key, limits] of Object.entries(ALLOWED_FIELDS)) {
+    if (key in raw) {
+      const val = raw[key];
+      if (typeof val !== "number" || !Number.isFinite(val)) {
+        return { ok: false, message: "Invalid profileContext" };
+      }
+      if (val < limits.min || val > limits.max) {
+        return { ok: false, message: "Invalid profileContext" };
+      }
+      out[key] = val;
+    }
+  }
+
+  return { ok: true, scores: out };
+}
+
 /** Strips unknown profile keys; validates listed fields. Pass-through scores/achievements/recentActivity when well-typed. */
 function validateProfileContext(
   raw: unknown,
@@ -182,11 +260,12 @@ function validateProfileContext(
     out.certificates = certsOut;
   }
 
-  if (src.scores !== undefined && src.scores !== null) {
-    if (typeof src.scores !== "object" || Array.isArray(src.scores)) {
-      return { ok: false, message: "Invalid profileContext" };
-    }
-    out.scores = src.scores;
+  const scoresResult = validateScores(src.scores);
+  if (!scoresResult.ok) {
+    return scoresResult;
+  }
+  if (Object.keys(scoresResult.scores).length > 0) {
+    out.scores = scoresResult.scores;
   }
 
   if (src.achievements !== undefined && src.achievements !== null) {
