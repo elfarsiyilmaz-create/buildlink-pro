@@ -15,6 +15,7 @@ const Onboarding = () => {
     { emoji: '👋', titleKey: 'onboarding.slide1Title', textKey: 'onboarding.slide1Text' },
     { emoji: '📝', titleKey: 'onboarding.slide2Title', textKey: 'onboarding.slide2Text' },
     { emoji: '🎁', titleKey: 'onboarding.slide3Title', textKey: 'onboarding.slide3Text' },
+    { emoji: '🏆', titleKey: 'onboarding.slide4Title', textKey: 'onboarding.slide4Text' },
   ];
 
   const handleComplete = useCallback(async () => {
@@ -45,8 +46,6 @@ const Onboarding = () => {
     }
   }, [navigate, t, i18n.resolvedLanguage, i18n.language]);
 
-  const handleSkip = () => handleComplete();
-
   const handleSwipe = (dir: 'left' | 'right') => {
     if (dir === 'left' && slideIndex < slides.length - 1) setSlideIndex(s => s + 1);
     if (dir === 'right' && slideIndex > 0) setSlideIndex(s => s - 1);
@@ -54,17 +53,6 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="absolute top-4 right-4 z-10">
-        <button
-          type="button"
-          onClick={handleSkip}
-          className="text-sm text-foreground/80 hover:text-foreground transition-colors px-3 py-1.5"
-          aria-label={t('onboarding.skip')}
-        >
-          {t('onboarding.skip')}
-        </button>
-      </div>
-
       <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10">
         <AnimatePresence mode="wait">
           <motion.div
