@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;

@@ -4,18 +4,16 @@ import { Browser } from "@capacitor/browser";
 import { Capacitor } from "@capacitor/core";
 import { Loader2 } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import Layout from "@/components/Layout";
 import AuthGuard from "@/components/AuthGuard";
 import AdminGuard from "@/components/AdminGuard";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import AlhanChat from "@/components/AlhanChat";
+import Login from "@/pages/Login";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Profile = lazy(() => import("@/pages/Profile"));
@@ -23,7 +21,9 @@ const Work = lazy(() => import("@/pages/Work"));
 const Network = lazy(() => import("@/pages/Network"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const Settings = lazy(() => import("@/pages/Settings"));
-const Login = lazy(() => import("@/pages/Login"));
+const AlhanChat = lazy(() => import("@/components/AlhanChat"));
+const PWAInstallPrompt = lazy(() => import("@/components/PWAInstallPrompt"));
+const Layout = lazy(() => import("@/components/Layout"));
 const Register = lazy(() => import("@/pages/Register"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
@@ -35,6 +35,19 @@ const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+const PUBLIC_AUTH_PATHS = new Set(["/login", "/register", "/forgot-password", "/reset-password"]);
+
+const DeferredGlobalChrome = () => {
+  const { pathname } = useLocation();
+  if (PUBLIC_AUTH_PATHS.has(pathname)) return null;
+  return (
+    <Suspense fallback={null}>
+      <PWAInstallPrompt />
+      <AlhanChat />
+    </Suspense>
+  );
+};
 
 const routeFallback = (
   <div className="flex items-center justify-center min-h-screen">
@@ -122,7 +135,9 @@ const App = () => (
               } />
               <Route element={
                 <AuthGuard>
-                  <Layout />
+                  <Suspense fallback={routeFallback}>
+                    <Layout />
+                  </Suspense>
                 </AuthGuard>
               }>
                 <Route path="/" element={<Home />} />
@@ -141,8 +156,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-          <PWAInstallPrompt />
-          <AlhanChat />
+          <DeferredGlobalChrome />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

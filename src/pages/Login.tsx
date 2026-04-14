@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
@@ -90,11 +89,7 @@ const Login = () => {
         De AI-chat FAB op /login wordt in AlhanChat hoger gezet zodat hij boven deze footer staat (min. 44×44px).
       */}
       <main id="main-content" className="flex-1 flex flex-col items-center justify-center px-6 py-10 min-h-0">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm space-y-8"
-        >
+        <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="text-center">
             <div className="flex justify-center mb-4">
               <Logo size="lg" />
@@ -206,7 +201,7 @@ const Login = () => {
               </Link>
             </p>
           </form>
-        </motion.div>
+        </div>
       </main>
       <footer className="shrink-0 w-full border-t border-border/60 bg-background/95 px-6 pt-3 pb-safe backdrop-blur supports-[backdrop-filter]:bg-background/85">
         <div className="max-w-sm mx-auto w-full flex justify-center">
