@@ -1,28 +1,18 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { Save, Loader2 } from 'lucide-react';
+import { Camera, ChevronLeft, Loader2, Bell, Clock3, Home as HomeIcon, User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn, initialsFromFullName } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
-import CertificateSection from '@/components/CertificateSection';
-import ProfilePhotoUpload from '@/components/profile/ProfilePhotoUpload';
-import AboutTransportSection from '@/components/profile/AboutTransportSection';
-import ProfileCompletenessRing from '@/components/profile/ProfileCompletenessRing';
-import CompletenessBanner from '@/components/profile/CompletenessBanner';
-import ProfileWizard from '@/components/profile/ProfileWizard';
 import { useProfileCompleteness } from '@/hooks/useProfileCompleteness';
+import { Link, useNavigate } from 'react-router-dom';
 
 const profileSchema = z.object({
   full_name: z.string().min(1, 'Verplicht').max(200),
@@ -64,18 +54,19 @@ const LANGUAGES = [
 
 const Profile = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<Record<string, unknown> | null>(null);
   const [hasCerts, setHasCerts] = useState(false);
   const [hasAvail, setHasAvail] = useState(false);
-  const [wizardOpen, setWizardOpen] = useState(false);
-  const [wizardStep, setWizardStep] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const rewardedRef = useRef(false);
 
   const completeness = useProfileCompleteness(profileData, hasCerts, hasAvail);
@@ -170,6 +161,7 @@ const Profile = () => {
 
   const fullNameWatch = watch('full_name');
   const initials = initialsFromFullName(fullNameWatch);
+  const hasOwnEquipment = watch('has_own_equipment');
 
   const loadProfile = async () => {
     try {
@@ -270,175 +262,315 @@ const Profile = () => {
     }
   };
 
-  const openWizard = (step?: number) => {
-    setWizardStep(step ?? 0);
-    setWizardOpen(true);
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !userId) return;
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+      toast.error('Alleen JPG en PNG bestanden');
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+      const path = `${userId}/avatar.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { contentType: file.type, upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+      const signedUrl = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: signedUrl })
+        .eq('user_id', userId);
+      if (updateError) throw updateError;
+
+      setAvatarUrl(signedUrl);
+      toast.success('Profielfoto bijgewerkt');
+    } catch (err: any) {
+      toast.error(err.message || 'Upload mislukt');
+    } finally {
+      setUploadingPhoto(false);
+      if (event.target) event.target.value = '';
+    }
   };
+
+  const profilePercentage = useMemo(
+    () => (Number.isFinite(completeness.percentage) ? completeness.percentage : 0),
+    [completeness.percentage],
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex min-h-dvh items-center justify-center bg-[#f3f3f5]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="py-5 space-y-5 pb-24"
-    >
-      <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
+    <div className="min-h-dvh bg-[#f3f3f5]">
+      <div className="mx-auto w-full max-w-[430px] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+128px)] pt-6">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="mb-4 inline-flex items-center gap-1 text-[17px] text-[#B91C1C]"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          <span>Terug</span>
+        </button>
 
-      {/* Completeness Banner */}
-      <CompletenessBanner
-        percentage={completeness.percentage}
-        missingFields={completeness.missingFields}
-        color={completeness.color}
-        onOpenWizard={openWizard}
-      />
+        <h1 className="mb-3 text-[40px] font-semibold leading-none tracking-[-0.01em] text-zinc-900">Profiel</h1>
 
-      {/* Avatar with Progress Ring */}
-      <div className="glass-card rounded-2xl p-6 flex flex-col items-center gap-3">
-        <ProfileCompletenessRing
-          percentage={completeness.percentage}
-          color={completeness.color}
-          avatarUrl={avatarUrl}
-          initials={initials}
-        />
-        <ProfilePhotoUpload
-          avatarUrl={null}
-          initials=""
-          userId={userId}
-          onPhotoUpdated={(url) => {
-            setAvatarUrl(url);
-            setRefreshKey(k => k + 1);
-          }}
-        />
+        <section className="rounded-[18px] border border-black/[0.035] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+          <div className="flex items-center justify-between px-4 py-3">
+            <p className="text-[17px] font-medium text-zinc-900">Profiel aanvullen</p>
+            <p className="text-[17px] text-zinc-700">{profilePercentage}% compleet</p>
+          </div>
+          <div className="h-[4px] bg-zinc-200">
+            <div className="h-full bg-[#B91C1C]" style={{ width: `${profilePercentage}%` }} />
+          </div>
+          <p className="px-4 py-3 text-[15px] text-zinc-700">Vul je profiel aan om meer opdrachten te krijgen</p>
+        </section>
+
+        <section className="mt-4 rounded-[18px] border border-black/[0.035] bg-white px-4 py-6 text-center shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+          <div className="relative mx-auto mb-3.5 h-[94px] w-[94px]">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="h-full w-full rounded-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-zinc-100 text-[42px] font-medium text-zinc-500">
+                {initials || 'ZZ'}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 flex h-8.5 w-8.5 items-center justify-center rounded-full bg-[#B91C1C] text-white shadow"
+              aria-label="Upload profielfoto"
+            >
+              {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+            </button>
+          </div>
+          <p className="text-[15px] text-zinc-700">{email || 'fwvjkn25xc@privaterelay.appleid.com'}</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png"
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+        </section>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+          <section className="overflow-hidden rounded-[18px] border border-black/[0.04] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+            <h2 className="border-b border-zinc-200 px-4 py-3 text-[13px] font-medium uppercase tracking-wide text-zinc-600">
+              PERSOONLIJKE GEGEVENS
+            </h2>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Volledige naam</p>
+              <Input {...register('full_name')} placeholder="Voer je naam in" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+              {errors.full_name ? <p className="mt-1 text-xs text-destructive">{errors.full_name.message}</p> : null}
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Telefoonnummer</p>
+              <Input {...register('phone')} placeholder="06 - 1234 5678" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+              {errors.phone ? <p className="mt-1 text-xs text-destructive">{errors.phone.message}</p> : null}
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">E-mailadres</p>
+              <p className="mt-1 text-[17px] text-zinc-900">{email}</p>
+            </div>
+
+            <div className="px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Geboortedatum</p>
+              <Input
+                type="date"
+                value={dateOfBirth ? format(dateOfBirth, 'yyyy-MM-dd') : ''}
+                onChange={e => {
+                  const nextDate = e.target.value ? new Date(e.target.value) : undefined;
+                  setDateOfBirth(nextDate);
+                  setValue('date_of_birth', nextDate || null);
+                }}
+                className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0"
+              />
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-[18px] border border-black/[0.04] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+            <h2 className="border-b border-zinc-200 px-4 py-3 text-[13px] font-medium uppercase tracking-wide text-zinc-600">
+              BEDRIJFSGEGEVENS
+            </h2>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">KVK nummer</p>
+              <Input {...register('kvk_number')} maxLength={8} placeholder="12345678" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Adres</p>
+              <Input {...register('address')} placeholder="Straatnaam + nummer" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+            </div>
+
+            <div className="grid grid-cols-2 border-b border-zinc-200">
+              <div className="border-r border-zinc-200 px-4 py-3">
+                <p className="text-[13px] text-zinc-700">Stad</p>
+                <Input {...register('city')} placeholder="Stad" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+              </div>
+              <div className="px-4 py-3">
+                <p className="text-[13px] text-zinc-700">Postcode</p>
+                <Input {...register('postal_code')} placeholder="1234 AB" className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0" />
+              </div>
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Specialisatie</p>
+              <Select value={watch('specialization') || ''} onValueChange={v => setValue('specialization', v)}>
+                <SelectTrigger className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus:ring-0">
+                  <SelectValue placeholder="Kies specialisatie" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SPECIALIZATIONS.map(s => (
+                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Uurtarief</p>
+              <Input
+                type="number"
+                step="0.50"
+                min="0"
+                max="999"
+                {...register('hourly_rate', { valueAsNumber: true })}
+                placeholder="€"
+                className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus-visible:ring-0"
+              />
+            </div>
+          </section>
+
+          <section className="overflow-hidden rounded-[18px] border border-black/[0.04] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+            <h2 className="border-b border-zinc-200 px-4 py-3 text-[13px] font-medium uppercase tracking-wide text-zinc-600">
+              OVER JOU & UITRUSTING
+            </h2>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Over mij / Werkervaring</p>
+              <textarea
+                {...register('bio')}
+                rows={3}
+                placeholder="Vertel iets over jezelf en je werkervaring..."
+                className={cn(
+                  'mt-1 w-full resize-none border-0 bg-transparent p-0 text-[17px] text-zinc-900 outline-none placeholder:text-zinc-400',
+                )}
+              />
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Vervoer</p>
+              <Select value={watch('transport_type') || ''} onValueChange={v => setValue('transport_type', v)}>
+                <SelectTrigger className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus:ring-0">
+                  <SelectValue placeholder="Hoe kom je naar werk?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">Auto</SelectItem>
+                  <SelectItem value="bus">Bus</SelectItem>
+                  <SelectItem value="trein">Trein</SelectItem>
+                  <SelectItem value="fiets">Fiets</SelectItem>
+                  <SelectItem value="anders">Anders</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="border-b border-zinc-200 px-4 py-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[17px] text-zinc-900">Eigen gereedschap</p>
+                <Switch
+                  checked={!!hasOwnEquipment}
+                  onCheckedChange={checked => setValue('has_own_equipment', checked)}
+                />
+              </div>
+            </div>
+
+            <div className="px-4 py-3">
+              <p className="text-[13px] text-zinc-700">Taal</p>
+              <Select value={watch('preferred_language') || 'nl'} onValueChange={v => setValue('preferred_language', v)}>
+                <SelectTrigger className="mt-1 h-7 border-0 px-0 text-[17px] shadow-none focus:ring-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map(l => (
+                    <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </section>
+
+          <button
+            type="submit"
+            className="h-[47px] w-full rounded-[12px] bg-[#C0161E] text-[17px] font-semibold text-white disabled:opacity-60"
+            disabled={saving}
+          >
+            {saving ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Opslaan
+              </span>
+            ) : 'Opslaan'}
+          </button>
+        </form>
+
+        <section className="mt-4 overflow-hidden rounded-[18px] border border-black/[0.04] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]">
+          <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
+            <h2 className="text-[13px] font-medium uppercase tracking-wide text-zinc-600">MIJN CERTIFICATEN</h2>
+            <button type="button" className="text-[14px] font-medium text-[#B91C1C]">+ Toevoegen</button>
+          </div>
+          <p className="px-4 py-6 text-center text-[15px] text-zinc-500">
+            {hasCerts ? 'Certificaten toegevoegd' : 'Nog geen certificaten toegevoegd'}
+          </p>
+        </section>
       </div>
-      <p className="text-sm text-muted-foreground text-center">{email}</p>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="full_name">{t('auth.fullName')}</Label>
-          <Input id="full_name" {...register('full_name')} className="bg-card" />
-          {errors.full_name && <p className="text-xs text-destructive">{errors.full_name.message}</p>}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
+        <div className="mx-auto w-full max-w-[430px] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
+          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white px-3 py-1 shadow-[0_-1px_8px_rgba(15,23,42,0.06)]">
+            <ul className="grid grid-cols-4">
+              <li>
+                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <HomeIcon className="h-5 w-5" />
+                  <span className="text-[11px]">Home</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <Clock3 className="h-5 w-5" />
+                  <span className="text-[11px]">Uren</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/notifications" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <Bell className="h-5 w-5" />
+                  <span className="text-[11px]">Meldingen</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-[#B91C1C]">
+                  <User className="h-5 w-5" />
+                  <span className="text-[11px] font-medium">Profiel</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="phone">{t('profile.phone')}</Label>
-          <Input id="phone" type="tel" {...register('phone')} className="bg-card" />
-          {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label>{t('auth.email')}</Label>
-          <Input value={email} readOnly disabled className="bg-muted" />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label>Geboortedatum</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-full justify-start text-left font-normal bg-card", !dateOfBirth && "text-muted-foreground")}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateOfBirth ? format(dateOfBirth, 'dd-MM-yyyy') : 'Selecteer datum'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar mode="single" selected={dateOfBirth} onSelect={(date) => { setDateOfBirth(date); setValue('date_of_birth', date || null); }} disabled={(date) => date > new Date() || date < new Date('1940-01-01')} initialFocus className="p-3 pointer-events-auto" />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="kvk_number">KVK nummer</Label>
-          <Input id="kvk_number" {...register('kvk_number')} maxLength={8} placeholder="12345678" className="bg-card" />
-          {errors.kvk_number && <p className="text-xs text-destructive">{errors.kvk_number.message}</p>}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="address">Adres</Label>
-          <Input id="address" {...register('address')} className="bg-card" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="city">Stad</Label>
-            <Input id="city" {...register('city')} className="bg-card" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="postal_code">Postcode</Label>
-            <Input id="postal_code" {...register('postal_code')} className="bg-card" />
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label>Specialisatie</Label>
-          <Select value={watch('specialization') || ''} onValueChange={(v) => setValue('specialization', v)}>
-            <SelectTrigger className="bg-card">
-              <SelectValue placeholder="Kies specialisatie" />
-            </SelectTrigger>
-            <SelectContent>
-              {SPECIALIZATIONS.map((s) => (
-                <SelectItem key={s} value={s}>{s}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="hourly_rate">{t('profile.hourlyRate')}</Label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">€</span>
-            <Input id="hourly_rate" type="number" step="0.50" min="0" max="999" className="pl-7 bg-card" {...register('hourly_rate', { valueAsNumber: true })} />
-          </div>
-        </div>
-
-        <div className="border-t border-border pt-4 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Over jou & Uitrusting</h2>
-          <AboutTransportSection register={register} watch={watch} setValue={setValue} />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label>{t('settings.language')}</Label>
-          <Select value={watch('preferred_language') || 'nl'} onValueChange={(v) => setValue('preferred_language', v)}>
-            <SelectTrigger className="bg-card">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGUAGES.map((l) => (
-                <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="submit" className="w-full" disabled={saving}>
-          {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-          {t('common.save')}
-        </Button>
-      </form>
-
-      <CertificateSection />
-
-      {/* Wizard */}
-      <ProfileWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-        initialStep={wizardStep}
-        profileData={profileData}
-        userId={userId}
-        avatarUrl={avatarUrl}
-        onProfileUpdated={() => setRefreshKey(k => k + 1)}
-        onAvatarUpdated={(url) => {
-          setAvatarUrl(url);
-          setRefreshKey(k => k + 1);
-        }}
-      />
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

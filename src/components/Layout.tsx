@@ -18,6 +18,9 @@ const Layout = () => {
   const location = useLocation();
   const { isAdmin } = useUserRole();
   const isHomeRoute = location.pathname === '/';
+  const isProfileRoute = location.pathname === '/profile';
+  const isHoursRoute = location.pathname === '/hours';
+  const useNativeLikeScreen = isHomeRoute || isProfileRoute || isHoursRoute;
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -54,7 +57,7 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {!isHomeRoute ? (
+      {!useNativeLikeScreen ? (
         <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
           <div className="flex items-center justify-between px-4 h-14">
             <button
@@ -176,7 +179,7 @@ const Layout = () => {
 
       <main
         id="main-content"
-        className={isHomeRoute ? 'mx-auto w-full max-w-none px-0 pt-0 pb-0' : 'pt-14 px-4 max-w-lg mx-auto pb-safe'}
+        className={useNativeLikeScreen ? 'mx-auto w-full max-w-none px-0 pt-0 pb-0' : 'pt-14 px-4 max-w-lg mx-auto pb-safe'}
       >
         <Outlet />
       </main>
