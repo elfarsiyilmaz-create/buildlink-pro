@@ -5,14 +5,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ShieldX, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
+import ProfileGate from '@/components/ProfileGate';
+import { fetchUserIsAdmin } from '@/hooks/useUserRole';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
+function isProfileCompleteForGate(fullName: string | null | undefined, phone: string | null | undefined, kvk: string | null | undefined): boolean {
+  return !!(fullName?.trim() && phone?.trim() && kvk?.trim());
+}
+
 const AuthGuard = ({ children }: AuthGuardProps) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'approved' | 'rejected' | 'unverified' | 'onboarding' | 'none'>('none');
+  const [showProfileGate, setShowProfileGate] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -29,30 +36,39 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       // Check if email is confirmed
       const user = session.user;
       if (!user.email_confirmed_at) {
+        setShowProfileGate(false);
         setStatus('unverified');
         setLoading(false);
         return;
       }
 
-      // Check profile status
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('status, onboarding_completed')
-        .eq('user_id', user.id)
-        .single();
+      const [{ data: profile }, isAdmin] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('status, onboarding_completed, full_name, phone, kvk_number')
+          .eq('user_id', user.id)
+          .maybeSingle(),
+        fetchUserIsAdmin(user.id),
+      ]);
 
       const profileStatus = (profile?.status as string) || 'pending';
 
       if (profileStatus === 'rejected') {
+        setShowProfileGate(false);
         setStatus('rejected');
       } else {
         // No admin-approval gate: pending and other non-rejected statuses get full app access
         const onboardingShownThisSession = sessionStorage.getItem('onboarding_shown');
         if (!onboardingShownThisSession && location.pathname !== '/onboarding') {
+          setShowProfileGate(false);
           navigate('/onboarding', { replace: true });
           setStatus('onboarding');
         } else {
           setStatus('approved');
+          const onboardingDone = !!profile?.onboarding_completed;
+          const profileComplete = isProfileCompleteForGate(profile?.full_name, profile?.phone, profile?.kvk_number);
+          const pathAllowsGate = location.pathname !== '/profile' && location.pathname !== '/onboarding';
+          setShowProfileGate(onboardingDone && !profileComplete && !isAdmin && pathAllowsGate);
         }
       }
 
@@ -124,6 +140,10 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   }
 
   if (status === 'onboarding') return <>{children}</>;
+
+  if (showProfileGate) {
+    return <ProfileGate />;
+  }
 
   return <>{children}</>;
 };

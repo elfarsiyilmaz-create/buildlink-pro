@@ -28,6 +28,14 @@
     "registerNow": "Registreer nu"
   },
   "splash": { "welcome": "Welkom bij Alhan Groep 💪" },
+  "profileGate": {
+    "title": "Maak je profiel compleet",
+    "subtitle": "Vul je profiel in om alle functies te ontgrendelen",
+    "cta": "Profiel invullen",
+    "benefit1": "✓ Zichtbaar voor opdrachtgevers",
+    "benefit2": "✓ Uren registreren",
+    "benefit3": "✓ Punten verdienen"
+  },
   "auth": {
     "login": "Inloggen", "register": "Registreren", "email": "E-mailadres", "password": "Wachtwoord",
     "confirmPassword": "Wachtwoord bevestigen", "forgotPassword": "Wachtwoord vergeten?",
