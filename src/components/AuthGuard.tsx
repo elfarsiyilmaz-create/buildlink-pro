@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ShieldX, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/Logo';
-import ProfileGate from '@/components/ProfileGate';
 import { fetchUserIsAdmin } from '@/hooks/useUserRole';
 
 interface AuthGuardProps {
@@ -19,7 +18,6 @@ function isProfileCompleteForGate(fullName: string | null | undefined, phone: st
 const AuthGuard = ({ children }: AuthGuardProps) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'approved' | 'rejected' | 'unverified' | 'onboarding' | 'none'>('none');
-  const [showProfileGate, setShowProfileGate] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -36,39 +34,54 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       // Check if email is confirmed
       const user = session.user;
       if (!user.email_confirmed_at) {
-        setShowProfileGate(false);
         setStatus('unverified');
         setLoading(false);
         return;
       }
 
-      const [{ data: profile }, isAdmin] = await Promise.all([
+      const [{ data: profile }, { count: availabilityCount }, isAdmin] = await Promise.all([
         supabase
           .from('profiles')
           .select('status, onboarding_completed, full_name, phone, kvk_number')
           .eq('user_id', user.id)
           .maybeSingle(),
+        supabase
+          .from('availability')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id),
         fetchUserIsAdmin(user.id),
       ]);
 
       const profileStatus = (profile?.status as string) || 'pending';
 
       if (profileStatus === 'rejected') {
-        setShowProfileGate(false);
         setStatus('rejected');
       } else {
         // No admin-approval gate: pending and other non-rejected statuses get full app access
         const onboardingShownThisSession = sessionStorage.getItem('onboarding_shown');
         if (!onboardingShownThisSession && location.pathname !== '/onboarding') {
-          setShowProfileGate(false);
           navigate('/onboarding', { replace: true });
           setStatus('onboarding');
         } else {
           setStatus('approved');
           const onboardingDone = !!profile?.onboarding_completed;
-          const profileComplete = isProfileCompleteForGate(profile?.full_name, profile?.phone, profile?.kvk_number);
-          const pathAllowsGate = location.pathname !== '/profile' && location.pathname !== '/onboarding';
-          setShowProfileGate(onboardingDone && !profileComplete && !isAdmin && pathAllowsGate);
+          const baseProfileComplete = isProfileCompleteForGate(profile?.full_name, profile?.phone, profile?.kvk_number);
+          const availabilityComplete = (availabilityCount || 0) > 0;
+          const verificationComplete = profileStatus === 'approved';
+          const profileComplete = baseProfileComplete && availabilityComplete && verificationComplete;
+          const gateRequired = onboardingDone && !profileComplete && !isAdmin;
+
+          if (gateRequired) {
+            const canStayOnPath =
+              location.pathname === '/profile-gate' ||
+              location.pathname === '/profile' ||
+              location.pathname === '/onboarding';
+            if (!canStayOnPath) {
+              navigate('/profile-gate', { replace: true });
+            }
+          } else if (location.pathname === '/profile-gate') {
+            navigate('/', { replace: true });
+          }
         }
       }
 
@@ -140,10 +153,6 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   }
 
   if (status === 'onboarding') return <>{children}</>;
-
-  if (showProfileGate) {
-    return <ProfileGate />;
-  }
 
   return <>{children}</>;
 };

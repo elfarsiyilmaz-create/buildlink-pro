@@ -30,11 +30,19 @@
   "splash": { "welcome": "Welkom bij Alhan Groep 💪" },
   "profileGate": {
     "title": "Maak je profiel compleet",
-    "subtitle": "Vul je profiel in om alle functies te ontgrendelen",
-    "cta": "Profiel invullen",
+    "subtitle": "Vul je gegevens in om alle functies te gebruiken",
+    "cta": "Profiel afronden",
     "benefit1": "✓ Zichtbaar voor opdrachtgevers",
     "benefit2": "✓ Uren registreren",
-    "benefit3": "✓ Punten verdienen"
+    "benefit3": "✓ Punten verdienen",
+    "check1": "Profiel invullen",
+    "check2": "Beschikbaarheid instellen",
+    "check3": "Verificatie",
+    "lockedTitle": "Alleen voor geverifieerde gebruikers",
+    "lockedSubtitle": "Beschikbaar na verificatie",
+    "lockedItem1": "Verdien beloningen",
+    "lockedItem2": "Draai aan het rad",
+    "lockedItem3": "Ontgrendel alle functies"
   },
   "auth": {
     "login": "Inloggen", "register": "Registreren", "email": "E-mailadres", "password": "Wachtwoord",
@@ -60,7 +68,7 @@
     "passwordUpdated": "Wachtwoord succesvol bijgewerkt"
   },
   "nav": { "home": "Home", "profile": "Profiel", "work": "Werk", "network": "Netwerk", "settings": "Instellingen", "admin": "Admin Panel", "leaderboard": "Leaderboard", "hours": "Uren" },
-  "home": { "welcome": "Welkom {{name}} 👋", "welcomeGuest": "Welkom bij Alhan Groep 👋", "welcomeNew": "Welkom, {{name}} 👋", "welcomeBack": "Welkom terug, {{name}} 👋", "registerHere": "Registreer hier", "completeProfile": "Maak je profiel compleet", "tagline": "Alhan Groep — Bouwen met vertrouwen", "weatherGood": "Goed weer om te klussen!", "weatherWarning": "Let op: minder prettig bouwweer.", "weatherUnavailable": "Weer tijdelijk niet beschikbaar", "writeHours": "Uren schrijven", "smartBlockLoading": "Coach denkt na…", "subtitle": "Alhan Groep — Bouwen met vertrouwen", "available": "Beschikbaar", "unavailable": "Niet beschikbaar", "profileComplete": "Jouw profiel is {{percentage}}% compleet", "documents": "Documenten", "license": "Rijbewijs", "region": "Regio", "referrals": "Referrals", "none": "Geen", "finishProfile": "Profiel afronden", "lockedVerifiedTitle": "Alleen voor geverifieerde gebruikers", "lockedVerifiedSubtitle": "Beschikbaar na verificatie", "lockedItemWheel": "Rad van fortuin", "lockedItemExtras": "Challenges en extra's" },
+  "home": { "welcome": "Welkom {{name}} 👋", "welcomeGuest": "Welkom bij Alhan Groep 👋", "welcomeNew": "Welkom, {{name}} 👋", "welcomeBack": "Welkom terug, {{name}} 👋", "registerHere": "Registreer hier", "completeProfile": "Maak je profiel compleet", "tagline": "Alhan Groep — Bouwen met vertrouwen", "weatherGood": "Goed weer om te klussen!", "weatherWarning": "Let op: minder prettig bouwweer.", "weatherUnavailable": "Weer tijdelijk niet beschikbaar", "writeHours": "Uren schrijven", "smartBlockLoading": "Coach denkt na…", "subtitle": "Alhan Groep — Bouwen met vertrouwen", "available": "Beschikbaar", "unavailable": "Niet beschikbaar", "profileComplete": "Jouw profiel is {{percentage}}% compleet", "documents": "Documenten", "license": "Rijbewijs", "region": "Regio", "referrals": "Referrals", "none": "Geen", "finishProfile": "Profiel afronden", "lockedVerifiedTitle": "Alleen voor geverifieerde gebruikers", "lockedVerifiedSubtitle": "Beschikbaar na verificatie", "lockedItemWheel": "Rad van fortuin", "lockedItemExtras": "Challenges en extra's", "welcomeFirstName": "Welkom, {{name}}", "primaryHoursTitle": "Uren schrijven", "primaryHoursSubtitle": "Houd je gewerkte uren bij", "primaryHoursCta": "Uren invoeren", "statusTitle": "Status", "availabilityTitle": "Beschikbaarheid", "profileCardTitle": "Profiel", "profileCompleteShort": "compleet", "safetyTitle": "Veilig werken", "safetySubtitle": "Maak anoniem een melding", "lockedItem1": "Verdien beloningen", "lockedItem2": "Draai aan het rad", "lockedItem3": "Extra functies beschikbaar" },
   "profile": {
     "title": "Profiel", "step1Title": "Wie ben jij?", "step2Title": "Wat doe jij?", "step3Title": "Jouw gegevens",
     "step4Title": "Rijbewijs & Materiaal", "step5Title": "Jouw documenten", "firstName": "Voornaam", "lastName": "Achternaam",

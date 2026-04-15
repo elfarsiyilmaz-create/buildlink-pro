@@ -1,31 +1,17 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { FileCheck, Car, MapPin, Users, Loader2, Sun, Cloud, CloudRain, Bot, Check, Lock } from 'lucide-react';
+import { Loader2, Sun, Cloud, CloudRain, ChevronRight, Lock, ShieldAlert, Bot, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { supabase } from '@/integrations/supabase/client';
 import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
-import DailyChallenges from '@/components/home/DailyChallenges';
-import AchievementUnlock from '@/components/home/AchievementUnlock';
-import { fetchDashboardSmartBlock } from '@/lib/fetchDashboardSmartBlock';
 import { useProfileCompleteness, type ProfileData } from '@/hooks/useProfileCompleteness';
 
 const DISPLAY_NAME_FALLBACK = 'Vakman';
-
 const AMSTERDAM = { lat: 52.3676, lon: 4.9041 };
-
-function yesterdayLocalISO(): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - 1);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
 
 type LiveWeather = {
   temp_c: number | null;
@@ -44,8 +30,8 @@ function weatherPresentation(live: LiveWeather | null, offline: boolean): { kind
   const code = live.conditionCode;
   const text = (live.conditionText || '').toLowerCase();
   const rainCodes = [
-    1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1240, 1243, 1246, 1066, 1069, 1114, 1117, 1195, 1204, 1237, 1249, 1252,
-    1261, 1264, 1087, 1273, 1276, 1279, 1282,
+    1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1240, 1243, 1246, 1066, 1069, 1114, 1117, 1195, 1204, 1237, 1249,
+    1252, 1261, 1264, 1087, 1273, 1276, 1279, 1282,
   ];
   if (code != null && rainCodes.includes(code)) {
     return { kind: 'rain', Icon: CloudRain };
@@ -65,48 +51,23 @@ function weatherPresentation(live: LiveWeather | null, offline: boolean): { kind
   return { kind: 'cloud', Icon: Cloud };
 }
 
-type CoachUi = 'loading' | 'ready' | 'error' | 'timeout';
-const PersonalDashboard = lazy(() => import('@/components/home/PersonalDashboard'));
-
 const Home = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { t: td } = useTranslation('dashboard');
-  const [available, setAvailable] = useState(false);
+
   const [displayName, setDisplayName] = useState(DISPLAY_NAME_FALLBACK);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const [homeProfile, setHomeProfile] = useState<ProfileData | null>(null);
   const [hasCerts, setHasCerts] = useState(false);
   const [hasAvail, setHasAvail] = useState(false);
-  const [stats, setStats] = useState({ documents: 0, referrals: 0, city: '--' });
-
+  const [city, setCity] = useState('--');
   const [weatherLive, setWeatherLive] = useState<LiveWeather | null>(null);
   const [weatherOffline, setWeatherOffline] = useState(false);
-  const [coachMessage, setCoachMessage] = useState('');
-  const [coachPriority, setCoachPriority] = useState<'low' | 'medium' | 'high'>('low');
-  const [coachUi, setCoachUi] = useState<CoachUi>('loading');
-  const [mountSmartBlock, setMountSmartBlock] = useState(false);
 
   useEffect(() => {
-    let timeoutId: number | null = null;
-
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(() => setMountSmartBlock(true));
-      return () => window.cancelIdleCallback(idleId);
-    }
-
-    timeoutId = window.setTimeout(() => setMountSmartBlock(true), 0);
-    return () => {
-      if (timeoutId != null) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const loadWeatherAndCoach = async (userId: string) => {
-      setCoachUi('loading');
+    const loadWeather = async () => {
       setWeatherOffline(false);
       let lat = AMSTERDAM.lat;
       let lon = AMSTERDAM.lon;
@@ -174,50 +135,6 @@ const Home = () => {
         setWeatherLive(live);
         setWeatherOffline(false);
       }
-
-      const yStr = yesterdayLocalISO();
-      const { count: yCount } = await supabase
-        .from('time_entries')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('date', yStr);
-      const hoursY = (yCount ?? 0) > 0;
-
-      const { data: myScore } = await supabase.from('leaderboard_scores').select('total_points').eq('user_id', userId).maybeSingle();
-      let rank: number | null = null;
-      if (myScore && typeof myScore.total_points === 'number') {
-        const { count: above } = await supabase
-          .from('leaderboard_scores')
-          .select('id', { count: 'exact', head: true })
-          .gt('total_points', myScore.total_points);
-        rank = (above ?? 0) + 1;
-      }
-
-      const condText = live?.conditionText?.trim() || '';
-      const tempNum = live?.temp_c != null && Number.isFinite(live.temp_c) ? live.temp_c : 0;
-
-      const result = await fetchDashboardSmartBlock({
-        weather: condText || t('home.weatherUnavailable'),
-        temperature: tempNum,
-        hoursLoggedYesterday: hoursY,
-        leaderboardPosition: rank != null && rank >= 1 ? rank : 999_999,
-        context: 'dashboard_smart_block',
-      });
-
-      if (result.status === 'timeout') {
-        setCoachUi('timeout');
-        setCoachMessage('');
-        return;
-      }
-      if (result.status === 'error') {
-        setCoachUi('error');
-        setCoachMessage('');
-        return;
-      }
-
-      setCoachMessage(result.data.message);
-      setCoachPriority(result.data.priority ?? 'low');
-      setCoachUi('ready');
     };
 
     const loadData = async () => {
@@ -231,16 +148,15 @@ const Home = () => {
           return;
         }
 
-        const [profileRes, certsRes, referralsRes, availRes] = await Promise.all([
+        const [profileRes, certsRes, availRes] = await Promise.all([
           supabase
             .from('profiles')
             .select(
-              'full_name, profile_completeness, city, onboarding_completed, phone, avatar_url, date_of_birth, specialization, specializations, bio, kvk_number, iban, preferred_language',
+              'full_name, city, onboarding_completed, phone, avatar_url, date_of_birth, specialization, specializations, bio, kvk_number, iban, preferred_language',
             )
             .eq('user_id', user.id)
             .single(),
           supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
-          supabase.from('referral_invites').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
           supabase.from('availability').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
         ]);
 
@@ -252,13 +168,9 @@ const Home = () => {
         setHasCerts((certsRes.count || 0) > 0);
         setHasAvail((availRes.count || 0) > 0);
         setHomeProfile(p ? (p as ProfileData) : null);
-        setStats({
-          documents: certsRes.count || 0,
-          referrals: referralsRes.count || 0,
-          city: p?.city || '--',
-        });
+        setCity(p?.city || '--');
 
-        void loadWeatherAndCoach(user.id);
+        void loadWeather();
       } catch (err) {
         console.error('Error loading home data:', err);
       } finally {
@@ -267,228 +179,177 @@ const Home = () => {
     };
 
     void loadData();
-  }, [navigate, t]);
+  }, [navigate]);
 
-  const shortDate = new Intl.DateTimeFormat(i18n.language?.startsWith('nl') ? 'nl-NL' : i18n.language || 'en', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  }).format(new Date());
-
-  const fadeUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
-
+  const fadeUp = { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 } };
   const { kind: weatherKind, Icon: WeatherIcon } = weatherPresentation(weatherLive, weatherOffline);
-  const glowClass = weatherKind === 'sunny' ? 'bg-yellow-50/30' : 'bg-blue-50/30';
-
   const weatherCaptionKey =
     weatherKind === 'sunny' ? 'weatherSunny' : weatherKind === 'rain' ? 'weatherRainy' : 'weatherCloudy';
 
-  const coachTextClass =
-    coachPriority === 'high' ? 'text-primary' : coachPriority === 'medium' ? 'text-foreground' : 'text-foreground';
-
   const completeness = useProfileCompleteness(homeProfile, hasCerts, hasAvail);
+  const firstNameRaw = displayName.trim().split(/\s+/)[0] || '';
+  const welcomeLine = firstNameRaw && firstNameRaw !== DISPLAY_NAME_FALLBACK ? `Welkom, ${firstNameRaw}` : 'Welkom';
+  const isAvailable = hasAvail;
+  const weatherLine = weatherOffline || !weatherLive ? null : `${city || '--'} • ${weatherLive.temp_c ?? '—'}°C • ${td(weatherCaptionKey)}`;
 
   return (
-    <div className="space-y-6 py-5 pb-24">
-      <AchievementUnlock />
-
-      <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
+    <div className="space-y-6 py-6 pb-24">
+      <motion.div {...fadeUp} transition={{ delay: 0.08 }} className="space-y-1">
         {!profileLoaded ? (
-          <div className="flex items-center gap-2 py-1 min-h-[2.5rem]">
-            <Loader2 className="w-6 h-6 animate-spin text-primary shrink-0" aria-hidden />
+          <div className="flex min-h-[2.5rem] items-center gap-2 py-1">
+            <Loader2 className="h-6 w-6 shrink-0 animate-spin text-primary" aria-hidden />
             <span className="text-sm text-muted-foreground">{t('common.loading')}</span>
           </div>
         ) : !onboardingCompleted ? (
           <>
-            <h1 className="text-2xl font-bold text-foreground">{t('home.welcomeNew', { name: displayName })}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              <Link to="/onboarding" className="text-primary font-medium underline-offset-2 hover:underline">
+            <p className="text-sm font-medium text-muted-foreground">Alhan Groep</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{welcomeLine}</h1>
+            <p className="text-sm text-muted-foreground">
+              <Link to="/onboarding" className="font-medium text-primary underline-offset-2 hover:underline">
                 {t('home.completeProfile')}
               </Link>
             </p>
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold text-foreground">{t('home.welcomeBack', { name: displayName })}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{t('home.tagline')}</p>
+            <p className="text-sm font-medium text-muted-foreground">Alhan Groep</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{welcomeLine}</h1>
+            {weatherLine ? (
+              <div className="mt-2 inline-flex items-center gap-2 text-xs text-muted-foreground">
+                <WeatherIcon className="h-4 w-4 text-muted-foreground" aria-hidden />
+                <span>{weatherLine}</span>
+              </div>
+            ) : null}
           </>
         )}
       </motion.div>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.15 }} className="space-y-3">
-        <div className="pt-safe">
-          <div className="relative overflow-hidden rounded-2xl border border-border/60">
-            <div className={`absolute inset-0 ${glowClass}`} style={{ willChange: 'transform' }} aria-hidden />
-            <div className="relative isolate flex min-h-[64px] flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-border/40 bg-background/45 px-4 py-3 backdrop-blur-md [contain:layout] dark:bg-background/35">
-              <span className="text-sm font-semibold capitalize text-foreground">{shortDate}</span>
-              <WeatherIcon className="h-5 w-5 shrink-0 text-primary" aria-hidden />
-              <span className="text-lg font-bold tabular-nums text-foreground">
-                {weatherOffline || weatherLive?.temp_c == null ? '—' : `${weatherLive.temp_c}°C`}
-              </span>
-              <span className="min-w-[8rem] flex-1 text-xs text-muted-foreground">{td(weatherCaptionKey)}</span>
-            </div>
-          </div>
+      <motion.section {...fadeUp} transition={{ delay: 0.12 }} className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-base font-semibold text-foreground">Profiel</h3>
+          <p className="text-sm font-medium text-muted-foreground">{completeness.percentage}% compleet</p>
         </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Link
-            to="/time-registration"
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-2xl bg-primary px-3 text-base font-semibold text-primary-foreground shadow-md transition-opacity hover:opacity-90"
-          >
-            <span aria-hidden>✍️</span>
-            <span className="truncate">{td('writeHours')}</span>
-          </Link>
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent('alhan-chat:open'))}
-            className="flex min-h-[44px] min-w-[44px] flex-col justify-center gap-1 rounded-2xl border border-border/60 bg-secondary/90 px-3 py-2 text-left shadow-sm dark:bg-secondary/40"
-            aria-label={t('common.openAssistant')}
-          >
-            <div className="flex items-center gap-2">
-              <span className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl bg-background/80">
-                <Bot className="h-6 w-6 text-primary" aria-hidden />
-              </span>
-              {!mountSmartBlock || coachUi === 'loading' ? (
-                <div className="min-h-[56px] flex-1 animate-pulse space-y-2 py-1.5">
-                  <span className="sr-only">{td('aiLoading')}</span>
-                  <div className="h-2.5 w-3/4 rounded bg-muted" />
-                  <div className="h-2.5 w-full rounded bg-muted" />
-                  <div className="h-2.5 w-5/6 rounded bg-muted" />
-                </div>
-              ) : coachUi === 'error' ? (
-                <span className="min-h-[44px] flex-1 text-xs leading-snug text-muted-foreground">{td('aiError')}</span>
-              ) : coachUi === 'timeout' ? (
-                <span className="min-h-[44px] flex-1 text-xs leading-snug text-muted-foreground">{td('aiTimeout')}</span>
-              ) : (
-                <span className={`line-clamp-4 flex-1 text-xs font-medium leading-snug ${coachTextClass}`}>{coachMessage}</span>
-              )}
-            </div>
-          </button>
+        <p className="text-sm text-muted-foreground">Vul je profiel aan voor volledige toegang</p>
+        <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${completeness.percentage}%` }}
+            transition={{ duration: 1, delay: 0.1 }}
+            className="h-full rounded-full bg-[#B91C1C]/85"
+          />
         </div>
-      </motion.div>
-
-      <motion.div {...fadeUp} transition={{ delay: 0.3 }}>
-        <button
-          type="button"
-          onClick={() => setAvailable(!available)}
-          className={`flex w-full items-center justify-between rounded-2xl p-5 transition-all duration-300 ${
-            available ? 'bg-success text-success-foreground pulse-green' : 'bg-destructive text-destructive-foreground'
-          }`}
-          aria-label={available ? t('home.available') : t('home.unavailable')}
-          aria-pressed={available}
+        <Link
+          to="/profile"
+          className="flex h-12 w-full items-center justify-center rounded-full bg-[#B91C1C] px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#991B1B]"
         >
-          <span className="text-lg font-bold">{available ? t('home.available') : t('home.unavailable')}</span>
-          <div
-            className={`relative h-8 w-14 rounded-full transition-colors duration-300 ${available ? 'bg-white/30' : 'bg-white/20'}`}
-          >
-            <motion.div
-              layout
-              className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-md"
-              style={{ left: available ? 'calc(100% - 28px)' : '4px' }}
-            />
-          </div>
-        </button>
-      </motion.div>
+          {t('home.finishProfile')}
+        </Link>
+      </motion.section>
 
-      <motion.div {...fadeUp} transition={{ delay: 0.35 }}>
-        <AvailabilityCalendar />
-      </motion.div>
-
-      <motion.div {...fadeUp} transition={{ delay: 0.4 }}>
-        <Suspense fallback={<div className="glass-card min-h-[260px] rounded-2xl p-4 animate-pulse" />}>
-          <PersonalDashboard />
-        </Suspense>
-      </motion.div>
-
-      <motion.div {...fadeUp} transition={{ delay: 0.45 }}>
-        <DailyChallenges />
-      </motion.div>
-
-      {profileLoaded && onboardingCompleted && completeness.percentage < 100 && (
-        <motion.div
-          {...fadeUp}
-          transition={{ delay: 0.5 }}
-          className="glass-card rounded-2xl p-5 shadow-sm space-y-5"
+      <motion.section {...fadeUp} transition={{ delay: 0.16 }} className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-foreground">Uren schrijven</h2>
+          <p className="text-sm text-muted-foreground">Afgelopen week: 40 uur</p>
+        </div>
+        <Link
+          to="/time-registration"
+          className="flex h-14 w-full items-center justify-center rounded-full bg-[#B91C1C] px-6 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#991B1B]"
         >
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">{t('home.completeProfile')}</h2>
-            <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">{completeness.percentage}%</p>
-            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray-100">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${completeness.percentage}%` }}
-                transition={{ duration: 1, delay: 0.6 }}
-                className="h-full rounded-full bg-[#B91C1C]/80"
-              />
-            </div>
-          </div>
-
-          <ul className="space-y-1">
-            {completeness.missingFields.slice(0, 5).map(field => (
-              <li key={field.key}>
-                <button
-                  type="button"
-                  onClick={() => navigate('/profile')}
-                  className="flex w-full items-center gap-3 rounded-xl py-2 px-2 text-left text-sm text-foreground transition-colors hover:bg-muted/50"
-                >
-                  <Check className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-                  <span className="min-w-0 flex-1">{t(field.labelKey)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <Link
-            to="/profile"
-            className="flex w-full items-center justify-center rounded-full bg-[#B91C1C] px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#991B1B]"
-          >
-            {t('home.finishProfile')}
-          </Link>
-
-          <div className="space-y-2 border-t border-gray-100 pt-5">
-            <h3 className="text-sm font-medium text-muted-foreground">{t('home.lockedVerifiedTitle')}</h3>
-            <p className="text-xs text-muted-foreground">{t('home.lockedVerifiedSubtitle')}</p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
-                <Lock className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
-                <span className="text-sm text-muted-foreground">{t('home.lockedItemWheel')}</span>
-              </div>
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
-                <Lock className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
-                <span className="text-sm text-muted-foreground">{t('home.lockedItemExtras')}</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      <motion.div {...fadeUp} transition={{ delay: 0.55 }} className="grid grid-cols-4 gap-2">
-        {[
-          { icon: FileCheck, label: t('home.documents'), value: `${stats.documents}` },
-          { icon: Car, label: t('home.license'), value: t('home.none') },
-          { icon: MapPin, label: t('home.region'), value: stats.city },
-          { icon: Users, label: t('home.referrals'), value: `${stats.referrals}` },
-        ].map((stat, i) => (
-          <div key={i} className="glass-card rounded-xl p-3 text-center">
-            <stat.icon className="mx-auto mb-1.5 h-5 w-5 text-primary" />
-            <p className="text-xs font-bold text-foreground">{stat.value}</p>
-            <p className="mt-0.5 text-[10px] text-muted-foreground">{stat.label}</p>
-          </div>
-        ))}
-      </motion.div>
+          Uren invoeren
+        </Link>
+      </motion.section>
 
       <motion.button
         {...fadeUp}
-        transition={{ delay: 0.6 }}
-        onClick={() => navigate('/wheel')}
-        className="glass-card flex w-full items-center gap-3 rounded-2xl p-4 text-left"
+        transition={{ delay: 0.2 }}
+        onClick={() => navigate('/profile')}
+        className="flex w-full items-center justify-between rounded-2xl bg-white p-5 text-left shadow-sm"
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-2xl">🎰</div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-foreground">{t('wheel.title')}</p>
-          <p className="text-xs text-muted-foreground">{t('wheel.spin_available')}</p>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <p className="text-base font-semibold text-foreground">Beschikbaar</p>
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-gray-400'}`}
+              aria-hidden
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">{isAvailable ? 'Je bent beschikbaar' : 'Je bent niet beschikbaar'}</p>
+        </div>
+        <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />
+      </motion.button>
+
+      <motion.section {...fadeUp} transition={{ delay: 0.24 }} className="space-y-3 rounded-2xl bg-white p-5 shadow-sm">
+        <h3 className="text-base font-semibold text-foreground">Beschikbaarheid</h3>
+        <div className="rounded-xl bg-background/60 p-2">
+          <AvailabilityCalendar />
+        </div>
+      </motion.section>
+
+      <motion.button
+        {...fadeUp}
+        transition={{ delay: 0.28 }}
+        onClick={() => window.dispatchEvent(new CustomEvent('alhan-chat:open'))}
+        className="flex w-full items-center justify-between rounded-2xl bg-white p-5 text-left shadow-sm"
+      >
+        <div className="space-y-1">
+          <p className="text-base font-semibold text-foreground">AI-assistent</p>
+          <p className="text-sm text-muted-foreground">Stel je vraag</p>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Bot className="h-4 w-4" aria-hidden />
+          <ChevronRight className="h-4 w-4" aria-hidden />
         </div>
       </motion.button>
+
+      <motion.button
+        {...fadeUp}
+        transition={{ delay: 0.32 }}
+        onClick={() => navigate('/settings')}
+        className="flex w-full items-center justify-between rounded-2xl bg-white p-5 text-left shadow-sm"
+      >
+        <div className="space-y-1">
+          <p className="text-base font-semibold text-foreground">Veilig werken</p>
+          <p className="text-sm text-muted-foreground">Checklist nog niet afgerond</p>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <ShieldAlert className="h-4 w-4" aria-hidden />
+          <ChevronRight className="h-4 w-4" aria-hidden />
+        </div>
+      </motion.button>
+
+      <motion.button
+        {...fadeUp}
+        transition={{ delay: 0.36 }}
+        onClick={() => navigate('/leaderboard')}
+        className="flex w-full items-center justify-between rounded-2xl bg-white p-5 text-left shadow-sm"
+      >
+        <div className="space-y-1">
+          <p className="text-base font-semibold text-foreground">Beloningen</p>
+          <p className="text-sm text-muted-foreground">{`${completeness.earnedPoints} punten gespaard`}</p>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Trophy className="h-4 w-4" aria-hidden />
+          <ChevronRight className="h-4 w-4" aria-hidden />
+        </div>
+      </motion.button>
+
+      <motion.section {...fadeUp} transition={{ delay: 0.4 }} className="space-y-1 rounded-2xl bg-white p-5 shadow-sm">
+        <p className="text-sm font-medium text-foreground">Volgende trekking: 25 maart</p>
+        <p className="text-xs text-muted-foreground">Op basis van punten</p>
+      </motion.section>
+
+      <motion.section {...fadeUp} transition={{ delay: 0.44 }} className="space-y-2 pt-1">
+        <p className="text-sm font-medium text-muted-foreground">{t('home.lockedVerifiedTitle')}</p>
+        <p className="text-xs text-muted-foreground">{t('home.lockedVerifiedSubtitle')}</p>
+        <div className="space-y-1.5 pt-1">
+          {['Verdien beloningen', 'Draai aan het rad', 'Extra functies beschikbaar'].map(item => (
+            <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="h-3.5 w-3.5 text-gray-400" aria-hidden />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </motion.section>
     </div>
   );
 };

@@ -29,6 +29,7 @@ const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const ProfileGate = lazy(() => import("@/pages/ProfileGate"));
 const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
 const TimeRegistration = lazy(() => import("@/pages/TimeRegistration"));
 const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
@@ -131,6 +132,11 @@ const App = () => (
               <Route path="/onboarding" element={
                 <AuthGuard>
                   <Onboarding />
+                </AuthGuard>
+              } />
+              <Route path="/profile-gate" element={
+                <AuthGuard>
+                  <ProfileGate />
                 </AuthGuard>
               } />
               <Route element={
