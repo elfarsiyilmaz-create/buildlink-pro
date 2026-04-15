@@ -38,7 +38,7 @@ const Home = () => {
   const [displayName, setDisplayName] = useState(DISPLAY_NAME);
   const [homeProfile, setHomeProfile] = useState<ProfileData | null>(null);
   const [hasCerts, setHasCerts] = useState(false);
-  const [hasAvail, setHasAvail] = useState(true);
+  const [hasAvail, setHasAvail] = useState(false);
   const [city, setCity] = useState(CITY_LABEL);
   const [weatherLive, setWeatherLive] = useState<LiveWeather | null>(null);
   const [weatherOffline, setWeatherOffline] = useState(false);
@@ -135,7 +135,7 @@ const Home = () => {
         const fullName = p?.full_name?.trim();
         setDisplayName(fullName && fullName.length > 0 ? fullName : DISPLAY_NAME);
         setHasCerts((certsRes.count || 0) > 0);
-        setHasAvail(true);
+        setHasAvail(false);
         setHomeProfile(p ? (p as ProfileData) : null);
         setCity(CITY_LABEL);
 
@@ -155,7 +155,7 @@ const Home = () => {
   const cityLabel = CITY_LABEL;
   const temperatureLabel = WEATHER_TEMP;
   const conditionLabel = WEATHER_CONDITION;
-  const isAvailable = true;
+  const isAvailable = hasAvail;
 
   return (
     <div className="min-h-dvh bg-[#f3f3f5]">
@@ -195,20 +195,33 @@ const Home = () => {
             </div>
           </button>
 
-          <button
-            type="button"
-            onClick={() => navigate('/profile')}
-            className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}
-          >
+          <div className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}>
             <div className="mb-2 flex items-start justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Beschikbaar</h3>
-                <span className={`mt-1 h-2.5 w-2.5 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-zinc-400'}`} />
+                <span className={`mt-1 h-2.5 w-2.5 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-[#C0161E]'}`} />
               </div>
-              <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
             </div>
-            <p className="text-[16px] leading-tight text-zinc-800">{isAvailable ? 'Je bent beschikbaar' : 'Je bent niet beschikbaar'}</p>
-          </button>
+            <p className={`text-[16px] leading-tight ${isAvailable ? 'font-medium text-zinc-900' : 'text-zinc-500'}`}>
+              {isAvailable ? 'Je bent beschikbaar' : 'Je bent niet beschikbaar'}
+            </p>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isAvailable}
+              aria-label="Beschikbaarheid wijzigen"
+              onClick={() => setHasAvail(v => !v)}
+              className={`mt-auto self-end inline-flex h-7 w-12 items-center rounded-full p-0.5 transition-colors ${
+                isAvailable ? 'bg-emerald-500' : 'bg-[#C0161E]'
+              }`}
+            >
+              <span
+                className={`h-6 w-6 rounded-full bg-white shadow transition-transform ${
+                  isAvailable ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
 
           <button
             type="button"
