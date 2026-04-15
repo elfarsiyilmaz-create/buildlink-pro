@@ -105,7 +105,12 @@
     "license": "رخصة القيادة",
     "region": "المنطقة",
     "referrals": "الإحالات",
-    "none": "لا يوجد"
+    "none": "لا يوجد",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "الملف الشخصي",

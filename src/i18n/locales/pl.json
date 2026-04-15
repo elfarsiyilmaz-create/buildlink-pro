@@ -105,7 +105,12 @@
     "license": "Prawo jazdy",
     "region": "Region",
     "referrals": "Polecenia",
-    "none": "Brak"
+    "none": "Brak",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "Profil",

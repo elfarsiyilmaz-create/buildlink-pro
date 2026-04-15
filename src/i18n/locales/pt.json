@@ -105,7 +105,12 @@
     "license": "Carteira",
     "region": "Região",
     "referrals": "Indicações",
-    "none": "Nenhum"
+    "none": "Nenhum",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "Perfil",

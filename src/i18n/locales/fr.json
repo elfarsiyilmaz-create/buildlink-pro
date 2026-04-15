@@ -105,7 +105,12 @@
     "license": "Permis",
     "region": "Région",
     "referrals": "Parrainages",
-    "none": "Aucun"
+    "none": "Aucun",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "Profil",

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { FileCheck, Car, MapPin, Users, Loader2, Sun, Cloud, CloudRain, Bot } from 'lucide-react';
+import { FileCheck, Car, MapPin, Users, Loader2, Sun, Cloud, CloudRain, Bot, Check, Lock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
@@ -11,6 +11,7 @@ import AvailabilityCalendar from '@/components/home/AvailabilityCalendar';
 import DailyChallenges from '@/components/home/DailyChallenges';
 import AchievementUnlock from '@/components/home/AchievementUnlock';
 import { fetchDashboardSmartBlock } from '@/lib/fetchDashboardSmartBlock';
+import { useProfileCompleteness, type ProfileData } from '@/hooks/useProfileCompleteness';
 
 const DISPLAY_NAME_FALLBACK = 'Vakman';
 
@@ -75,7 +76,9 @@ const Home = () => {
   const [displayName, setDisplayName] = useState(DISPLAY_NAME_FALLBACK);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
-  const [profilePercentage, setProfilePercentage] = useState(0);
+  const [homeProfile, setHomeProfile] = useState<ProfileData | null>(null);
+  const [hasCerts, setHasCerts] = useState(false);
+  const [hasAvail, setHasAvail] = useState(false);
   const [stats, setStats] = useState({ documents: 0, referrals: 0, city: '--' });
 
   const [weatherLive, setWeatherLive] = useState<LiveWeather | null>(null);
@@ -228,14 +231,17 @@ const Home = () => {
           return;
         }
 
-        const [profileRes, certsRes, referralsRes] = await Promise.all([
+        const [profileRes, certsRes, referralsRes, availRes] = await Promise.all([
           supabase
             .from('profiles')
-            .select('full_name, profile_completeness, city, onboarding_completed')
+            .select(
+              'full_name, profile_completeness, city, onboarding_completed, phone, avatar_url, date_of_birth, specialization, specializations, bio, kvk_number, iban, preferred_language',
+            )
             .eq('user_id', user.id)
             .single(),
           supabase.from('certificates').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('referral_invites').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id),
+          supabase.from('availability').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
         ]);
 
         const p = profileRes.data;
@@ -243,7 +249,9 @@ const Home = () => {
           (p?.full_name?.trim() && p.full_name.trim().length > 0 ? p.full_name.trim() : null) || DISPLAY_NAME_FALLBACK;
         setDisplayName(name);
         setOnboardingCompleted(!!p?.onboarding_completed);
-        setProfilePercentage(p?.profile_completeness || 0);
+        setHasCerts((certsRes.count || 0) > 0);
+        setHasAvail((availRes.count || 0) > 0);
+        setHomeProfile(p ? (p as ProfileData) : null);
         setStats({
           documents: certsRes.count || 0,
           referrals: referralsRes.count || 0,
@@ -278,8 +286,10 @@ const Home = () => {
   const coachTextClass =
     coachPriority === 'high' ? 'text-primary' : coachPriority === 'medium' ? 'text-foreground' : 'text-foreground';
 
+  const completeness = useProfileCompleteness(homeProfile, hasCerts, hasAvail);
+
   return (
-    <div className="space-y-5 py-5 pb-24">
+    <div className="space-y-6 py-5 pb-24">
       <AchievementUnlock />
 
       <motion.div {...fadeUp} transition={{ delay: 0.1 }}>
@@ -394,22 +404,63 @@ const Home = () => {
         <DailyChallenges />
       </motion.div>
 
-      <motion.div
-        {...fadeUp}
-        transition={{ delay: 0.5 }}
-        className="glass-card cursor-pointer rounded-2xl p-4"
-        onClick={() => navigate('/profile')}
-      >
-        <p className="mb-2 text-sm font-medium text-foreground">{t('home.profileComplete', { percentage: profilePercentage })}</p>
-        <div className="h-2.5 overflow-hidden rounded-full bg-muted">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${profilePercentage}%` }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="h-full rounded-full gradient-primary"
-          />
-        </div>
-      </motion.div>
+      {profileLoaded && onboardingCompleted && completeness.percentage < 100 && (
+        <motion.div
+          {...fadeUp}
+          transition={{ delay: 0.5 }}
+          className="glass-card rounded-2xl p-5 shadow-sm space-y-5"
+        >
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">{t('home.completeProfile')}</h2>
+            <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">{completeness.percentage}%</p>
+            <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray-100">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${completeness.percentage}%` }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="h-full rounded-full bg-[#B91C1C]/80"
+              />
+            </div>
+          </div>
+
+          <ul className="space-y-1">
+            {completeness.missingFields.slice(0, 5).map(field => (
+              <li key={field.key}>
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  className="flex w-full items-center gap-3 rounded-xl py-2 px-2 text-left text-sm text-foreground transition-colors hover:bg-muted/50"
+                >
+                  <Check className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <span className="min-w-0 flex-1">{t(field.labelKey)}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            to="/profile"
+            className="flex w-full items-center justify-center rounded-full bg-[#B91C1C] px-5 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#991B1B]"
+          >
+            {t('home.finishProfile')}
+          </Link>
+
+          <div className="space-y-2 border-t border-gray-100 pt-5">
+            <h3 className="text-sm font-medium text-muted-foreground">{t('home.lockedVerifiedTitle')}</h3>
+            <p className="text-xs text-muted-foreground">{t('home.lockedVerifiedSubtitle')}</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
+                <Lock className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+                <span className="text-sm text-muted-foreground">{t('home.lockedItemWheel')}</span>
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5">
+                <Lock className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+                <span className="text-sm text-muted-foreground">{t('home.lockedItemExtras')}</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div {...fadeUp} transition={{ delay: 0.55 }} className="grid grid-cols-4 gap-2">
         {[

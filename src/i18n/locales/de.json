@@ -105,7 +105,12 @@
     "license": "Führerschein",
     "region": "Region",
     "referrals": "Empfehlungen",
-    "none": "Keine"
+    "none": "Keine",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "Profil",

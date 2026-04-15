@@ -14,7 +14,7 @@ interface CompletenessResult {
   earnedPoints: number;
 }
 
-interface ProfileData {
+export interface ProfileData {
   full_name?: string | null;
   phone?: string | null;
   avatar_url?: string | null;

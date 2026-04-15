@@ -105,7 +105,12 @@
     "license": "Шофьорска книжка",
     "region": "Регион",
     "referrals": "Препоръки",
-    "none": "Няма"
+    "none": "Няма",
+    "finishProfile": "Finish profile",
+    "lockedVerifiedTitle": "For verified users only",
+    "lockedVerifiedSubtitle": "Available after verification",
+    "lockedItemWheel": "Wheel of fortune",
+    "lockedItemExtras": "Challenges & extras"
   },
   "profile": {
     "title": "Профил",
