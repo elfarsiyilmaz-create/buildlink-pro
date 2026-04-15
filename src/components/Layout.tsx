@@ -17,6 +17,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAdmin } = useUserRole();
+  const isHomeRoute = location.pathname === '/';
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -53,31 +54,32 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="flex items-center justify-between px-4 h-14">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors"
-            aria-label={t('common.openMenu')}
-            aria-expanded={sidebarOpen}
-            aria-controls="app-sidebar"
-          >
-            <Menu className="w-5 h-5 text-foreground" aria-hidden />
-          </button>
-          <Logo size="sm" />
-          <div className="flex items-center gap-1">
-            <NotificationBell />
-            <Avatar className="w-9 h-9">
-              {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
-              <AvatarFallback className="text-xs bg-muted text-foreground/80">
-                {initials || <User className="w-4 h-4" aria-hidden />}
-              </AvatarFallback>
-            </Avatar>
+      {!isHomeRoute ? (
+        <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border">
+          <div className="flex items-center justify-between px-4 h-14">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors"
+              aria-label={t('common.openMenu')}
+              aria-expanded={sidebarOpen}
+              aria-controls="app-sidebar"
+            >
+              <Menu className="w-5 h-5 text-foreground" aria-hidden />
+            </button>
+            <Logo size="sm" />
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <Avatar className="w-9 h-9">
+                {profile?.avatar_url ? <AvatarImage src={profile.avatar_url} alt="Profile" /> : null}
+                <AvatarFallback className="text-xs bg-muted text-foreground/80">
+                  {initials || <User className="w-4 h-4" aria-hidden />}
+                </AvatarFallback>
+              </Avatar>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      ) : null}
 
       {/* Sidebar Overlay */}
       <AnimatePresence>
@@ -172,7 +174,10 @@ const Layout = () => {
         )}
       </AnimatePresence>
 
-      <main id="main-content" className="pt-14 px-4 max-w-lg mx-auto pb-safe">
+      <main
+        id="main-content"
+        className={isHomeRoute ? 'mx-auto w-full max-w-none px-0 pt-0 pb-0' : 'pt-14 px-4 max-w-lg mx-auto pb-safe'}
+      >
         <Outlet />
       </main>
     </div>
