@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Loader2, Sun, Cloud, CloudRain, ChevronRight, Lock, ShieldAlert, Bot, Trophy } from 'lucide-react';
