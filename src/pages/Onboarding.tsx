@@ -78,7 +78,6 @@ const Onboarding = () => {
                 transition={{ duration: 0.25 }}
                 className="text-center space-y-4"
               >
-                <div className="text-7xl" aria-hidden>{slides[slideIndex].emoji}</div>
                 <h2 className="text-xl font-bold text-foreground">{t(slides[slideIndex].titleKey)}</h2>
                 <p className="text-sm text-foreground/80 leading-relaxed">{t(slides[slideIndex].textKey)}</p>
               </motion.div>
