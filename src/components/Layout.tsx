@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield, Trophy, Clock } from 'lucide-react';
+import { Home, User, Briefcase, Users, Settings, LogOut, Menu, X, Shield, HardHat, Clock } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import Logo from './Logo';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -20,8 +20,11 @@ const Layout = () => {
   const isHomeRoute = location.pathname === '/';
   const isProfileRoute = location.pathname === '/profile';
   const isHoursRoute = location.pathname === '/hours';
+  const isWorkRoute = location.pathname === '/work';
   const isNetworkRoute = location.pathname === '/network';
-  const useNativeLikeScreen = isHomeRoute || isProfileRoute || isHoursRoute || isNetworkRoute;
+  const isSafetyRoute = location.pathname === '/safety';
+  const useNativeLikeScreen =
+    isHomeRoute || isProfileRoute || isHoursRoute || isWorkRoute || isNetworkRoute || isSafetyRoute;
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -46,7 +49,7 @@ const Layout = () => {
     { icon: Briefcase, label: t('nav.work'), path: '/work' },
     { icon: Clock, label: t('nav.hours'), path: '/hours' },
     { icon: Users, label: t('nav.network'), path: '/network' },
-    { icon: Trophy, label: t('nav.leaderboard', 'Leaderboard'), path: '/leaderboard' },
+    { icon: HardHat, label: t('nav.safety', 'Veiligheid'), path: '/safety' },
     { icon: Settings, label: t('nav.settings'), path: '/settings' },
     ...(isAdmin ? [{ icon: Shield, label: t('nav.admin'), path: '/admin' }] : []),
   ];

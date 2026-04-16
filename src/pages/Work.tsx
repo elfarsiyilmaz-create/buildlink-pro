@@ -1,16 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Search, Briefcase, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { Search, Briefcase, Home as HomeIcon, Clock3, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import JobCard from '@/components/work/JobCard';
 import JobDetailSheet from '@/components/work/JobDetailSheet';
 import type { Job } from '@/components/work/JobCard';
-import { format } from 'date-fns';
 
 interface Application {
   id: string;
@@ -23,6 +22,7 @@ interface Application {
 
 const Work = () => {
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<'available' | 'applications'>('available');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
@@ -38,22 +38,21 @@ const Work = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch jobs, applications, and profile in parallel
       const [jobsRes, appsRes, profileRes] = await Promise.all([
         supabase.from('jobs').select('*').eq('status', 'open').order('created_at', { ascending: false }),
         supabase.from('job_applications').select('*, jobs(*)').eq('user_id', user.id).order('applied_at', { ascending: false }),
         supabase.from('profiles').select('phone, specialization, specializations').eq('user_id', user.id).single(),
       ]);
 
-      if (jobsRes.data) setJobs(jobsRes.data as any);
+      if (jobsRes.data) setJobs(jobsRes.data as Job[]);
       if (appsRes.data) {
-        setApplications(appsRes.data as any);
-        setAppliedJobIds(new Set((appsRes.data as any).map((a: any) => a.job_id)));
+        setApplications(appsRes.data as Application[]);
+        setAppliedJobIds(new Set((appsRes.data as Application[]).map(a => a.job_id)));
       }
       if (profileRes.data) {
         const p = profileRes.data;
         const hasPhone = !!p.phone;
-        const hasSpec = (p.specializations as any)?.length > 0 || !!p.specialization;
+        const hasSpec = ((p.specializations as string[] | null)?.length ?? 0) > 0 || !!p.specialization;
         setProfileComplete(hasPhone && hasSpec);
       }
     } catch (err) {
@@ -64,12 +63,11 @@ const Work = () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    // Try to get user location
+    void fetchData();
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => {} // silently fail
+        pos => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {},
       );
     }
   }, [fetchData]);
@@ -86,13 +84,21 @@ const Work = () => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   };
 
-  const filteredJobs = jobs.filter(j => {
-    if (!search) return true;
+  const filteredJobs = useMemo(() => {
+    if (!search.trim()) return jobs;
     const q = search.toLowerCase();
-    return j.title.toLowerCase().includes(q) ||
+    return jobs.filter(j =>
+      j.title.toLowerCase().includes(q) ||
       j.city?.toLowerCase().includes(q) ||
-      j.location?.toLowerCase().includes(q);
-  });
+      j.location?.toLowerCase().includes(q),
+    );
+  }, [jobs, search]);
+
+  const filteredApplications = useMemo(() => {
+    if (!search.trim()) return applications;
+    const q = search.toLowerCase();
+    return applications.filter(a => (a.jobs?.title || '').toLowerCase().includes(q));
+  }, [applications, search]);
 
   const statusColor = (s: string) => {
     if (s === 'accepted') return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
@@ -106,55 +112,68 @@ const Work = () => {
     return t('work.status_pending');
   };
 
+  const showEmpty = activeTab === 'available' ? filteredJobs.length === 0 : filteredApplications.length === 0;
+
   if (loading) {
     return (
-      <div className="py-5 space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-10 w-full" />
-        {[1, 2, 3].map(i => <Skeleton key={i} className="h-40 w-full rounded-2xl" />)}
+      <div className="flex min-h-dvh items-center justify-center bg-[#f3f3f5]">
+        <Briefcase className="h-7 w-7 animate-pulse text-zinc-400" />
       </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="py-5 space-y-4 pb-24"
-    >
-      <h1 className="text-2xl font-bold text-foreground">{t('work.title')}</h1>
+    <div className="min-h-dvh bg-[#f3f3f5]">
+      <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+108px)] pt-12">
+        <h1 className="text-center text-[47px] font-semibold leading-none tracking-[-0.02em] text-zinc-900">
+          {t('work.title')}
+        </h1>
 
-      <Tabs defaultValue="available" className="w-full">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="available">{t('work.available_jobs')}</TabsTrigger>
-          <TabsTrigger value="applications">
+        <div className="mt-5 grid grid-cols-2 gap-3 rounded-[18px] p-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab('available')}
+            className={`rounded-[16px] px-3 py-3 text-[17px] font-semibold leading-tight ${
+              activeTab === 'available' ? 'bg-white text-zinc-900 shadow-[0_4px_14px_rgba(15,23,42,0.07)]' : 'bg-white/75 text-zinc-800'
+            }`}
+          >
+            {t('work.available_jobs')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('applications')}
+            className={`rounded-[16px] px-3 py-3 text-[17px] font-semibold leading-tight ${
+              activeTab === 'applications' ? 'bg-white text-zinc-900 shadow-[0_4px_14px_rgba(15,23,42,0.07)]' : 'bg-white/75 text-zinc-800'
+            }`}
+          >
             {t('work.my_applications')}
-            {applications.length > 0 && (
-              <span className="ml-1.5 bg-primary/20 text-primary text-xs rounded-full px-1.5">
-                {applications.length}
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
+          </button>
+        </div>
 
-        <TabsContent value="available" className="space-y-3 mt-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="mt-4 rounded-full bg-zinc-100 px-4 py-3">
+          <label className="flex items-center gap-2.5">
+            <Search className="h-5 w-5 shrink-0 text-zinc-500" />
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder={t('work.search_placeholder')}
-              className="pl-10 bg-card"
+              className="h-auto border-0 bg-transparent p-0 text-[16px] text-zinc-700 shadow-none placeholder:text-zinc-400 focus-visible:ring-0"
             />
-          </div>
+          </label>
+        </div>
 
-          {filteredJobs.length === 0 ? (
-            <div className="glass-card rounded-2xl p-8 flex flex-col items-center text-center">
-              <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground text-sm">{t('work.no_jobs_found')}</p>
+        {showEmpty ? (
+          <section className="mt-5 rounded-[20px] border border-black/[0.04] bg-white p-10 shadow-[0_6px_20px_rgba(15,23,42,0.06)]">
+            <div className="flex flex-col items-center text-center">
+              <Briefcase className="h-12 w-12 text-zinc-500" />
+              <p className="mt-4 text-[17px] leading-tight text-zinc-500">
+                {activeTab === 'available' ? t('work.no_jobs_found') : t('work.no_applications_yet')}
+              </p>
             </div>
-          ) : (
-            filteredJobs.map((job, i) => (
+          </section>
+        ) : activeTab === 'available' ? (
+          <section className="mt-5 space-y-3">
+            {filteredJobs.map((job, i) => (
               <JobCard
                 key={job.id}
                 job={job}
@@ -163,44 +182,46 @@ const Work = () => {
                 hasApplied={appliedJobIds.has(job.id)}
                 onView={() => { setSelectedJob(job); setSheetOpen(true); }}
               />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="applications" className="space-y-3 mt-4">
-          {applications.length === 0 ? (
-            <div className="glass-card rounded-2xl p-8 flex flex-col items-center text-center">
-              <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground text-sm">{t('work.no_applications_yet')}</p>
-            </div>
-          ) : (
-            applications.map((app, i) => (
+            ))}
+          </section>
+        ) : (
+          <section className="mt-5 space-y-3">
+            {filteredApplications.map((app, i) => (
               <motion.div
                 key={app.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="glass-card rounded-2xl p-4 space-y-2 cursor-pointer"
+                transition={{ delay: i * 0.06 }}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
-                  if (app.jobs) { setSelectedJob(app.jobs as any); setSheetOpen(true); }
+                  if (app.jobs) { setSelectedJob(app.jobs); setSheetOpen(true); }
                 }}
+                onKeyDown={e => {
+                  if ((e.key === 'Enter' || e.key === ' ') && app.jobs) {
+                    e.preventDefault();
+                    setSelectedJob(app.jobs);
+                    setSheetOpen(true);
+                  }
+                }}
+                className="rounded-[18px] border border-black/[0.04] bg-white p-4 shadow-[0_4px_14px_rgba(15,23,42,0.05)] cursor-pointer"
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground truncate">
-                    {(app.jobs as any)?.title || t('work.title')}
-                  </h3>
-                  <Badge className={`${statusColor(app.status)} border-0 text-xs`}>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[17px] font-semibold text-zinc-900 truncate">
+                    {app.jobs?.title || t('work.title')}
+                  </p>
+                  <Badge className={`${statusColor(app.status)} shrink-0 border-0 text-xs`}>
                     {statusLabel(app.status)}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="mt-1 text-xs text-zinc-500">
                   {t('work.applied_on')} {format(new Date(app.applied_at), 'dd MMM yyyy')}
                 </p>
               </motion.div>
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+            ))}
+          </section>
+        )}
+      </div>
 
       <JobDetailSheet
         job={selectedJob}
@@ -211,7 +232,40 @@ const Work = () => {
         profileComplete={profileComplete}
         onApplicationSent={fetchData}
       />
-    </motion.div>
+
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
+        <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
+          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white/98 px-3 py-1.5 shadow-[0_-2px_10px_rgba(15,23,42,0.07)] backdrop-blur">
+            <ul className="grid grid-cols-4">
+              <li>
+                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <HomeIcon className="h-5 w-5" />
+                  <span className="text-[11px]">{t('nav.home')}</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <Clock3 className="h-5 w-5" />
+                  <span className="text-[11px]">{t('nav.hours')}</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/work" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-zinc-900">
+                  <Briefcase className="h-5 w-5" />
+                  <span className="text-[11px] font-medium">{t('nav.work')}</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
+                  <User className="h-5 w-5" />
+                  <span className="text-[11px]">{t('nav.profile')}</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 };
 

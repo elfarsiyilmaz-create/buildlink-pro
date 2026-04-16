@@ -30,8 +30,8 @@ const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const ProfileGate = lazy(() => import("@/pages/ProfileGate"));
-const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
 const TimeRegistration = lazy(() => import("@/pages/TimeRegistration"));
+const Safety = lazy(() => import("@/pages/Safety"));
 const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
@@ -153,8 +153,9 @@ const App = () => (
                 <Route path="/network" element={<Network />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/leaderboard" element={<Navigate to="/safety" replace />} />
                 <Route path="/hours" element={<TimeRegistration />} />
+                <Route path="/safety" element={<Safety />} />
                 <Route path="/time-registration" element={<Navigate to="/hours" replace />} />
                 <Route path="/wheel" element={<WheelOfFortunePage />} />
                 <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

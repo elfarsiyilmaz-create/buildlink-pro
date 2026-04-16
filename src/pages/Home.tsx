@@ -11,7 +11,6 @@ const CITY_LABEL = 'Rotterdam';
 const WEATHER_TEMP = 12;
 const WEATHER_CONDITION = 'Bewolkt';
 const PROFILE_PERCENT = 35;
-const REWARD_POINTS = 35;
 const AMSTERDAM = { lat: 52.3676, lon: 4.9041 };
 
 type LiveWeather = {
@@ -151,7 +150,6 @@ const Home = () => {
   const completeness = useProfileCompleteness(homeProfile, hasCerts, hasAvail);
   const firstName = displayName.trim().split(/\s+/)[0] || DISPLAY_NAME;
   const profilePercent = PROFILE_PERCENT;
-  const earnedPoints = REWARD_POINTS;
   const cityLabel = CITY_LABEL;
   const temperatureLabel = WEATHER_TEMP;
   const conditionLabel = WEATHER_CONDITION;
@@ -225,29 +223,14 @@ const Home = () => {
 
           <button
             type="button"
-            onClick={() => navigate('/settings')}
-            className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}
+            onClick={() => navigate('/safety')}
+            className={`${cardClass} col-span-2 flex min-h-[162px] flex-col p-4 text-left`}
           >
             <div className="mb-2 flex items-start justify-between gap-2">
               <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Veilig werken</h3>
               <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
             </div>
-            <p className="text-[16px] leading-tight text-zinc-800">Vandaag nog afronden</p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate('/leaderboard')}
-            className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}
-          >
-            <div className="mb-2 flex items-start justify-between gap-2">
-              <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Beloningen</h3>
-              <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-[16px] leading-tight text-zinc-800">{earnedPoints} punten •</p>
-              <p className="text-[16px] leading-tight text-zinc-800">Scoor meer</p>
-            </div>
+            <p className="text-[16px] leading-tight text-zinc-800">Dagelijkse checkup — tik om te starten</p>
           </button>
         </section>
 

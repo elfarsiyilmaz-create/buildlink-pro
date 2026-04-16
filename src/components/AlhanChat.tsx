@@ -137,7 +137,9 @@ const AlhanChat = () => {
   const isHomeRoute = location.pathname === '/';
   const isProfileRoute = location.pathname === '/profile';
   const isHoursRoute = location.pathname === '/hours';
+  const isWorkRoute = location.pathname === '/work';
   const isNetworkRoute = location.pathname === '/network';
+  const isSafetyRoute = location.pathname === '/safety';
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -296,7 +298,13 @@ const AlhanChat = () => {
   return (
     <>
       <AnimatePresence>
-        {!open && !isHomeRoute && !isProfileRoute && !isHoursRoute && !isNetworkRoute && (
+        {!open &&
+          !isHomeRoute &&
+          !isProfileRoute &&
+          !isHoursRoute &&
+          !isWorkRoute &&
+          !isNetworkRoute &&
+          !isSafetyRoute && (
           <motion.button
             type="button"
             initial={{ scale: 0 }}
