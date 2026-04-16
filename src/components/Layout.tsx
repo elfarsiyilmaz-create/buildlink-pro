@@ -20,7 +20,8 @@ const Layout = () => {
   const isHomeRoute = location.pathname === '/';
   const isProfileRoute = location.pathname === '/profile';
   const isHoursRoute = location.pathname === '/hours';
-  const useNativeLikeScreen = isHomeRoute || isProfileRoute || isHoursRoute;
+  const isNetworkRoute = location.pathname === '/network';
+  const useNativeLikeScreen = isHomeRoute || isProfileRoute || isHoursRoute || isNetworkRoute;
 
   useEffect(() => {
     const loadProfile = async () => {
