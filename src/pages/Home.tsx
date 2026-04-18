@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ChevronRight, Menu } from 'lucide-react';
+import { Check, ChevronRight, Circle, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BottomNav } from '@/components/BottomNav';
 import { DashboardDrawer } from '@/components/DashboardDrawer';
@@ -28,6 +28,17 @@ const cardStd =
 const titleSm = 'text-[16px] leading-[22px] font-semibold text-[#1C1C1E]';
 const subMd = 'mt-2 text-[14px] leading-[20px] text-[#3A3A3C]';
 const chevron = 'h-4 w-4 shrink-0 text-[#8E8E93]';
+
+/** Statische demo — later te koppelen aan echte uren/veiligheid/login-data */
+const WORK_PROGRESS = {
+  summary: '2 van 3 acties voltooid',
+  weekNote: 'Deze week actief op 4 van 5 werkdagen',
+  items: [
+    { id: 'hours', label: 'Urenregistratie', done: true },
+    { id: 'safety', label: 'Veiligheid voltooid', done: true },
+    { id: 'active', label: 'Ingelogd vandaag', done: false },
+  ] as const,
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -203,6 +214,43 @@ const Home = () => {
             </div>
           </div>
           <p className="mt-3 text-[14px] leading-[20px] text-[#3A3A3C]">Vul je profiel aan voor volledige toegang</p>
+        </section>
+
+        <section className={cardStd} aria-label="Vandaag op orde">
+          <h2 className={titleSm}>Vandaag op orde</h2>
+          <p className="mt-0.5 text-[13px] leading-[18px] text-[#636366]">{WORK_PROGRESS.summary}</p>
+          <ul className="mt-4 space-y-3">
+            {WORK_PROGRESS.items.map(item => (
+              <li key={item.id} className="flex items-center gap-3">
+                {item.done ? (
+                  <span
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#C5E3CF] bg-[#F0F7F2] text-[#3D6B4F]"
+                    aria-hidden
+                  >
+                    <Check className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+                  </span>
+                ) : (
+                  <span
+                    className="flex h-5 w-5 shrink-0 items-center justify-center"
+                    aria-hidden
+                  >
+                    <Circle className="h-4 w-4 text-[#BDBDBD]" strokeWidth={1.75} aria-hidden />
+                  </span>
+                )}
+                <span
+                  className={cn(
+                    'text-[15px] leading-[20px]',
+                    item.done ? 'text-[#355A42]' : 'text-[#6C6C72]',
+                  )}
+                >
+                  {item.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 border-t border-[#E5E5EA] pt-3 text-[12px] leading-[16px] text-[#6C6C72]">
+            {WORK_PROGRESS.weekNote}
+          </p>
         </section>
 
         <section className="grid grid-cols-2 gap-3">
