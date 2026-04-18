@@ -8,7 +8,8 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Loader2, Mail, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const Register = () => {
   const { t } = useTranslation();
@@ -18,6 +19,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [referralCode, setReferralCode] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -145,34 +148,66 @@ const Register = () => {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 className="rounded-xl h-12"
-                placeholder="+31 6 1234 5678"
+                placeholder="+31 6 12 34 56 78"
                 aria-label={t('auth.phone')}
               />
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">{t('auth.password')}</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="rounded-xl h-12"
-                placeholder="••••••••"
-                aria-label={t('auth.password')}
-                required
-                minLength={6}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="rounded-xl h-12 min-h-12 pr-12"
+                  placeholder="••••••••"
+                  aria-label={t('auth.password')}
+                  required
+                  minLength={6}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground active:bg-muted/90"
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                  aria-pressed={showPassword}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                  ) : (
+                    <Eye className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">{t('auth.confirmPassword')}</label>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                className="rounded-xl h-12"
-                placeholder="••••••••"
-                aria-label={t('auth.confirmPassword')}
-                required
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  className="rounded-xl h-12 min-h-12 pr-12"
+                  placeholder="••••••••"
+                  aria-label={t('auth.confirmPassword')}
+                  required
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(v => !v)}
+                  className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground active:bg-muted/90"
+                  aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                  aria-pressed={showConfirmPassword}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                  ) : (
+                    <Eye className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                  )}
+                </button>
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium text-foreground mb-1.5 block">{t('auth.referralCode')}</label>
@@ -180,7 +215,7 @@ const Register = () => {
                 value={referralCode}
                 onChange={e => setReferralCode(e.target.value)}
                 className="rounded-xl h-12"
-                placeholder="ALHAN-XXXX"
+                placeholder={t('auth.referralCodePlaceholder')}
                 aria-label={t('auth.referralCode')}
               />
             </div>
@@ -188,13 +223,19 @@ const Register = () => {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-xl text-base font-semibold gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
+              className={cn(
+                'w-full h-12 rounded-xl text-base font-semibold gradient-primary text-primary-foreground',
+                'shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)] ring-1 ring-inset ring-white/15',
+                'transition-[box-shadow,opacity,transform] hover:opacity-[0.97] hover:shadow-[0_6px_20px_-4px_hsl(var(--primary)/0.42)]',
+                'active:translate-y-px active:shadow-[0_3px_12px_-2px_hsl(var(--primary)/0.3)]',
+                'disabled:opacity-50 disabled:hover:shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.35)]',
+              )}
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden />}
               {t('auth.register')}
             </Button>
 
-            <p className="text-center text-sm text-foreground/80">
+            <p className="!mt-2.5 text-center text-sm text-foreground/80">
               {t('auth.hasAccount')}{' '}
               <Link to="/login" className="text-primary font-semibold underline-offset-2 hover:underline">
                 {t('auth.login')}
