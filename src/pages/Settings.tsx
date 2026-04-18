@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
   Sun,
+  Globe,
   Lock,
   Mail,
   Phone,
@@ -15,7 +16,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTheme } from '@/contexts/ThemeContext';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { languages } from '@/i18n/config';
 import {
   Dialog,
   DialogContent,
@@ -36,13 +37,17 @@ const cardClass =
   'rounded-[18px] border border-black/[0.035] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]';
 
 const Settings = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteStep, setDeleteStep] = useState<'warn' | 'confirm'>('warn');
   const [deletePhrase, setDeletePhrase] = useState('');
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+
+  const resolvedCode = (i18n.resolvedLanguage || i18n.language || 'nl').split('-')[0];
+  const currentLanguage =
+    languages.find(l => l.code === resolvedCode) ?? languages[0];
 
   const resetDeleteDialog = () => {
     setDeleteStep('warn');
@@ -119,27 +124,20 @@ const Settings = () => {
         <p className="mt-1 text-[14px] leading-[20px] text-[#636366]">{t('settings.subtitle')}</p>
 
         <div className="mt-5 flex flex-col gap-3">
-          <section className={cn(cardClass, 'p-4')}>
-            <h2 className="mb-3 text-[16px] font-semibold leading-[22px] text-[#1C1C1E]">{t('settings.language')}</h2>
-            <LanguageSwitcher variant="settings" />
-          </section>
-
-          <section className={cn(cardClass, 'flex items-center justify-between p-4')}>
-            <div className="flex min-w-0 items-center gap-3">
-              <Sun className="h-5 w-5 shrink-0 text-[#1C1C1E]" aria-hidden />
-              <span className="text-[15px] font-medium text-[#1C1C1E]">{t('settings.darkMode')}</span>
-            </div>
-            <div className="shrink-0">
-              <Switch
-                checked={theme === 'dark'}
-                onCheckedChange={checked => setTheme(checked ? 'dark' : 'light')}
-                aria-label={t('settings.darkMode')}
-                className="data-[state=checked]:bg-[#1C1C1E] data-[state=unchecked]:bg-[#E5E5EA]"
-              />
-            </div>
-          </section>
-
           <section className={cn(cardClass, 'divide-y divide-[#E5E5EA] overflow-hidden')}>
+            <button
+              type="button"
+              onClick={() => navigate('/settings/language')}
+              className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-[#F9F9F9] active:bg-[#F2F2F7]"
+              aria-label={t('settings.language')}
+            >
+              <Globe className="h-5 w-5 shrink-0 text-[#636366]" aria-hidden />
+              <span className="min-w-0 flex-1 text-[15px] font-medium text-[#1C1C1E]">{t('settings.language')}</span>
+              <span className="min-w-0 max-w-[48%] shrink truncate text-right text-[15px] font-medium text-[#636366]">
+                {currentLanguage.name}
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-[#C7C7CC]" aria-hidden />
+            </button>
             <button
               type="button"
               onClick={() => navigate('/forgot-password')}
@@ -160,6 +158,21 @@ const Settings = () => {
               <span className="min-w-0 flex-1 text-[15px] font-medium text-[#DC2626]">{t('auth.logout')}</span>
               <ChevronRight className="h-4 w-4 shrink-0 text-[#C7C7CC]" aria-hidden />
             </button>
+          </section>
+
+          <section className={cn(cardClass, 'flex items-center justify-between p-4')}>
+            <div className="flex min-w-0 items-center gap-3">
+              <Sun className="h-5 w-5 shrink-0 text-[#1C1C1E]" aria-hidden />
+              <span className="text-[15px] font-medium text-[#1C1C1E]">{t('settings.darkMode')}</span>
+            </div>
+            <div className="shrink-0">
+              <Switch
+                checked={theme === 'dark'}
+                onCheckedChange={checked => setTheme(checked ? 'dark' : 'light')}
+                aria-label={t('settings.darkMode')}
+                className="data-[state=checked]:bg-[#1C1C1E] data-[state=unchecked]:bg-[#E5E5EA]"
+              />
+            </div>
           </section>
 
           <section className={cn(cardClass, 'flex gap-4 p-4')}>

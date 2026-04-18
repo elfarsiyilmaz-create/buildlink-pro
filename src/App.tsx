@@ -21,6 +21,7 @@ const Work = lazy(() => import("@/pages/Work"));
 const Network = lazy(() => import("@/pages/Network"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const Settings = lazy(() => import("@/pages/Settings"));
+const SettingsLanguage = lazy(() => import("@/pages/SettingsLanguage"));
 const AlhanChat = lazy(() => import("@/components/AlhanChat"));
 const PWAInstallPrompt = lazy(() => import("@/components/PWAInstallPrompt"));
 const Layout = lazy(() => import("@/components/Layout"));
@@ -154,6 +155,7 @@ const App = () => (
                 <Route path="/network" element={<Network />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/settings/language" element={<SettingsLanguage />} />
                 <Route path="/leaderboard" element={<Navigate to="/safety" replace />} />
                 <Route path="/hours" element={<TimeRegistration />} />
                 <Route path="/safety" element={<Safety />} />
