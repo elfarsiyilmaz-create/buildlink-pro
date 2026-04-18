@@ -33,6 +33,7 @@ const ProfileGate = lazy(() => import("@/pages/ProfileGate"));
 const TimeRegistration = lazy(() => import("@/pages/TimeRegistration"));
 const Safety = lazy(() => import("@/pages/Safety"));
 const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
+const Rewards = lazy(() => import("@/pages/Rewards"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -157,6 +158,8 @@ const App = () => (
                 <Route path="/hours" element={<TimeRegistration />} />
                 <Route path="/safety" element={<Safety />} />
                 <Route path="/time-registration" element={<Navigate to="/hours" replace />} />
+                <Route path="/uren" element={<Navigate to="/hours" replace />} />
+                <Route path="/rewards" element={<Rewards />} />
                 <Route path="/wheel" element={<WheelOfFortunePage />} />
                 <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               </Route>

@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { Search, Briefcase, Home as HomeIcon, Clock3, User } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Briefcase } from 'lucide-react';
+import { BottomNav } from '@/components/BottomNav';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -233,38 +233,7 @@ const Work = () => {
         onApplicationSent={fetchData}
       />
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white/98 px-3 py-1.5 shadow-[0_-2px_10px_rgba(15,23,42,0.07)] backdrop-blur">
-            <ul className="grid grid-cols-4">
-              <li>
-                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.home')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.hours')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/work" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-zinc-900">
-                  <Briefcase className="h-5 w-5" />
-                  <span className="text-[11px] font-medium">{t('nav.work')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <User className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.profile')}</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

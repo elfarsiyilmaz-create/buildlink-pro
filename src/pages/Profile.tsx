@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Camera, ChevronLeft, Loader2, Bell, Clock3, Home as HomeIcon, User } from 'lucide-react';
+import { Camera, ChevronLeft, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,7 +12,8 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn, initialsFromFullName } from '@/lib/utils';
 import { useProfileCompleteness } from '@/hooks/useProfileCompleteness';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { BottomNav } from '@/components/BottomNav';
 
 const profileSchema = z.object({
   full_name: z.string().min(1, 'Verplicht').max(200),
@@ -538,38 +539,7 @@ const Profile = () => {
         </section>
       </div>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white px-3 py-1 shadow-[0_-1px_8px_rgba(15,23,42,0.06)]">
-            <ul className="grid grid-cols-4">
-              <li>
-                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[11px]">Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-[11px]">Uren</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/notifications" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Bell className="h-5 w-5" />
-                  <span className="text-[11px]">Meldingen</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-[#B91C1C]">
-                  <User className="h-5 w-5" />
-                  <span className="text-[11px] font-medium">Profiel</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

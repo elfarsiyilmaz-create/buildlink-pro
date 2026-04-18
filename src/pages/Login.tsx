@@ -95,28 +95,25 @@ const Login = () => {
   };
 
   const inputClassName =
-    'h-14 rounded-2xl border-neutral-300 bg-white px-4 text-base md:text-base placeholder:text-neutral-400 focus-visible:ring-neutral-300';
+    'h-12 rounded-xl border-[#C7C7CC] bg-white px-4 text-[17px] placeholder:text-[#AEAEB2] focus-visible:ring-[#D1D1D6]';
 
   return (
-    <div className="min-h-screen bg-white flex flex-col pt-safe">
+    <div className="min-h-dvh bg-[#f3f3f5] pt-safe">
       {/*
         Taalkeuze via bottom sheet onder de card. De AI-chat FAB op /login wordt in AlhanChat hoger gezet indien nodig.
       */}
-      <main
-        id="main-content"
-        className="flex-1 flex flex-col items-center px-6 pt-10 pb-10 min-h-0 w-full"
-      >
-        <div className="w-full max-w-sm flex flex-col items-stretch animate-in fade-in slide-in-from-top-4 duration-300">
-          <h1 className="text-center text-3xl font-medium text-foreground tracking-tight mb-6">
+      <main id="main-content" className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col px-4 pb-8 pt-5">
+        <div className="w-full animate-in fade-in slide-in-from-top-4 duration-300">
+          <h1 className="mb-5 mt-6 text-[56px] font-semibold leading-[1.02] tracking-[-0.03em] text-[#1C1C1E]">
             Alhan Groep
           </h1>
 
-          <div className="w-full rounded-3xl border border-neutral-200 bg-white px-6 py-6 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+          <div className="w-full rounded-[24px] border border-black/[0.035] bg-white px-5 py-5 shadow-[0_6px_20px_rgba(15,23,42,0.06)]">
             <div className="flex flex-col gap-4">
               <Button
                 type="button"
                 variant="outline"
-                className="relative h-14 w-full gap-0 rounded-2xl border-neutral-300 bg-white px-4 text-base font-medium text-foreground shadow-none hover:bg-neutral-50"
+                className="relative h-14 w-full gap-0 rounded-xl border-[#C7C7CC] bg-white px-4 text-base font-medium text-[#1C1C1E] shadow-[0_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#FAFAFA]"
                 onClick={() => handleSocialLogin('google')}
                 disabled={!!socialLoading}
                 aria-label={t('auth.continueWithGoogle')}
@@ -145,13 +142,13 @@ const Login = () => {
                     </svg>
                   )}
                 </span>
-                <span className="flex w-full justify-center pr-2">{t('auth.continueWithGoogle')}</span>
+                <span className="flex w-full justify-center pr-2 text-[17px]">{t('auth.continueWithGoogle')}</span>
               </Button>
 
               <Button
                 type="button"
                 variant="outline"
-                className="relative h-14 w-full gap-0 rounded-2xl border-neutral-300 bg-white px-4 text-base font-medium text-foreground shadow-none hover:bg-neutral-50"
+                className="relative h-14 w-full gap-0 rounded-xl border-[#C7C7CC] bg-white px-4 text-base font-medium text-[#1C1C1E] shadow-[0_1px_1px_rgba(0,0,0,0.05)] hover:bg-[#FAFAFA]"
                 onClick={() => handleSocialLogin('apple')}
                 disabled={!!socialLoading}
                 aria-label={t('auth.continueWithApple')}
@@ -165,23 +162,23 @@ const Login = () => {
                     </svg>
                   )}
                 </span>
-                <span className="flex w-full justify-center pr-2">{t('auth.continueWithApple')}</span>
+                <span className="flex w-full justify-center pr-2 text-[17px]">{t('auth.continueWithApple')}</span>
               </Button>
             </div>
 
-            <div className="relative my-6">
+            <div className="relative my-7">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-neutral-200" />
+                <span className="w-full border-t border-[#D1D1D6]" />
               </div>
               <div className="relative flex justify-center">
-                <span className="bg-white px-3 text-sm text-neutral-500">{t('auth.orContinueWith')}</span>
+                <span className="bg-white px-3 text-[16px] text-[#6E6E73]">{t('auth.orContinueWith')}</span>
               </div>
             </div>
 
             <form onSubmit={handleLogin} className="flex flex-col">
               <div className="space-y-4">
                 <div>
-                  <label className="mb-2 block text-base font-medium text-foreground" htmlFor="login-email">
+                  <label className="mb-2 block text-[17px] font-semibold text-[#1C1C1E]" htmlFor="login-email">
                     {t('auth.email')}
                   </label>
                   <Input
@@ -196,7 +193,7 @@ const Login = () => {
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-base font-medium text-foreground" htmlFor="login-password">
+                  <label className="mb-2 block text-[17px] font-semibold text-[#1C1C1E]" htmlFor="login-password">
                     {t('auth.password')}
                   </label>
                   <Input
@@ -212,16 +209,19 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between gap-3 text-sm">
+              <div className="mt-5 flex items-center justify-between gap-3 text-sm">
                 <div className="flex min-w-0 items-center gap-2">
-                  <Checkbox id="remember" />
-                  <label htmlFor="remember" className="cursor-pointer text-foreground">
+                  <Checkbox
+                    id="remember"
+                    className="h-6 w-6 rounded-full border-[#B91C1C] data-[state=checked]:border-[#B91C1C] data-[state=checked]:bg-[#B91C1C]"
+                  />
+                  <label htmlFor="remember" className="cursor-pointer text-[17px] text-[#1C1C1E]">
                     {t('auth.rememberMe')}
                   </label>
                 </div>
                 <Link
                   to="/forgot-password"
-                  className="shrink-0 text-neutral-600 underline-offset-2 hover:underline"
+                  className="shrink-0 text-[17px] text-[#6E6E73] underline-offset-2 hover:underline"
                   aria-label={t('auth.forgotPassword')}
                 >
                   {t('auth.forgotPassword')}
@@ -231,17 +231,17 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="mt-6 h-14 w-full rounded-full bg-[#B91C1C] text-lg font-semibold text-white shadow-none hover:bg-[#A01818] focus-visible:ring-2 focus-visible:ring-[#B91C1C]/35 focus-visible:ring-offset-2"
+                className="mt-6 h-14 w-full rounded-full bg-[#C61E1E] text-[17px] font-semibold text-white shadow-[inset_0_-1px_0_rgba(0,0,0,0.08)] hover:bg-[#B91C1C] focus-visible:ring-2 focus-visible:ring-[#C61E1E]/35 focus-visible:ring-offset-2"
               >
                 {loading && <Loader2 className="mr-2 size-5 animate-spin" aria-hidden />}
                 {t('auth.login')}
               </Button>
 
-              <p className="mt-5 text-center text-sm text-neutral-500">
+              <p className="mt-5 text-center text-[17px] text-[#6E6E73]">
                 {t('auth.noAccount')}{' '}
                 <Link
                   to="/register"
-                  className="font-medium text-[#B91C1C] underline-offset-2 hover:underline"
+                  className="font-semibold text-[#B91C1C] underline-offset-2 hover:underline"
                 >
                   {t('auth.register')}
                 </Link>
@@ -251,7 +251,7 @@ const Login = () => {
 
           <button
             type="button"
-            className="mt-6 flex w-full items-center justify-center gap-1 text-base text-neutral-500"
+            className="mt-8 flex w-full items-center justify-center gap-1 text-[17px] text-[#6E6E73]"
             onClick={() => setLangSheetOpen(true)}
             aria-haspopup="dialog"
             aria-expanded={langSheetOpen}

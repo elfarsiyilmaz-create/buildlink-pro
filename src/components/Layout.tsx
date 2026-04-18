@@ -23,8 +23,17 @@ const Layout = () => {
   const isWorkRoute = location.pathname === '/work';
   const isNetworkRoute = location.pathname === '/network';
   const isSafetyRoute = location.pathname === '/safety';
+  const isSettingsRoute = location.pathname === '/settings';
+  const isRewardsRoute = location.pathname === '/rewards';
   const useNativeLikeScreen =
-    isHomeRoute || isProfileRoute || isHoursRoute || isWorkRoute || isNetworkRoute || isSafetyRoute;
+    isHomeRoute ||
+    isProfileRoute ||
+    isHoursRoute ||
+    isWorkRoute ||
+    isNetworkRoute ||
+    isSafetyRoute ||
+    isSettingsRoute ||
+    isRewardsRoute;
 
   useEffect(() => {
     const loadProfile = async () => {

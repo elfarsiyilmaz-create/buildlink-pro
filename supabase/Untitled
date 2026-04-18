@@ -1,0 +1,18 @@
+Open supabase/functions/alhan-chat/index.ts
+
+Het probleem: de browser blokkeert POST-requests vanuit http://localhost:8081 
+naar de Supabase Edge Function met de melding:
+"Access to fetch has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header"
+
+Fix uitsluitend het CORS-gedeelte:
+
+1. Zorg dat 'http://localhost:8081' in de ALLOWED_ORIGINS staat
+2. Controleer dat getCorsHeaders() de Origin-header teruggeeft als exacte 
+   waarde (niet '*') wanneer de origin matched
+3. Raak de chat-logica, auth, Gemini-streaming of andere functionaliteit NIET aan
+
+Deploy daarna de function:
+supabase functions deploy alhan-chat
+
+Verwacht resultaat: POST naar alhan-chat heeft in de response-headers 
+'Access-Control-Allow-Origin: http://localhost:8081'

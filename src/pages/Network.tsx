@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { BottomNav } from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 import {
   Copy,
@@ -8,10 +8,7 @@ import {
   Mail,
   Link2,
   TrendingUp,
-  Home as HomeIcon,
   Search,
-  Bell,
-  User,
   ChevronRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -369,41 +366,7 @@ const Network = () => {
         </section>
       </div>
 
-      {/* Ondernavigatie — zoals mockup: Home, Zoeken, Meldingen, Profiel */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white/98 px-3 py-1.5 shadow-[0_-2px_10px_rgba(15,23,42,0.07)] backdrop-blur">
-            <ul className="grid grid-cols-4">
-              <li>
-                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.home')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/work" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Search className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.search')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/notifications" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <span className="relative inline-flex">
-                    <Bell className="h-5 w-5" />
-                  </span>
-                  <span className="text-[11px]">{t('notifications.title')}</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <User className="h-5 w-5" />
-                  <span className="text-[11px]">{t('nav.profile')}</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

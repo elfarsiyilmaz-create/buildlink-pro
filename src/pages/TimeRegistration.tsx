@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock3, Euro, Bell, Home as HomeIcon, User, CalendarDays, Minus, Plus, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock3, Euro, CalendarDays, Minus, Plus, FileText } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, addWeeks, getISOWeek, getYear } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { BottomNav } from '@/components/BottomNav';
 
 interface TimeEntry {
   id: string;
@@ -340,38 +341,7 @@ const TimeRegistration = () => {
         ) : null}
       </div>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white px-3 py-1 shadow-[0_-1px_8px_rgba(15,23,42,0.06)]">
-            <ul className="grid grid-cols-4">
-              <li>
-                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[11px]">Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/hours" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-[#C0161E]">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-[11px] font-semibold">Uren</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/notifications" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Bell className="h-5 w-5" />
-                  <span className="text-[11px]">Meldingen</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <User className="h-5 w-5" />
-                  <span className="text-[11px]">Profiel</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

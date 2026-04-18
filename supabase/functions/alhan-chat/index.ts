@@ -18,9 +18,12 @@ const parsedEnvOrigins = envOrigins
   .map((s) => s.trim())
   .filter(Boolean);
 
+/** Lokale dev (o.a. Vite/Capacitor live reload); POST moet exact `Access-Control-Allow-Origin: <Origin>` terugkrijgen — nooit `*`. */
 const ALLOWED_ORIGINS = new Set([
+  "http://localhost:8081",
   "http://localhost:5173",
   "http://localhost:4173",
+  "http://127.0.0.1:8081",
   "capacitor://localhost",
   "https://localhost",
   ...parsedEnvOrigins,
@@ -38,6 +41,27 @@ if (isProduction && parsedEnvOrigins.length === 0) {
   );
 }
 
+/** Vergelijk origins robuust (trailing slash + lowercase host), echo altijd de exacte Origin-header van de client. */
+function normalizeOriginKey(origin: string): string {
+  const t = origin.trim();
+  const noSlash = t.replace(/\/+$/, "");
+  try {
+    const u = new URL(noSlash);
+    return `${u.protocol}//${u.host}`.toLowerCase();
+  } catch {
+    return noSlash.toLowerCase();
+  }
+}
+
+function isOriginAllowed(requestOrigin: string): boolean {
+  if (!requestOrigin.trim()) return false;
+  const key = normalizeOriginKey(requestOrigin);
+  for (const allowed of ALLOWED_ORIGINS) {
+    if (normalizeOriginKey(allowed) === key) return true;
+  }
+  return false;
+}
+
 function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") ?? "";
   const headers: Record<string, string> = {
@@ -47,7 +71,8 @@ function getCorsHeaders(req: Request): Record<string, string> {
     "Vary": "Origin",
   };
 
-  if (ALLOWED_ORIGINS.has(origin)) {
+  // Echo de request Origin exact terug (CORS-specificatie); geen wildcard.
+  if (origin && isOriginAllowed(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
 
@@ -408,8 +433,11 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
   );
 
   if (!response.ok) {
-    await response.text();
-    console.error("dashboard smart block gateway error:", response.status, "[body geredacteerd]");
+    const errBody = await response.text();
+    console.error("[alhan-chat] Gemini dashboard_smart_block HTTP-fout", {
+      status: response.status,
+      bodySnippet: errBody.slice(0, 400) || "(leeg)",
+    });
     return new Response(JSON.stringify({ error: "AI fout" }), {
       status: 500,
       headers: jsonHeaders(req),
@@ -452,7 +480,7 @@ serve(async (req) => {
     const body = await req.json() as Record<string, unknown>;
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     if (!GEMINI_API_KEY) {
-      console.error("alhan-chat: GEMINI_API_KEY is not configured");
+      console.error("[alhan-chat] GEMINI_API_KEY ontbreekt (secret niet gezet)");
       return jsonError(req, "Interne fout", 500);
     }
 
@@ -465,6 +493,7 @@ serve(async (req) => {
 
     const chatCheck = validateChatBody(body);
     if (!chatCheck.ok) {
+      console.error("[alhan-chat] validateChatBody geweigerd:", chatCheck.message);
       return jsonError(req, chatCheck.message, 400);
     }
     const sanitizedProfile = chatCheck.profileContext;
@@ -531,8 +560,12 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
           headers: jsonHeaders(req),
         });
       }
-      await response.text();
-      console.error("AI gateway error:", response.status, "[body geredacteerd]");
+      const geminiErrBody = await response.text();
+      const snippet = geminiErrBody.slice(0, 400);
+      console.error("[alhan-chat] Gemini chat streaming HTTP-fout", {
+        status: response.status,
+        bodySnippet: snippet || "(leeg)",
+      });
       return new Response(JSON.stringify({ error: "AI fout" }), {
         status: 500,
         headers: jsonHeaders(req),
@@ -543,7 +576,7 @@ Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taa
       headers: sseHeaders(req),
     });
   } catch (e) {
-    console.error("chat error:", e);
+    console.error("[alhan-chat] onverwachte fout in serve-handler:", e);
     return new Response(JSON.stringify({ error: "Interne fout" }), {
       status: 500,
       headers: jsonHeaders(req),

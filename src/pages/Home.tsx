@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Bell, ChevronRight, Clock3, Home as HomeIcon, User } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { ChevronRight, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BottomNav } from '@/components/BottomNav';
+import { DashboardDrawer } from '@/components/DashboardDrawer';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { supabase } from '@/integrations/supabase/client';
-import { useProfileCompleteness, type ProfileData } from '@/hooks/useProfileCompleteness';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 
 const DISPLAY_NAME = 'Yunus';
 const CITY_LABEL = 'Rotterdam';
@@ -18,29 +21,23 @@ type LiveWeather = {
   conditionText: string;
 };
 
-const cardClass =
-  'rounded-[22px] border border-black/[0.035] bg-white shadow-[0_4px_14px_rgba(15,23,42,0.05)]';
-
-const formatCondition = (value: string) => {
-  const raw = value.trim().toLowerCase();
-  if (!raw) return 'Bewolkt';
-  if (raw.includes('cloud')) return 'Bewolkt';
-  if (raw.includes('sun') || raw.includes('clear')) return 'Zonnig';
-  if (raw.includes('rain') || raw.includes('drizzle')) return 'Regen';
-  if (raw.includes('snow')) return 'Sneeuw';
-  return value;
-};
+const tileCard =
+  'min-h-[144px] rounded-[18px] bg-white px-4 py-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] flex flex-col';
+const cardStd =
+  'rounded-[18px] bg-white px-4 py-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]';
+const titleSm = 'text-[16px] leading-[22px] font-semibold text-[#1C1C1E]';
+const subMd = 'mt-2 text-[14px] leading-[20px] text-[#3A3A3C]';
+const chevron = 'h-4 w-4 shrink-0 text-[#8E8E93]';
 
 const Home = () => {
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState(DISPLAY_NAME);
-  const [homeProfile, setHomeProfile] = useState<ProfileData | null>(null);
-  const [hasCerts, setHasCerts] = useState(false);
-  const [hasAvail, setHasAvail] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
   const [city, setCity] = useState(CITY_LABEL);
   const [weatherLive, setWeatherLive] = useState<LiveWeather | null>(null);
   const [weatherOffline, setWeatherOffline] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const loadWeather = async () => {
@@ -118,7 +115,7 @@ const Home = () => {
           return;
         }
 
-        const [profileRes, certsRes, availRes] = await Promise.all([
+        const [profileRes, , availRes] = await Promise.all([
           supabase
             .from('profiles')
             .select(
@@ -133,9 +130,7 @@ const Home = () => {
         const p = profileRes.data;
         const fullName = p?.full_name?.trim();
         setDisplayName(fullName && fullName.length > 0 ? fullName : DISPLAY_NAME);
-        setHasCerts((certsRes.count || 0) > 0);
-        setHasAvail(false);
-        setHomeProfile(p ? (p as ProfileData) : null);
+        setIsAvailable((availRes.count ?? 0) > 0);
         setCity(CITY_LABEL);
 
         void loadWeather();
@@ -147,143 +142,140 @@ const Home = () => {
     void loadData();
   }, [navigate]);
 
-  const completeness = useProfileCompleteness(homeProfile, hasCerts, hasAvail);
-  const firstName = displayName.trim().split(/\s+/)[0] || DISPLAY_NAME;
+  const firstName = displayName.trim().split(/\s+/)[0] || '';
+  const welcomeTitle = firstName ? `Welkom, ${firstName}` : 'Welkom';
   const profilePercent = PROFILE_PERCENT;
-  const cityLabel = CITY_LABEL;
-  const temperatureLabel = WEATHER_TEMP;
-  const conditionLabel = WEATHER_CONDITION;
-  const isAvailable = hasAvail;
+  const cityLabel = city;
+  const temperatureLabel = weatherLive?.temp_c ?? WEATHER_TEMP;
+  const conditionLabel = weatherOffline
+    ? WEATHER_CONDITION
+    : weatherLive?.conditionText
+      ? weatherLive.conditionText
+      : WEATHER_CONDITION;
+
+  const workStatusLabel = isAvailable ? 'Beschikbaar voor werk' : 'Niet beschikbaar voor werk';
+  const workStatusDotClass = isAvailable ? 'bg-green-600' : 'bg-red-600';
+  const workStatusTextClass = isAvailable ? 'text-green-600' : 'text-red-600';
 
   return (
-    <div className="min-h-dvh bg-[#f3f3f5]">
-      <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+94px)] pt-11">
-        <section className="space-y-2">
-          <p className="text-center text-[15px] font-medium text-zinc-500">Alhan Groep</p>
-          <h1 className="text-[42px] font-semibold leading-[1.06] tracking-[-0.02em] text-zinc-900">Welkom, {firstName}</h1>
-          <p className="text-[17px] leading-[1.25] text-zinc-700">{`${cityLabel} • ${temperatureLabel}°C • ${conditionLabel}`}</p>
+    <div className="min-h-dvh bg-[#F2F2F7]">
+      <DashboardDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <div className="mx-auto flex w-full max-w-[430px] flex-col gap-4 px-4 pb-28 pt-5">
+        <header
+          className="mb-2 flex h-11 items-center justify-between px-1"
+          style={{ paddingTop: 'max(0px, env(safe-area-inset-top, 0px))' }}
+        >
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#1C1C1E] transition-colors hover:bg-black/[0.04] active:bg-black/[0.06]"
+            aria-label="Menu openen"
+            aria-expanded={menuOpen}
+            aria-controls="dashboard-drawer"
+          >
+            <Menu className="h-5 w-5" strokeWidth={2} aria-hidden />
+          </button>
+          <div className="min-w-0 flex-1 px-2 text-center">
+            <p className="text-[13px] font-medium leading-[18px] text-[#8E8E93]">Alhan Groep</p>
+            <p className="text-[22px] font-semibold leading-[28px] tracking-[-0.02em] text-[#1C1C1E]">{welcomeTitle}</p>
+            <p className="mt-1 flex items-center justify-center gap-1.5 px-1 text-[13px] leading-[18px] font-medium">
+              <span
+                className={`mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${workStatusDotClass}`}
+                aria-hidden
+              />
+              <span className={workStatusTextClass}>{workStatusLabel}</span>
+            </p>
+            <p className="mt-0.5 text-[13px] leading-[18px] text-[#8E8E93]">
+              {`${cityLabel} • ${temperatureLabel}°C • ${conditionLabel}`}
+            </p>
+          </div>
+          <div className="h-10 w-10 shrink-0 rounded-full" aria-hidden />
+        </header>
+
+        <section className={cardStd}>
+          <div className="flex items-center justify-between">
+            <h2 className={titleSm}>Profiel</h2>
+            <p className="text-[13px] font-medium leading-[18px] text-[#636366]">{profilePercent}% compleet</p>
+          </div>
+          <div className="mt-3 w-full">
+            <div className="h-1.5 w-full rounded-full bg-[#E5E5EA]">
+              <div className="h-1.5 rounded-full bg-[#B91C1C]" style={{ width: `${profilePercent}%` }} />
+            </div>
+          </div>
+          <p className="mt-3 text-[14px] leading-[20px] text-[#3A3A3C]">Vul je profiel aan voor volledige toegang</p>
         </section>
 
-        <section className={`${cardClass} mt-5 p-4`}>
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <h2 className="text-[18px] font-semibold leading-none tracking-[-0.015em] text-zinc-900">Profiel</h2>
-            <p className="text-[17px] leading-none text-zinc-700">{profilePercent}% compleet</p>
-          </div>
-          <div className="h-[5px] overflow-hidden rounded-full bg-zinc-200">
-            <div className="h-full rounded-full bg-[#B91C1C]" style={{ width: `${profilePercent}%` }} />
-          </div>
-          <p className="mt-3 text-[17px] leading-[1.3] tracking-[-0.005em] text-zinc-800">
-            Werk je profiel bij om alles te ontgrendelen
-          </p>
-        </section>
-
-        <section className="mt-5 grid grid-cols-2 gap-3">
+        <section className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => navigate('/hours')}
-            className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}
+            className={`${tileCard} text-left`}
           >
-            <div className="mb-2 flex items-start justify-between gap-2">
-              <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Uren schrijven</h3>
-              <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+            <div className="flex items-start justify-between gap-2">
+              <h3 className={titleSm}>Uren schrijven</h3>
+              <ChevronRight className={`${chevron} mt-0.5`} aria-hidden />
             </div>
-            <div className="space-y-0.5">
-              <p className="text-[14px] leading-tight text-zinc-700">Vorige week</p>
-              <p className="text-[16px] leading-tight tracking-[-0.01em] text-zinc-800">40 uur gewerkt</p>
-            </div>
+            <p className={subMd}>Afgelopen week: 40 uur</p>
           </button>
 
-          <div className={`${cardClass} flex h-[162px] flex-col p-4 text-left`}>
-            <div className="mb-2 flex items-start justify-between gap-2">
-              <div className="flex items-center gap-1.5">
-                <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Beschikbaar</h3>
-                <span className={`mt-1 h-2.5 w-2.5 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-[#C0161E]'}`} />
+          <div className={cn(tileCard, 'min-w-0 gap-2 !p-4 text-left')}>
+            <div className="flex min-w-0 items-start justify-between">
+              <h3 className="min-w-0 flex-1 truncate pr-2 font-semibold text-sm text-[#1C1C1E]">Werkstatus</h3>
+              <div className="shrink-0">
+                <Switch
+                  checked={isAvailable}
+                  onCheckedChange={setIsAvailable}
+                  aria-label="Werkstatus"
+                  className={cn(
+                    'data-[state=checked]:bg-green-600 data-[state=unchecked]:bg-red-600',
+                  )}
+                />
               </div>
             </div>
-            <p className={`text-[16px] leading-tight ${isAvailable ? 'font-medium text-zinc-900' : 'text-zinc-500'}`}>
-              {isAvailable ? 'Je bent beschikbaar' : 'Je bent niet beschikbaar'}
-            </p>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={isAvailable}
-              aria-label="Beschikbaarheid wijzigen"
-              onClick={() => setHasAvail(v => !v)}
-              className={`mt-auto self-end inline-flex h-7 w-12 items-center rounded-full p-0.5 transition-colors ${
-                isAvailable ? 'bg-emerald-500' : 'bg-[#C0161E]'
-              }`}
-            >
-              <span
-                className={`h-6 w-6 rounded-full bg-white shadow transition-transform ${
-                  isAvailable ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => navigate('/safety')}
-            className={`${cardClass} col-span-2 flex min-h-[162px] flex-col p-4 text-left`}
-          >
-            <div className="mb-2 flex items-start justify-between gap-2">
-              <h3 className="text-[17px] font-semibold leading-tight tracking-[-0.01em] text-zinc-900">Veilig werken</h3>
-              <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden />
+            <div className="flex min-w-0 items-start gap-2">
+              <span className={`mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${workStatusDotClass}`} aria-hidden />
+              <p className={`min-w-0 flex-1 break-words text-sm font-medium ${workStatusTextClass}`}>
+                {workStatusLabel}
+              </p>
             </div>
-            <p className="text-[16px] leading-tight text-zinc-800">Dagelijkse checkup — tik om te starten</p>
-          </button>
+          </div>
         </section>
 
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent('alhan-chat:open'))}
-          className={`${cardClass} mt-5 w-full p-4 text-left`}
+          onClick={() => navigate('/safety')}
+          className={`${cardStd} flex min-h-[116px] w-full flex-col text-left`}
         >
-          <h3 className="text-[17px] font-semibold leading-none tracking-[-0.01em] text-zinc-900">Slimme assistent</h3>
-          <p className="mt-1 text-[16px] leading-tight text-zinc-800">Hulp nodig? Stel je vraag</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className={titleSm}>Veilig werken</h3>
+              <p className={subMd}>Checklist nog niet afgerond</p>
+            </div>
+            <ChevronRight className={`${chevron} mt-0.5`} aria-hidden />
+          </div>
         </button>
 
-        <section className="mt-6">
-          <div className="h-px w-full bg-zinc-300/80" />
-          <div className="space-y-0.5 py-3 text-center">
-            <p className="text-[20px] font-medium leading-tight text-zinc-800">Volgende trekking: 25 maart</p>
-            <p className="text-[14px] leading-tight text-zinc-500">Spaar punten en doe mee</p>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('alhan-chat:open'))}
+          className={`${cardStd} flex min-h-[88px] w-full flex-col text-left`}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h3 className={titleSm}>Slimme assistent</h3>
+              <p className="mt-1.5 text-[14px] leading-[20px] text-[#636366]">Stel je vraag</p>
+            </div>
+            <ChevronRight className={`${chevron} mt-0.5`} aria-hidden />
           </div>
+        </button>
+
+        <section className="border-t border-[#E5E5EA] pt-4 text-center">
+          <p className="text-[14px] font-medium leading-[20px] text-[#1C1C1E]">Volgende trekking: 25 maart</p>
+          <p className="mt-1 text-[12px] leading-[16px] text-[#8E8E93]">De prijzen blijven elke maand een verrassing</p>
         </section>
       </div>
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white/98 px-3 py-1.5 shadow-[0_-2px_10px_rgba(15,23,42,0.07)] backdrop-blur">
-            <ul className="grid grid-cols-4">
-              <li>
-                <Link to="/" aria-current="page" className="flex flex-col items-center gap-0.5 py-1 text-zinc-900">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[11px] font-medium">Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-[11px]">Uren</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/notifications" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Bell className="h-5 w-5" />
-                  <span className="text-[11px]">Meldingen</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <User className="h-5 w-5" />
-                  <span className="text-[11px]">Profiel</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

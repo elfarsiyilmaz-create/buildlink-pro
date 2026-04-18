@@ -1,16 +1,9 @@
 import { useCallback, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  Check,
-  ChevronRight,
-  ClipboardList,
-  Clock3,
-  Home as HomeIcon,
-  Shield,
-  User,
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Check, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { BottomNav } from '@/components/BottomNav';
 
 const PRIMARY = '#B91C1C';
 
@@ -183,50 +176,7 @@ const Safety = () => {
         </div>
       </div>
 
-      {/* Bottom navigation (mockup: 5 tabs, Veiligheid actief) */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30">
-        <div className="mx-auto w-full max-w-[430px] px-4 pb-[calc(env(safe-area-inset-bottom,0px)+9px)]">
-          <nav className="pointer-events-auto rounded-[20px] border border-black/[0.05] bg-white/98 px-2 py-1.5 shadow-[0_-2px_10px_rgba(15,23,42,0.07)] backdrop-blur">
-            <ul className="grid grid-cols-5">
-              <li>
-                <Link to="/" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="text-[10px]">Home</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/hours" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <Clock3 className="h-5 w-5" />
-                  <span className="text-[10px]">Uren</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/work" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <ClipboardList className="h-5 w-5" />
-                  <span className="text-[10px]">Opdrachten</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/safety"
-                  aria-current="page"
-                  className="flex flex-col items-center gap-0.5 py-1 font-medium"
-                  style={{ color: PRIMARY }}
-                >
-                  <Shield className="h-5 w-5" />
-                  <span className="text-[10px]">Veiligheid</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="flex flex-col items-center gap-0.5 py-1 text-zinc-500">
-                  <User className="h-5 w-5" />
-                  <span className="text-[10px]">Profiel</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 };

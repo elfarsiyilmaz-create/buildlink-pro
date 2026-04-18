@@ -13,6 +13,30 @@ type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alhan-chat`;
 
+/**
+ * Leest de response-body exact één keer (text() verbruikt de stream).
+ * Geeft geparseerde `error` terug indien JSON met stringveld; altijd een korte preview voor logging.
+ */
+async function readAlhanChatErrorPayload(resp: Response): Promise<{
+  serverMessage: string | null;
+  bodyPreview: string;
+}> {
+  const text = await resp.text();
+  const bodyPreview = text.length > 600 ? `${text.slice(0, 600)}…` : text || '(leeg)';
+  if (!text.trim()) {
+    return { serverMessage: null, bodyPreview };
+  }
+  try {
+    const parsed = JSON.parse(text) as { error?: unknown };
+    if (typeof parsed.error === 'string' && parsed.error.trim()) {
+      return { serverMessage: parsed.error.trim(), bodyPreview };
+    }
+  } catch {
+    /* geen JSON */
+  }
+  return { serverMessage: null, bodyPreview };
+}
+
 const LOGGED_IN_GREETING: Msg = {
   role: 'assistant',
   content:
@@ -41,21 +65,38 @@ async function streamChat({
     return;
   }
 
-  const resp = await fetch(CHAT_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
-      apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify({
-      messages,
-      profileContext,
-      ...(dashboardCoachContext ? { dashboardCoachContext } : {}),
-    }),
-  });
+  let resp: Response;
+  try {
+    resp = await fetch(CHAT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({
+        messages,
+        profileContext,
+        ...(dashboardCoachContext ? { dashboardCoachContext } : {}),
+      }),
+    });
+  } catch (e) {
+    console.error('[AlhanChat] fetch failed', e);
+    onError(
+      import.meta.env.DEV && e instanceof Error
+        ? `Netwerkfout: ${e.message}`
+        : 'Er ging iets mis. Probeer het later opnieuw.',
+    );
+    return;
+  }
 
-  if (!resp.ok || !resp.body) {
+  if (!resp.ok) {
+    const { serverMessage, bodyPreview } = await readAlhanChatErrorPayload(resp);
+    console.error('[AlhanChat] alhan-chat HTTP error', {
+      status: resp.status,
+      parsedError: serverMessage,
+      bodyPreview: bodyPreview.slice(0, 500),
+    });
     if (resp.status === 401) {
       onError('Log in om de chat te gebruiken.');
       return;
@@ -68,7 +109,22 @@ async function streamChat({
       onError('AI-tegoed op. Neem contact op met de beheerder.');
       return;
     }
-    onError('Er ging iets mis. Probeer het later opnieuw.');
+    const generic = 'Er ging iets mis. Probeer het later opnieuw.';
+    if (import.meta.env.DEV && serverMessage) {
+      onError(`[${resp.status}] ${serverMessage}`);
+      return;
+    }
+    onError(generic);
+    return;
+  }
+
+  if (!resp.body) {
+    console.error('[AlhanChat] alhan-chat response OK maar geen body', { status: resp.status });
+    onError(
+      import.meta.env.DEV
+        ? `Streaming mislukt (HTTP ${resp.status}, lege body).`
+        : 'Er ging iets mis. Probeer het later opnieuw.',
+    );
     return;
   }
 
@@ -285,8 +341,14 @@ const AlhanChat = () => {
         },
       });
     } catch (err) {
-      console.error('Chat error:', err);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Er ging iets mis. Probeer het later opnieuw.' }]);
+      console.error('[AlhanChat] send / stream error', err);
+      const fallback = 'Er ging iets mis. Probeer het later opnieuw.';
+      const detail =
+        import.meta.env.DEV && err instanceof Error && err.message.trim() ? err.message.trim() : null;
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: detail ? `${fallback} (${detail})` : fallback },
+      ]);
       setLoading(false);
     }
   };
