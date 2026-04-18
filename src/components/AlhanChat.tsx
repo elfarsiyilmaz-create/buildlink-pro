@@ -196,6 +196,8 @@ const AlhanChat = () => {
   const isWorkRoute = location.pathname === '/work';
   const isNetworkRoute = location.pathname === '/network';
   const isSafetyRoute = location.pathname === '/safety';
+  const isPrivacyPolicyRoute = location.pathname === '/settings/privacy';
+  const isPartnerProgrammaRoute = location.pathname === '/partner-programma';
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -366,7 +368,9 @@ const AlhanChat = () => {
           !isHoursRoute &&
           !isWorkRoute &&
           !isNetworkRoute &&
-          !isSafetyRoute && (
+          !isSafetyRoute &&
+          !isPrivacyPolicyRoute &&
+          !isPartnerProgrammaRoute && (
           <motion.button
             type="button"
             initial={{ scale: 0 }}

@@ -301,6 +301,76 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_partner_activity_log: {
+        Row: {
+          aangemaakt_op: string
+          activiteit: string
+          datum_amsterdam: string
+          id: string
+          jaar: number
+          maand: number
+          punten: number
+          referral_user_id: string | null
+          user_id: string
+        }
+        Insert: {
+          aangemaakt_op?: string
+          activiteit: string
+          id?: string
+          jaar: number
+          maand: number
+          punten: number
+          referral_user_id?: string | null
+          user_id: string
+        }
+        Update: {
+          aangemaakt_op?: string
+          activiteit?: string
+          id?: string
+          jaar?: number
+          maand?: number
+          punten?: number
+          referral_user_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      platform_partner_monthly_summary: {
+        Row: {
+          beloning_bedrag: number
+          beloning_gekozen: boolean
+          beloning_verstuurd: boolean
+          id: string
+          jaar: number
+          maand: number
+          tier: string
+          totaal_punten: number
+          user_id: string
+        }
+        Insert: {
+          beloning_bedrag?: number
+          beloning_gekozen?: boolean
+          beloning_verstuurd?: boolean
+          id?: string
+          jaar: number
+          maand: number
+          tier?: string
+          totaal_punten?: number
+          user_id: string
+        }
+        Update: {
+          beloning_bedrag?: number
+          beloning_gekozen?: boolean
+          beloning_verstuurd?: boolean
+          id?: string
+          jaar?: number
+          maand?: number
+          tier?: string
+          totaal_punten?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -719,6 +789,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ken_punten_toe: {
+        Args: {
+          p_activiteit: string
+          p_referral_user_id?: string | null
+          p_user_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {

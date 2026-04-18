@@ -1,0 +1,26 @@
+# Query: Privacyverklaring
+# ContextLines: 1
+
+6 results - 1 file
+
+docs/privacy-policy.html:
+    5    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    6:   <meta name="description" content="Privacyverklaring van Alhan Groep voor het ZZP-portaal." />
+    7:   <title>Privacyverklaring — Alhan Groep</title>
+    8    <style>
+
+  147    <header>
+  148:     <h1>Privacyverklaring</h1>
+  149      <p>Alhan Groep — Platform voor vakmensen en ondernemers</p>
+
+  160          Alhan Groep B.V. (“<strong>Alhan Groep</strong>”, “<strong>wij</strong>”) respecteert uw privacy.
+  161:         In deze privacyverklaring leggen wij uit welke persoonsgegevens wij verwerken via onze app en
+  162          diensten voor zelfstandigen (<abbr title="zelfstandigen zonder personeel">ZZP’ers</abbr>) in de
+
+  243        <p>
+  244:         Wij kunnen deze privacyverklaring van tijd tot tijd aanpassen, bijvoorbeeld bij wijzigingen in
+  245          wetgeving of onze dienstverlening. De actuele versie wordt gepubliceerd met vermelding van de
+
+  259    <footer>
+  260:     © Alhan Groep B.V. — Privacyverklaring — april 2026
+  261    </footer>

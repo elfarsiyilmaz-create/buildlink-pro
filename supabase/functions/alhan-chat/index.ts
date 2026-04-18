@@ -20,6 +20,7 @@ const parsedEnvOrigins = envOrigins
 
 /** Lokale dev (o.a. Vite/Capacitor live reload); POST moet exact `Access-Control-Allow-Origin: <Origin>` terugkrijgen — nooit `*`. */
 const ALLOWED_ORIGINS = new Set([
+  "http://localhost:8080",
   "http://localhost:8081",
   "http://localhost:5173",
   "http://localhost:4173",
@@ -148,8 +149,7 @@ async function requireAuth(req: Request): Promise<Response | null> {
   if (!authHeader?.startsWith("Bearer ")) {
     return jsonError(req, "Unauthorized", 401);
   }
-  const token = authHeader.slice(7).trim();
-  if (!token) {
+  if (!authHeader.slice(7).trim()) {
     return jsonError(req, "Unauthorized", 401);
   }
 
@@ -160,10 +160,14 @@ async function requireAuth(req: Request): Promise<Response | null> {
     return jsonError(req, "Interne fout", 500);
   }
 
+  // Gebruik Authorization via global headers + getUser() zonder JWT-argument.
+  // Dan valideert Supabase Auth de sessie server-side (geen lokale JWT-parse in Deno;
+  // anders: "Unsupported JWT algorithm ES256" bij getUser(jwt)).
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } },
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
     return jsonError(req, "Unauthorized", 401);
   }
@@ -417,12 +421,15 @@ message: maximaal 12 woorden, motiverend, in het Nederlands.`;
     }. Leaderboard positie: ${rankStr}.`;
 
   const response = await fetch(
-    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key=" + geminiKey,
+    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${geminiKey}`,
+      },
       body: JSON.stringify({
-        model: "gemini-2.0-flash",
+        model: "gemini-2.5-flash",
         stream: false,
         messages: [
           { role: "system", content: systemPrompt },
@@ -530,14 +537,15 @@ Gebruik deze profielgegevens om GEPERSONALISEERD advies te geven. Noem de gebrui
 Communiceer kort, vriendelijk en motiverend. Gebruik emoji's. Antwoord in de taal van de gebruiker (standaard Nederlands). Houd antwoorden beknopt (max 3-4 zinnen tenzij meer detail nodig is). Gebruik markdown voor structuur als dat helpt.`;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions?key=" + GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${GEMINI_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "gemini-2.0-flash",
+          model: "gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
             ...messages,

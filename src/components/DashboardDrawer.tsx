@@ -16,6 +16,7 @@ const primaryLinks: { path: string; label: string }[] = [
   { path: '/hours', label: 'Uren' },
   { path: '/safety', label: 'Veilig werken' },
   { path: '/rewards', label: 'Maandtrekking' },
+  { path: '/partner-programma', label: 'Partner Programma' },
   { path: '/profile', label: 'Profiel' },
 ];
 

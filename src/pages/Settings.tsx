@@ -200,20 +200,19 @@ const Settings = () => {
             </div>
           </section>
 
-          <a
-            href="https://elfarsiyilmaz-create.github.io/buildlink-pro/privacy-policy.html"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => navigate('/settings/privacy')}
             className={cn(
               cardClass,
-              'flex items-center gap-3 p-4 transition-colors hover:bg-[#FAFAFA] active:bg-[#F5F5F5]',
+              'flex w-full items-center gap-3 p-4 text-left transition-colors hover:bg-[#FAFAFA] active:bg-[#F5F5F5]',
             )}
             aria-label={t('settings.readPrivacy')}
           >
             <FileText className="h-5 w-5 shrink-0 text-[#DC2626]" aria-hidden />
             <span className="min-w-0 flex-1 text-[15px] font-medium text-[#DC2626]">{t('settings.readPrivacy')}</span>
             <ChevronRight className="h-4 w-4 shrink-0 text-[#DC2626]/50" aria-hidden />
-          </a>
+          </button>
 
           <Button
             type="button"

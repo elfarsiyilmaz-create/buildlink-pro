@@ -24,7 +24,9 @@ const Layout = () => {
   const isNetworkRoute = location.pathname === '/network';
   const isSafetyRoute = location.pathname === '/safety';
   const isSettingsRoute = location.pathname === '/settings';
+  const isSettingsSubRoute = /^\/settings\/.+/.test(location.pathname);
   const isRewardsRoute = location.pathname === '/rewards';
+  const isPartnerProgrammaRoute = location.pathname === '/partner-programma';
   const useNativeLikeScreen =
     isHomeRoute ||
     isProfileRoute ||
@@ -33,7 +35,9 @@ const Layout = () => {
     isNetworkRoute ||
     isSafetyRoute ||
     isSettingsRoute ||
-    isRewardsRoute;
+    isSettingsSubRoute ||
+    isRewardsRoute ||
+    isPartnerProgrammaRoute;
 
   useEffect(() => {
     const loadProfile = async () => {

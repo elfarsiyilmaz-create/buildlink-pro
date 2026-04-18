@@ -22,6 +22,7 @@ const Network = lazy(() => import("@/pages/Network"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const SettingsLanguage = lazy(() => import("@/pages/SettingsLanguage"));
+const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const AlhanChat = lazy(() => import("@/components/AlhanChat"));
 const PWAInstallPrompt = lazy(() => import("@/components/PWAInstallPrompt"));
 const Layout = lazy(() => import("@/components/Layout"));
@@ -35,6 +36,7 @@ const TimeRegistration = lazy(() => import("@/pages/TimeRegistration"));
 const Safety = lazy(() => import("@/pages/Safety"));
 const WheelOfFortunePage = lazy(() => import("@/pages/WheelOfFortunePage"));
 const Rewards = lazy(() => import("@/pages/Rewards"));
+const PartnerProgramma = lazy(() => import("@/pages/PartnerProgramma"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -156,12 +158,14 @@ const App = () => (
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/settings/language" element={<SettingsLanguage />} />
+                <Route path="/settings/privacy" element={<PrivacyPolicy />} />
                 <Route path="/leaderboard" element={<Navigate to="/safety" replace />} />
                 <Route path="/hours" element={<TimeRegistration />} />
                 <Route path="/safety" element={<Safety />} />
                 <Route path="/time-registration" element={<Navigate to="/hours" replace />} />
                 <Route path="/uren" element={<Navigate to="/hours" replace />} />
                 <Route path="/rewards" element={<Rewards />} />
+                <Route path="/partner-programma" element={<PartnerProgramma />} />
                 <Route path="/wheel" element={<WheelOfFortunePage />} />
                 <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
               </Route>
